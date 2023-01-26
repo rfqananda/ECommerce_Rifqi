@@ -1,5 +1,6 @@
 package com.example.ecommerce_rifqi.ui.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -13,6 +14,8 @@ import com.example.ecommerce_rifqi.adapter.ListProductFavoriteAdapter
 import com.example.ecommerce_rifqi.databinding.FragmentFavoriteBinding
 import com.example.ecommerce_rifqi.helper.Constant
 import com.example.ecommerce_rifqi.helper.PreferencesHelper
+import com.example.ecommerce_rifqi.model.DataProduct
+import com.example.ecommerce_rifqi.ui.DetailActivity
 import com.example.ecommerce_rifqi.ui.MyScrollListener
 import com.example.ecommerce_rifqi.ui.view.GetListFavoriteProductViewModel
 import com.example.ecommerce_rifqi.ui.view.GetListProductViewModel
@@ -114,6 +117,15 @@ class FragmentFavorite : Fragment(R.layout.fragment_favorite) {
 
     private fun setupListProduct(){
         listFavoriteProductAdapter = ListProductFavoriteAdapter(requireContext())
+        listFavoriteProductAdapter.setOnItemClick(object : ListProductFavoriteAdapter.OnAdapterListenerListProductFavorite{
+            override fun onClick(data: DataProduct) {
+                val productID = data.id
+
+                val intent = Intent(requireActivity(), DetailActivity::class.java)
+                intent.putExtra("id", productID)
+                startActivity(intent)
+            }
+        })
 
         binding.apply {
             rvFavorite.layoutManager = LinearLayoutManager(context)

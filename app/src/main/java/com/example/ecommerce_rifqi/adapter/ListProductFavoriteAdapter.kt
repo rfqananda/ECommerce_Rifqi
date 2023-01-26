@@ -32,6 +32,11 @@ class ListProductFavoriteAdapter(val context:Context) : RecyclerView.Adapter<Lis
         notifyDataSetChanged()
     }
 
+    private var onItemClick: ListProductFavoriteAdapter.OnAdapterListenerListProductFavorite? = null
+
+    fun setOnItemClick(onItemClick: ListProductFavoriteAdapter.OnAdapterListenerListProductFavorite){
+        this.onItemClick = onItemClick
+    }
 
     class ViewHolder(val binding: AdapterLayoutListFavoriteBinding) : RecyclerView.ViewHolder(binding.root) {
     }
@@ -63,9 +68,16 @@ class ListProductFavoriteAdapter(val context:Context) : RecyclerView.Adapter<Lis
             ratingBar.rating = listProduct.rate.toFloat()
         }
 
+        holder.itemView.setOnClickListener {
+            onItemClick?.onClick(listProduct)
+        }
     }
 
     override fun getItemCount(): Int = listData.size
+
+    interface OnAdapterListenerListProductFavorite {
+        fun onClick(data: DataProduct)
+    }
 
     private fun formatRupiah(angka: Int): String {
         val formatRupiah =  DecimalFormat("Rp #,###")
