@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ECommerce_Rifqi</string>
+    <string name="home">Beranda</string>
+    <string name="fav">Favorit</string>
+    <string name="profile">Profil</string>
+    <string name="txt_loading">Menunggu…</string>
+    <string name="txt_old_pass">Kata Sandi Lama</string>
+    <string name="txt_new_pass">Kata Sandi Baru</string>
+    <string name="txt_confirm_new_pass">Konfirmasi Kata Sandi Baru</string>
+    <string name="txt_save">Simpan</string>
+    <string name="txt_email">Email</string>
+    <string name="txt_pass">Kata Sandi</string>
+    <string name="txt_confirm_pass">Konfirmasi Kata Sandi</string>
+    <string name="txt_name">Nama</string>
+    <string name="txt_phone">Nomor Telepon</string>
+    <string name="txt_gender">JENIS KELAMIN</string>
+    <string name="txt_male">Laki-laki</string>
+    <string name="txt_female">Perempuan</string>
+    <string name="txt_signup">Daftar</string>
+    <string name="txt_login">Masuk</string>
+    <string name="txt_logout">Keluar</string>
+    <string name="txt_change_lang">Ubah Bahasa</string>
+    <string name="txt_change_pass" translatable="false">Ubah Kata Sandi</string>
+    <string name="select_language">PILIH BAHASA:</string>
+    <string name="txt_insert_image">Silakan masukkan file gambar terlebih dahulu!</string>
+    <string name="txt_search">Cari…</string>
+    <string name="txt_sort">Sortir</string>
+    <string name="txt_empty">Data Kosong</string>
+    <string name="txt_sortirAZ">Dari A sampai Z</string>
+    <string name="txt_sortirZA">Dari Z sampai A</string>
+
+
+
+
+</resources>

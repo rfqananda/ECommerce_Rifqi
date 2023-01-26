@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <ImageView
+        android:id="@+id/iv_detail_product"
+        android:layout_width="match_parent"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_list_dummy"
+        android:layout_height="200dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="#54000000"
+        android:orientation="vertical"
+        android:gravity="center_vertical"
+        android:layout_gravity="bottom">
+
+        <TextView
+            android:id="@+id/tv_detail_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:textColor="@color/white"
+            tools:text="Bagian depan"/>
+
+    </LinearLayout>
+</FrameLayout>
