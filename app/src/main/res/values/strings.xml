@@ -1,0 +1,33 @@
+<resources>
+    <string name="app_name">ECommerce_Rifqi</string>
+    <string name="home">Home</string>
+    <string name="fav">Favorite</string>
+    <string name="profile">Profile</string>
+    <string name="txt_loading">Waiting…</string>
+    <string name="txt_old_pass">Old Password</string>
+    <string name="txt_new_pass">New Password</string>
+    <string name="txt_confirm_new_pass">Confirm New Password</string>
+    <string name="txt_save">Save</string>
+    <string name="txt_email">Email</string>
+    <string name="txt_pass">Password</string>
+    <string name="txt_confirm_pass">Confirm Password</string>
+    <string name="txt_name">Name</string>
+    <string name="txt_phone">Phone Number</string>
+    <string name="txt_gender">GENDER</string>
+    <string name="txt_male">Male</string>
+    <string name="txt_female">Female</string>
+    <string name="txt_signup">Sign Up</string>
+    <string name="txt_login">Login</string>
+    <string name="txt_logout">Logout</string>
+    <string name="txt_change_lang">Change Language</string>
+    <string name="txt_change_pass">Change Password</string>
+    <string name="select_language">SELECT LANGUAGE:</string>
+    <string name="txt_insert_image">Please insert an image file first!</string>
+    <string name="txt_search">Search…</string>
+    <string name="txt_sort">Sort By</string>
+    <string name="txt_empty">Data is empty</string>
+    <string name="txt_sortirAZ">From A to Z</string>
+    <string name="txt_sortirZA">From Z to A</string>
+
+
+</resources>
