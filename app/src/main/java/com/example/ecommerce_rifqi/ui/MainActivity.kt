@@ -1,5 +1,6 @@
 package com.example.ecommerce_rifqi.ui
 
+import android.content.Intent
 import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -45,6 +46,11 @@ class MainActivity : AppCompatActivity(), Communicator {
                     R.id.fragmentChangePassword, R.id.fragmentDetail -> toolBar.visibility = View.GONE
                     else -> toolBar.visibility = View.VISIBLE
                 }
+            }
+
+            btnCart.setOnClickListener {
+                val intent = Intent(this@MainActivity, CartActivity::class.java)
+                startActivity(intent)
             }
 
         }

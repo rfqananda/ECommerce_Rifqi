@@ -3,6 +3,7 @@ package com.example.ecommerce_rifqi.ui.view
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.ecommerce_rifqi.data.local.Product
 
 class BuyProductViewModel : ViewModel(){
 
@@ -40,8 +41,6 @@ class BuyProductViewModel : ViewModel(){
         initTotalPrice = productPrice
         _totalPrice.value = productPrice
     }
-
-
 
 
 

@@ -71,12 +71,12 @@ class BottomSheetFragment(val dataProduct: DetailDataProduct): BottomSheetDialog
 
 
 
-            viewModel.setPrice(price.toInt())
+//            viewModel.setPrice(price.toInt())
 
-            viewModel.totalPrice.observe(requireActivity()){ it ->
-                val totalPrice = formatRupiah(it)
-                btnBuy.text = "Buy Now - $totalPrice"
-            }
+//            viewModel.totalPrice.observe(requireActivity()){ it ->
+//                val totalPrice = formatRupiah(it)
+//                btnBuy.text = "Buy Now - $totalPrice"
+//            }
 
             viewModel.quantity.observe(requireActivity()){
                 tvQuantity.text = it.toString()

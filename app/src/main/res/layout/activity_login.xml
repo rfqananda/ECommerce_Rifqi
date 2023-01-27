@@ -1,111 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:background="@color/pink"
     tools:context=".ui.LoginActivity">
+    <ImageView
+        android:id="@+id/ic_login"
+        android:layout_width="267dp"
+        android:layout_height="266dp"
+        android:layout_marginTop="35dp"
+        android:src="@drawable/ic_login"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="0dp"
+        android:background="@drawable/bg_card"
+        app:layout_constraintTop_toBottomOf="@id/ic_login"
+        app:layout_constraintBottom_toBottomOf="parent">
 
-        <ImageView
-            android:id="@+id/ic_login"
-            android:layout_width="267dp"
-            android:layout_height="266dp"
-            android:layout_marginTop="35dp"
-            android:src="@drawable/ic_login"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
-
-        <RelativeLayout
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/input_email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="21dp"
-            android:background="@drawable/bg_card"
-            app:layout_constraintTop_toBottomOf="@id/ic_login"
-            app:layout_constraintBottom_toBottomOf="parent">
+            android:layout_marginTop="57dp"
+            android:hint="@string/txt_email"
+            app:startIconDrawable="@drawable/ic_user"
+            android:layout_marginStart="38dp"
+            android:layout_marginEnd="38dp">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/input_email"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="57dp"
-                android:hint="@string/txt_email"
-                app:startIconDrawable="@drawable/ic_user"
-                android:layout_marginStart="38dp"
-                android:layout_marginEnd="38dp">
+                android:background="@color/white"
+                android:inputType="textEmailAddress"
+                android:drawablePadding="10dp"/>
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/et_email"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/white"
-                    android:inputType="textEmailAddress"
-                    android:drawablePadding="10dp"/>
+        </com.google.android.material.textfield.TextInputLayout>
 
-            </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/input_pass"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:hint="@string/txt_pass"
+            android:layout_below="@id/input_email"
+            app:startIconDrawable="@drawable/ic_pass"
+            app:endIconMode="password_toggle"
+            android:layout_marginStart="38dp"
+            android:layout_marginEnd="38dp">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/input_pass"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_pass"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:hint="@string/txt_pass"
-                android:layout_below="@id/input_email"
-                app:startIconDrawable="@drawable/ic_pass"
-                app:endIconMode="password_toggle"
-                android:layout_marginStart="38dp"
-                android:layout_marginEnd="38dp">
+                android:background="@color/white"
+                android:inputType="textPassword"
+                android:drawablePadding="10dp"/>
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/et_pass"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/white"
-                    android:inputType="textPassword"
-                    android:drawablePadding="10dp"/>
+        </com.google.android.material.textfield.TextInputLayout>
 
-            </com.google.android.material.textfield.TextInputLayout>
+        <android.widget.Button
+            android:id="@+id/btn_login"
+            android:layout_width="278dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="60dp"
+            android:text="@string/txt_login"
+            android:fontFamily="@font/bold"
+            android:textColor="@color/white"
+            android:textAllCaps="false"
+            android:textSize="20sp"
+            android:background="@drawable/bg_btn"
+            android:gravity="center"
+            android:layout_below="@id/input_pass"
+            android:layout_centerHorizontal="true"/>
 
-            <android.widget.Button
-                android:id="@+id/btn_login"
-                android:layout_width="278dp"
-                android:layout_height="50dp"
-                android:layout_marginTop="60dp"
-                android:text="@string/txt_login"
-                android:fontFamily="@font/bold"
-                android:textColor="@color/white"
-                android:textAllCaps="false"
-                android:textSize="20sp"
-                android:background="@drawable/bg_btn"
-                android:gravity="center"
-                android:layout_below="@id/input_pass"
-                android:layout_centerHorizontal="true"/>
+        <android.widget.Button
+            android:id="@+id/btn_signup"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:text="@string/txt_signup"
+            android:fontFamily="@font/bold"
+            android:textColor="@color/white"
+            android:textAllCaps="false"
+            android:textSize="20sp"
+            android:layout_marginTop="50dp"
 
-            <android.widget.Button
-                android:id="@+id/btn_signup"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:text="@string/txt_signup"
-                android:fontFamily="@font/bold"
-                android:textColor="@color/white"
-                android:textAllCaps="false"
-                android:textSize="20sp"
-                android:layout_marginTop="50dp"
-                android:layout_below="@id/btn_login"
-                android:background="@drawable/bg_btn2"
-                android:layout_alignParentBottom="true"/>
-
-
-        </RelativeLayout>
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            android:background="@drawable/bg_btn2"
+            android:layout_alignParentBottom="true"/>
+    </RelativeLayout>
 
 
 
-</androidx.core.widget.NestedScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

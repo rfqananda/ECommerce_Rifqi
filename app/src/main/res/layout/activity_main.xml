@@ -23,6 +23,15 @@
             android:layout_marginStart="16dp"
             android:src="@drawable/ic_toolbar" />
 
+        <ImageView
+            android:id="@+id/btn_cart"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginEnd="10dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true"
+            android:src="@drawable/ic_cart"/>
+
     </RelativeLayout>
 
     <androidx.fragment.app.FragmentContainerView

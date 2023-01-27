@@ -5,11 +5,8 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.findNavController
-import com.example.ecommerce_rifqi.R
 import com.example.ecommerce_rifqi.adapter.ImagePagerAdapter
 import com.example.ecommerce_rifqi.databinding.ActivityDetailBinding
-import com.example.ecommerce_rifqi.databinding.FragmentDetailBinding
 import com.example.ecommerce_rifqi.helper.Constant
 import com.example.ecommerce_rifqi.helper.PreferencesHelper
 import com.example.ecommerce_rifqi.model.DetailDataProduct
@@ -17,6 +14,10 @@ import com.example.ecommerce_rifqi.ui.view.AddToFavoriteViewModel
 import com.example.ecommerce_rifqi.ui.view.GetDetailProductViewModel
 import com.example.ecommerce_rifqi.ui.view.RemoveFromFavoriteViewModel
 import com.example.ecommerce_rifqi.utils.ViewModelFactory
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.DecimalFormat
 
 class DetailActivity : AppCompatActivity() {
@@ -27,13 +28,17 @@ class DetailActivity : AppCompatActivity() {
 
     private lateinit var viewModelRemoveFromFav: RemoveFromFavoriteViewModel
 
-
-
     lateinit var sharedPref: PreferencesHelper
 
     private var isFavorite: Boolean = false
 
     private lateinit var binding: ActivityDetailBinding
+
+    private var name: String = ""
+
+    private var price: String = ""
+
+    private var image: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,16 +52,17 @@ class DetailActivity : AppCompatActivity() {
         getDetailProductData()
 
         binding.apply {
+            val productID = intent.getIntExtra("id", 0)
+            val userID = sharedPref.getString(Constant.PREF_ID)
+
             btnBack.setOnClickListener {
                 finish()
             }
 
-
             toggleButton.setOnClickListener {
                 isFavorite = !isFavorite
 
-                val productID = intent.getIntExtra("id", 0)
-                val userID = sharedPref.getString(Constant.PREF_ID)
+
 
                 if (isFavorite) {
                     addToFav(productID!!, userID!!.toInt())
@@ -64,6 +70,26 @@ class DetailActivity : AppCompatActivity() {
                     removeFromFav(productID!!, userID!!.toInt())
                 }
                 toggleButton.isChecked = isFavorite
+            }
+
+            btnCart.setOnClickListener {
+                CoroutineScope(Dispatchers.IO).launch {
+                    val isProductHasBeenAdded = viewModel.checkProduct(productID)
+                    withContext(Dispatchers.Main) {
+
+                        if (isProductHasBeenAdded != null){
+                            if (isProductHasBeenAdded.toInt() > 0){
+                                showMessage("Product Is Already In the Trolley!")
+                            }else{
+                                viewModel.addToCart(productID, name, price, image, 1)
+                                showMessage("Product Has Been Added To Trolley!")
+                            }
+                        }
+                    }
+
+                }
+
+
             }
         }
 
@@ -88,6 +114,10 @@ class DetailActivity : AppCompatActivity() {
             if (it != null) {
 
                 showShimmer(false)
+
+                name = it.name_product
+                price = it.harga
+                image = it.image
 
                 if (it.isFavorite) {
                     isFavorite = true
