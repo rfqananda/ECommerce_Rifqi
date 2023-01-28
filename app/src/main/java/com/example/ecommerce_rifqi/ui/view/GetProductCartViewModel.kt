@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.ecommerce_rifqi.adapter.CartAdapter
 import com.example.ecommerce_rifqi.data.local.Product
 import com.example.ecommerce_rifqi.data.local.ProductDAO
 import com.example.ecommerce_rifqi.data.local.ProductDatabase
@@ -14,6 +15,10 @@ import kotlinx.coroutines.launch
 class GetProductCartViewModel(application: Application): AndroidViewModel(application) {
     private var productDAO: ProductDAO?
     private var productDB: ProductDatabase?
+
+    private lateinit var dataProductAdapter: CartAdapter
+
+
 
     init {
         productDB = ProductDatabase.getDatabase(application)

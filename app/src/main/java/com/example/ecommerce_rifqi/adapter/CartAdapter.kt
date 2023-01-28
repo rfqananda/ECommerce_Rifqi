@@ -80,4 +80,21 @@ class CartAdapter(private val context: Context): RecyclerView.Adapter<CartAdapte
         fun onIncrease(data: Product, tv: TextView)
         fun onDecrease(data: Product)
     }
+
+    fun updateData(data: Product) {
+        val index = listData.indexOfFirst { it.id == data.id }
+        if (index != -1) {
+            listData[index] = data
+            notifyItemChanged(index)
+        }
+    }
+
+    fun removeData(id: Int) {
+        val index = listData.indexOfFirst { it.id == id }
+        if (index != -1) {
+            listData.removeAt(index)
+            notifyItemRemoved(index)
+        }
+    }
+
 }

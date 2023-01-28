@@ -51,14 +51,13 @@ class CartActivity : AppCompatActivity() {
         dataProductAdapter.setOnItemClick(object : CartAdapter.OnAdapterListener{
             override fun onDelete(data: Product) {
                 viewModel.deleteProduct(data.id)
-                dataProductAdapter.notifyDataSetChanged()
+                dataProductAdapter.removeData(data.id)
             }
 
             override fun onIncrease(data: Product, tv: TextView) {
-                binding.rvCart.adapter?.notifyDataSetChanged()
-                showMessage("Coba")
                 viewModel.incrementQuantity(data.id)
-
+                val updatedData = data.copy(quantity = data.quantity + 1)
+                dataProductAdapter.updateData(updatedData)
             }
 
 //            override fun onIncrease(data: Product) {
