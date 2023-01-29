@@ -23,14 +23,14 @@ class GetProductCartViewModel(application: Application): AndroidViewModel(applic
     init {
         productDB = ProductDatabase.getDatabase(application)
         productDAO = productDB?.productDAO()
-        productDAO?.getCheckedProducts()?.observeForever {
-            checkedProducts.value = it.map { product ->
-                CheckedProduct(
-                    id = product.id,
-                    quantity = product.quantity
-                )
-            }
-        }
+//        productDAO?.getCheckedProducts()?.observeForever {
+//            checkedProducts.value = it.map { product ->
+//                CheckedProduct(
+//                    id = product.id,
+//                    quantity = product.quantity
+//                )
+//            }
+//        }
     }
 
     private var _quantity = MutableLiveData<Int>()

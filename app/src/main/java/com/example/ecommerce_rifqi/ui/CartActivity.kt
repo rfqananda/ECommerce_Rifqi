@@ -36,7 +36,6 @@ class CartActivity : AppCompatActivity() {
 
     private var totalPrice: Int = 0
 
-    private var selectedProducts: MutableList<Product> = mutableListOf()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,6 +47,9 @@ class CartActivity : AppCompatActivity() {
 
         viewModel = ViewModelProvider(this)[GetProductCartViewModel::class.java]
         viewModelBuy = ViewModelProvider(this)[BuyProductViewModel::class.java]
+
+        getProduct()
+
 
         binding.apply {
             rvCart.setHasFixedSize(true)
@@ -175,18 +177,11 @@ class CartActivity : AppCompatActivity() {
 
             override fun onChecked(data: Product, isChecked: Boolean) {
                 viewModel.buttonCheck(data.id, isChecked)
-                viewModel.getTotalItemByCheckButton(1)!!.observe(this@CartActivity){
-                    if (it == null){
-                        binding.tvTotal.text = formatRupiah(0)
-                    } else binding.tvTotal.text = formatRupiah(it)
-                }
-
-                if(isChecked){
-                    selectedProducts.add(data)
-                }else{
-                    selectedProducts.remove(data)
-                }
-
+//                viewModel.getTotalItemByCheckButton(1)!!.observe(this@CartActivity){
+//                    if (it == null){
+//                        binding.tvTotal.text = formatRupiah(0)
+//                    } else binding.tvTotal.text = formatRupiah(it)
+//                }
                 Log.e("Quantity Check Box", data.quantity.toString())
 
             }
@@ -196,7 +191,6 @@ class CartActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        getProduct()
     }
 
     private fun getProduct(){
