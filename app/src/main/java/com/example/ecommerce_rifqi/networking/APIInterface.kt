@@ -3,6 +3,7 @@ package com.example.ecommerce_rifqi.networking
 import com.example.ecommerce_rifqi.model.*
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.*
@@ -44,7 +45,7 @@ interface APIInterface {
 
 
     @FormUrlEncoded
-    @Headers(*["apikey:TuIBt77u7tZHi8n7WqUC"])
+//    @Headers(*["apikey:TuIBt77u7tZHi8n7WqUC"])
     @POST("api/ecommerce/refresh-token")
     suspend fun refreshToken(
         @Field("id_user") id_user: Int,
@@ -88,6 +89,11 @@ interface APIInterface {
     @POST("api/ecommerce/update-stock")
     fun updateStock(
         @Body dataStock: DataStock
+    ): Call<UpdateStockSuccess>
+
+    @POST("api/ecommerce/update-stock")
+    fun updateStockCart(
+        @Body dataStock: HashMap<String, Any>
     ): Call<UpdateStockSuccess>
 
     @FormUrlEncoded

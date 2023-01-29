@@ -57,9 +57,9 @@ class GetDetailProductViewModel(context: Context): ViewModel() {
         return productDetail
     }
 
-    fun addToCart(id: Int, name: String, price: String, image: String, quantity: Int){
+    fun addToCart(id: Int, name: String, price: String, image: String, quantity: Int, totalPriceItem: Int, buttonCheck: Boolean){
         CoroutineScope(Dispatchers.IO).launch {
-            val product = Product(id, name, price, image, quantity)
+            val product = Product(id, name, price, image, quantity, totalPriceItem, buttonCheck)
             productDAO?.addToCart(product)
         }
     }

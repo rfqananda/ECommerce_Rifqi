@@ -5,7 +5,9 @@ import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
 import android.view.View
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.ecommerce_rifqi.R
@@ -13,14 +15,23 @@ import com.example.ecommerce_rifqi.databinding.ActivityMainBinding
 import com.example.ecommerce_rifqi.helper.Constant
 import com.example.ecommerce_rifqi.helper.PreferencesHelper
 import com.example.ecommerce_rifqi.ui.fragments.FragmentDetail
+import com.example.ecommerce_rifqi.ui.view.GetProductCartViewModel
 import com.example.ecommerce_rifqi.utils.Communicator
+import com.google.android.material.badge.BadgeDrawable
+import com.google.android.material.badge.BadgeUtils
 import java.util.*
 
 @Suppress("DEPRECATION")
 class MainActivity : AppCompatActivity(), Communicator {
     private lateinit var binding: ActivityMainBinding
 
+    private lateinit var badge: BadgeDrawable
+
+    private var badgeNumber = 0
+
     lateinit var sharedPref: PreferencesHelper
+
+    private lateinit var viewModel: GetProductCartViewModel
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,8 +39,6 @@ class MainActivity : AppCompatActivity(), Communicator {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         sharedPref = PreferencesHelper(this)
-
-        validationLanguage()
 
         binding.apply {
             val fragment = supportFragmentManager.findFragmentById(R.id.fragment_container)
@@ -56,13 +65,28 @@ class MainActivity : AppCompatActivity(), Communicator {
         }
     }
 
-//    override fun onStart() {
-//        super.onStart()
-//        val language = sharedPref.getString(Constant.PREF_LANG)
-//        if (language != null) {
-//            setLocate(language)
-//        }
-//    }
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        return super.onCreateOptionsMenu(menu)
+
+    }
+
+    override fun onStart() {
+        super.onStart()
+        validationLanguage()
+        countData()
+    }
+
+    private fun countData(){
+        viewModel = ViewModelProvider(this)[GetProductCartViewModel::class.java]
+        viewModel.getProductCount()
+        viewModel.totalData.observe(this){
+            if (it > 0){
+                binding.badgeCount.visibility = View.VISIBLE
+                binding.badgeCount.text = it.toString()
+            } else binding.badgeCount.visibility = View.GONE
+        }
+
+    }
 
 
     private fun setLocate(Lang: String){
@@ -81,20 +105,6 @@ class MainActivity : AppCompatActivity(), Communicator {
             setLocate("in")
         }
     }
-
-//    override fun passDataCom(productID: Int) {
-//        val bundle = Bundle()
-//        bundle.putString("id", productID.toString())
-//
-//        val transaction = this.supportFragmentManager.beginTransaction()
-//        val detailFrag = FragmentDetail()
-//        detailFrag.arguments = bundle
-//
-//        transaction.replace(R.id.fragment_container, detailFrag)
-//
-//        transaction.addToBackStack(null)
-//        transaction.commit()
-//    }
 
     override fun passDataCom(image: String, price: String, stock: Int) {
         val bundle = Bundle()

@@ -54,4 +54,30 @@ class UpdateStockViewModel(context: Context): ViewModel() {
             }
         })
     }
+
+    fun setUpdateStockCart(productData: HashMap<String, Any>){
+        val apiInterface = api?.create(APIInterface::class.java)
+
+        apiInterface!!.updateStockCart(productData).enqueue(object: Callback<UpdateStockSuccess>{
+            override fun onResponse(
+                call: Call<UpdateStockSuccess>,
+                response: Response<UpdateStockSuccess>
+            ) {
+                if (response.isSuccessful){
+                    _updateStockSuccess.value = Event(response.body()!!)
+                } else{
+                    val jObjError = JSONObject(response.errorBody()!!.string()).toString()
+                    val gson = Gson()
+                    val jsonObject = gson.fromJson(jObjError, JsonObject::class.java)
+                    val error = gson.fromJson(jsonObject, UpdateStockError::class.java)
+                    _toast.value = Event(error.error?.message.toString())
+                }
+            }
+
+            override fun onFailure(call: Call<UpdateStockSuccess>, t: Throwable) {
+                Log.e("Failure", t.message!!)
+
+            }
+        })
+    }
 }

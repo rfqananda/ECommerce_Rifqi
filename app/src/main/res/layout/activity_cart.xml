@@ -42,6 +42,34 @@
     </RelativeLayout>
 
     <LinearLayout
+        android:id="@+id/empty_data"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <ImageView
+            android:layout_width="215dp"
+            android:layout_height="200dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_empty"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/medium"
+            android:layout_gravity="center"
+            android:textSize="20sp"
+            android:textColor="@color/black"
+            android:text="@string/txt_empty"/>
+
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/layout_check"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -82,6 +110,7 @@
         android:id="@+id/rv_cart"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        app:stackFromEnd="true"
         app:layout_constraintBottom_toTopOf="@id/bottom_appbar"
         app:layout_constraintTop_toBottomOf="@id/layout_check"
         tools:listitem="@layout/adapter_list_cart" />
@@ -115,7 +144,7 @@
             android:fontFamily="@font/bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_tp"
-            android:text="Rp 10.000"/>
+            android:text="Rp 0"/>
 
 
         <android.widget.Button

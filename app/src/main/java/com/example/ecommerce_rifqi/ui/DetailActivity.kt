@@ -81,7 +81,7 @@ class DetailActivity : AppCompatActivity() {
                             if (isProductHasBeenAdded.toInt() > 0){
                                 showMessage("Product Is Already In the Trolley!")
                             }else{
-                                viewModel.addToCart(productID, name, price, image, 1)
+                                viewModel.addToCart(productID, name, price, image, 1, price.toInt(), false)
                                 showMessage("Product Has Been Added To Trolley!")
                             }
                         }

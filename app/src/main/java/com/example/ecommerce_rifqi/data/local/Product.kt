@@ -2,7 +2,6 @@ package com.example.ecommerce_rifqi.data.local
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import java.io.Serializable
 
 @Entity(tableName = "item_product")
 data class Product (
@@ -11,6 +10,6 @@ data class Product (
     var name: String = "",
     var price: String = "",
     var image: String = "",
-    var quantity: Int){
-    constructor() : this(0, "", "", "", 0)
-}
+    var quantity: Int,
+    var total_price_item: Int,
+    var check_button: Boolean)

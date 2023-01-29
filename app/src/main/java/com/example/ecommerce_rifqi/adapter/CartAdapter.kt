@@ -18,8 +18,6 @@ class CartAdapter(private val context: Context): RecyclerView.Adapter<CartAdapte
 
     private var onItemClick: CartAdapter.OnAdapterListener? = null
 
-    private lateinit var viewModelBuy: BuyProductViewModel
-
 
     fun setOnItemClick(onItemClick: CartAdapter.OnAdapterListener){
         this.onItemClick = onItemClick
@@ -64,11 +62,17 @@ class CartAdapter(private val context: Context): RecyclerView.Adapter<CartAdapte
             }
 
             btnPlus.setOnClickListener {
-                onItemClick?.onIncrease(productData, tvQuantityCart)
+                onItemClick?.onIncrease(productData, position)
             }
 
             btnMinus.setOnClickListener {
-                onItemClick?.onDecrease(productData)
+                onItemClick?.onDecrease(productData, position)
+            }
+
+            cbCart.isChecked = productData.check_button
+            cbCart.setOnCheckedChangeListener { _, isChecked ->
+                productData.check_button = isChecked
+                onItemClick?.onChecked(productData, isChecked)
             }
         }
     }
@@ -77,8 +81,10 @@ class CartAdapter(private val context: Context): RecyclerView.Adapter<CartAdapte
 
     interface OnAdapterListener {
         fun onDelete(data: Product)
-        fun onIncrease(data: Product, tv: TextView)
-        fun onDecrease(data: Product)
+        fun onIncrease(data: Product, position: Int)
+        fun onDecrease(data: Product, position: Int)
+        fun onChecked(data: Product, isChecked: Boolean)
+
     }
 
     fun updateData(data: Product) {
