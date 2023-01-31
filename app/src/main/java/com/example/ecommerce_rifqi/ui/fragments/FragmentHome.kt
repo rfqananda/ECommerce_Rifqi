@@ -99,7 +99,7 @@ class FragmentHome : Fragment(R.layout.fragment_home) {
         })
 
         binding.apply {
-            rvHome.layoutManager = LinearLayoutManager(context)
+//            rvHome.layoutManager = LinearLayoutManager(context)
             rvHome.setHasFixedSize(true)
             rvHome.adapter = listProductAdapter
         }

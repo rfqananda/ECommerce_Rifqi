@@ -99,4 +99,10 @@ class GetProductCartViewModel(application: Application): AndroidViewModel(applic
         return productDAO?.getCheckedProducts()
     }
 
+    fun deleteCheckedProducts(){
+        CoroutineScope(Dispatchers.IO).launch {
+            productDAO?.deleteCheckedProducts()
+        }
+    }
+
 }

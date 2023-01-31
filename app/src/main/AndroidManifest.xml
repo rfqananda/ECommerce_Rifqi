@@ -28,7 +28,23 @@
         </activity>
         <activity
             android:name=".ui.DetailActivity"
-            android:exported="false">
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="myostuffsmr.com"
+                    android:pathPrefix="/detail_product"
+                    android:scheme="https" />
+                <data
+                    android:host="www.myostuffsmr.com"
+                    android:scheme="app" />
+            </intent-filter>
+
+
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />

@@ -20,18 +20,26 @@ class RatingActivity : AppCompatActivity() {
         binding = ActivityRatingBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-
         binding.apply {
+
             btnSubmit.setOnClickListener {
+                val listProductId = intent.getStringArrayListExtra("list_id")
+
                 val rate = ratingBar.rating
                 val productID = intent.getIntExtra("id", 0)
-                updateRating(productID, rate.toInt())
+
+                if (productID != 0){
+                    updateRating(productID, rate.toInt())
+                } else {
+                    for (i in listProductId!!.indices) {
+                        updateRating(listProductId[i].toInt(), rate.toInt())
+                    }
+                }
                 val intent = Intent(this@RatingActivity, MainActivity::class.java)
                 startActivity(intent)
                 finish()
             }
         }
-
     }
 
     private fun updateRating(productID: Int, rate: Int){

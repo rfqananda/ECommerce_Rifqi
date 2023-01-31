@@ -52,6 +52,7 @@
             android:text="Rp 10.000"
             android:textColor="@color/black"
             android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toTopOf="@id/rating_bar"
             app:layout_constraintStart_toEndOf="@id/iv_photo"
             app:layout_constraintTop_toBottomOf="@id/tv_name" />
@@ -80,6 +81,8 @@
             android:text="03 Agustus 2022"
             android:textAllCaps="true"
             android:textSize="14sp"
+            android:textAlignment="textEnd"
+            app:layout_constraintStart_toEndOf="@id/iv_photo"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 

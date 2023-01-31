@@ -16,7 +16,7 @@ interface ProductDAO {
     fun getDataProduct(): LiveData<List<Product>>
 
     @Query("SELECT  count(*) FROM item_product where item_product.id = :id")
-    fun checkProduct(id: Int): String
+    fun checkProduct(id: Int): Int
 
     @Query("DELETE FROM item_product WHERE item_product.id = :id")
     fun deleteProduct(id: Int)
@@ -47,6 +47,9 @@ interface ProductDAO {
 
     @Query("SELECT id, quantity FROM item_product WHERE check_button = 1")
     fun getCheckedProducts(): LiveData<List<CheckedProduct>>
+
+    @Query("DELETE FROM item_product WHERE check_button = 1")
+    fun deleteCheckedProducts()
 
 //    DELETE FROM item_product
 

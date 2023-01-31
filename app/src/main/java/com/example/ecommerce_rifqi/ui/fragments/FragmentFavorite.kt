@@ -8,6 +8,7 @@ import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.ecommerce_rifqi.R
 import com.example.ecommerce_rifqi.adapter.ListProductAdapter
 import com.example.ecommerce_rifqi.adapter.ListProductFavoriteAdapter
@@ -36,6 +37,7 @@ class FragmentFavorite : Fragment(R.layout.fragment_favorite) {
 
     private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main)
     private var searchJob: Job? = null
+    private var febJob: Job? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -48,7 +50,6 @@ class FragmentFavorite : Fragment(R.layout.fragment_favorite) {
 
         binding.apply {
 
-            rvFavorite.addOnScrollListener(MyScrollListener(fabFavorite))
 
 
             fabFavorite.setOnClickListener {
@@ -87,9 +88,12 @@ class FragmentFavorite : Fragment(R.layout.fragment_favorite) {
             if (isEmpty){
                 fabFavorite.visibility = View.GONE
                 emptyData.visibility = View.VISIBLE
+                animationFAB(false)
             } else {
                 fabFavorite.visibility = View.VISIBLE
-                emptyData.visibility = View.GONE }
+                emptyData.visibility = View.GONE
+                animationFAB(true)
+            }
         }
     }
 
@@ -184,5 +188,35 @@ class FragmentFavorite : Fragment(R.layout.fragment_favorite) {
 
     private fun showMessage(message: String) {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun animationFAB(isDataNotEmpty: Boolean){
+        if (isDataNotEmpty){
+
+            binding.fabFavorite.hide()
+
+            binding.rvFavorite.addOnScrollListener(object : RecyclerView.OnScrollListener(){
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    super.onScrolled(recyclerView, dx, dy)
+                    binding.fabFavorite.hide()
+                    if (dy >= 0) {
+                        febJob?.cancel()
+                        febJob = coroutineScope.launch {
+                            delay(1000)
+                            binding.fabFavorite.show()
+                        }
+                    } else if (dy <= 0) {
+                        febJob?.cancel()
+                        febJob = coroutineScope.launch {
+                            delay(1000)
+                            binding.fabFavorite.show()
+                        }
+                    }
+                }
+
+            })
+        } else binding.fabFavorite.hide()
+
+
     }
 }

@@ -10,7 +10,9 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.example.ecommerce_rifqi.data.local.Product
 import com.example.ecommerce_rifqi.databinding.AdapterListCartBinding
+import com.example.ecommerce_rifqi.model.DataProduct
 import com.example.ecommerce_rifqi.ui.view.BuyProductViewModel
+import java.text.DecimalFormat
 
 class CartAdapter(private val context: Context): RecyclerView.Adapter<CartAdapter.ViewHolder>() {
 
@@ -54,8 +56,12 @@ class CartAdapter(private val context: Context): RecyclerView.Adapter<CartAdapte
                 .into(ivCart)
 
             tvNameCart.text = productData.name
-            tvPrice.text = productData.price
+            tvPrice.text = formatRupiah(productData.price.toInt())
             tvQuantityCart.text = productData.quantity.toString()
+
+            holder.itemView.setOnClickListener {
+                onItemClick?.onClick(productData)
+            }
 
             btnDelete.setOnClickListener {
                 onItemClick?.onDelete(productData)
@@ -80,11 +86,11 @@ class CartAdapter(private val context: Context): RecyclerView.Adapter<CartAdapte
     override fun getItemCount(): Int = listData.size
 
     interface OnAdapterListener {
+        fun onClick(data: Product)
         fun onDelete(data: Product)
         fun onIncrease(data: Product, position: Int)
         fun onDecrease(data: Product, position: Int)
         fun onChecked(data: Product, isChecked: Boolean)
-
     }
 
     fun updateData(data: Product) {
@@ -102,5 +108,11 @@ class CartAdapter(private val context: Context): RecyclerView.Adapter<CartAdapte
             notifyItemRemoved(index)
         }
     }
+
+    private fun formatRupiah(angka: Int): String {
+        val formatRupiah =  DecimalFormat("Rp #,###")
+        return formatRupiah.format(angka)
+    }
+
 
 }

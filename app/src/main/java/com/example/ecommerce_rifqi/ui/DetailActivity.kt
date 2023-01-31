@@ -1,8 +1,11 @@
 package com.example.ecommerce_rifqi.ui
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.example.ecommerce_rifqi.adapter.ImagePagerAdapter
@@ -50,9 +53,9 @@ class DetailActivity : AppCompatActivity() {
         showShimmer(true)
 
         getDetailProductData()
+        val productID = intent.getIntExtra("id", 0)
 
         binding.apply {
-            val productID = intent.getIntExtra("id", 0)
             val userID = sharedPref.getString(Constant.PREF_ID)
 
             btnBack.setOnClickListener {
@@ -61,8 +64,6 @@ class DetailActivity : AppCompatActivity() {
 
             toggleButton.setOnClickListener {
                 isFavorite = !isFavorite
-
-
 
                 if (isFavorite) {
                     addToFav(productID!!, userID!!.toInt())
@@ -79,7 +80,19 @@ class DetailActivity : AppCompatActivity() {
 
                         if (isProductHasBeenAdded != null){
                             if (isProductHasBeenAdded.toInt() > 0){
-                                showMessage("Product Is Already In the Trolley!")
+                                val alertDialog = AlertDialog.Builder(this@DetailActivity)
+                                alertDialog.apply {
+                                    setTitle("Product Is Already In the Trolley")
+                                    setMessage("Want to see the trolley?")
+                                    setNegativeButton("Cancel") { dialogInterface, i ->
+                                        dialogInterface.dismiss()
+                                    }
+                                    setPositiveButton("Go to Trolley") { dialogInterface, i ->
+                                        val intent = Intent(this@DetailActivity, CartActivity::class.java)
+                                        startActivity(intent)
+                                        finish()
+                                    }
+                                }.show()
                             }else{
                                 viewModel.addToCart(productID, name, price, image, 1, price.toInt(), false)
                                 showMessage("Product Has Been Added To Trolley!")
@@ -88,8 +101,18 @@ class DetailActivity : AppCompatActivity() {
                     }
 
                 }
+            }
 
+            btnShare.setOnClickListener {
+                val intentShare = Intent(Intent.ACTION_SEND)
+                intentShare.type = "text/plain"
+                intentShare.putExtra(Intent.EXTRA_TEXT, "https://myostuffsmr.com/detail_product?id=$productID")
+                startActivity(Intent.createChooser(intentShare, "Share link using: "))
 
+            }
+
+            btnBack.setOnClickListener {
+                onBackPressed()
             }
         }
 
@@ -97,7 +120,14 @@ class DetailActivity : AppCompatActivity() {
 
     private fun getDetailProductData() {
 
-        val productID = intent.getIntExtra("id", 0)
+        var productID = intent.getIntExtra("id", 0)
+        if (productID == 0) {
+            val data: Uri? = intent?.data
+            val id = data?.getQueryParameter("id")
+            if (id != null) {
+                productID = id.toInt()
+            }
+        }
         val userID = sharedPref.getString(Constant.PREF_ID)
 
         viewModel = ViewModelProvider(

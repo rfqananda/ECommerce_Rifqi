@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginStart="20dp"
@@ -11,11 +12,11 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="140dp">
+        android:layout_height="150dp">
 
         <ImageView
             android:id="@+id/iv_photo"
-            android:layout_width="140dp"
+            android:layout_width="150dp"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
             android:src="@drawable/ic_list_dummy"
@@ -52,6 +53,7 @@
             android:text="Rp 10.000"
             android:textColor="@color/black"
             android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toTopOf="@id/rating_bar"
             app:layout_constraintStart_toEndOf="@id/iv_photo"
             app:layout_constraintTop_toBottomOf="@id/tv_name" />
@@ -81,6 +83,8 @@
             android:text="03 Agustus 2022"
             android:textAllCaps="true"
             android:textSize="14sp"
+            android:textAlignment="textEnd"
+            app:layout_constraintStart_toEndOf="@id/iv_photo"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
