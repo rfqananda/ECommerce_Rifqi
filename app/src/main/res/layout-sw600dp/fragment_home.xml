@@ -31,17 +31,24 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_home"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:paddingBottom="80dp"
-        app:spanCount="2"
-        app:layout_constraintTop_toBottomOf="@id/input_search_home"
-        tools:listitem="@layout/adapter_layout_list"
-        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"/>
+        app:layout_constraintTop_toBottomOf="@id/input_search_home">
 
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_home"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="80dp"
+            app:spanCount="2"
+            app:layout_constraintTop_toBottomOf="@id/input_search_home"
+            tools:listitem="@layout/adapter_layout_list"
+            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"/>
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <com.facebook.shimmer.ShimmerFrameLayout
         android:id="@+id/shimmer_list"

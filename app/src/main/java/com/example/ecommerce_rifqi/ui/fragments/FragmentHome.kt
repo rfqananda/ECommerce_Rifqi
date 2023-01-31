@@ -4,22 +4,16 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
-import androidx.core.widget.doAfterTextChanged
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ecommerce_rifqi.R
 import com.example.ecommerce_rifqi.adapter.ListProductAdapter
 import com.example.ecommerce_rifqi.databinding.FragmentHomeBinding
-import com.example.ecommerce_rifqi.helper.Constant
 import com.example.ecommerce_rifqi.helper.PreferencesHelper
 import com.example.ecommerce_rifqi.model.DataProduct
 import com.example.ecommerce_rifqi.ui.DetailActivity
-import com.example.ecommerce_rifqi.ui.MyScrollListener
-import com.example.ecommerce_rifqi.ui.RatingActivity
 import com.example.ecommerce_rifqi.ui.view.GetListProductViewModel
 import com.example.ecommerce_rifqi.utils.Communicator
 import com.example.ecommerce_rifqi.utils.ViewModelFactory
@@ -53,7 +47,7 @@ class FragmentHome : Fragment(R.layout.fragment_home) {
         sharedPref = PreferencesHelper(requireContext())
 
         setupListProduct()
-        setListProduct("")
+        getListProduct("")
 
         binding.apply {
             fabHome.setOnClickListener {
@@ -76,13 +70,19 @@ class FragmentHome : Fragment(R.layout.fragment_home) {
                     }
                 }
             }
+
+            swipeRefresh!!.setOnRefreshListener{
+                showShimmer(true)
+                viewModel.setProductList("")
+                getListProduct(null)
+            }
         }
     }
 
     override fun onStart() {
         super.onStart()
         viewModel.setProductList("")
-        setListProduct(null)
+        getListProduct(null)
     }
 
     private fun setupListProduct(){
@@ -116,8 +116,8 @@ class FragmentHome : Fragment(R.layout.fragment_home) {
             }
             .setPositiveButton("Ok"){ _, _->
                 when (selectedOption) {
-                    resources.getString(R.string.txt_sortirAZ) -> setListProduct(resources.getString(R.string.txt_sortirAZ))
-                    resources.getString(R.string.txt_sortirZA) -> setListProduct(resources.getString(R.string.txt_sortirZA))
+                    resources.getString(R.string.txt_sortirAZ) -> getListProduct(resources.getString(R.string.txt_sortirAZ))
+                    resources.getString(R.string.txt_sortirZA) -> getListProduct(resources.getString(R.string.txt_sortirZA))
                 }
             }
             .setNegativeButton("Cancel"){ dialog, _ ->
@@ -144,7 +144,7 @@ class FragmentHome : Fragment(R.layout.fragment_home) {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
 
-    private fun setListProduct(query: String?){
+    private fun getListProduct(query: String?){
         viewModel = ViewModelProvider(
             requireActivity(),
             ViewModelFactory(requireContext())
@@ -171,6 +171,7 @@ class FragmentHome : Fragment(R.layout.fragment_home) {
                     else -> {
                         showShimmer(false)
                         listProductAdapter.setData(data)
+                        binding.swipeRefresh!!.isRefreshing = false
                     }
                 }
 
