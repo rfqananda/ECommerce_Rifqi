@@ -1,8 +1,12 @@
 package com.example.ecommerce_rifqi.ui
 
 import android.content.Intent
+import android.graphics.BitmapFactory
+import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -21,6 +25,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.net.URL
 import java.text.DecimalFormat
 
 class DetailActivity : AppCompatActivity() {
@@ -104,9 +109,14 @@ class DetailActivity : AppCompatActivity() {
             }
 
             btnShare.setOnClickListener {
+                Log.e("Isi",image)
+                val uri = Uri.parse(image)
+
                 val intentShare = Intent(Intent.ACTION_SEND)
-                intentShare.type = "text/plain"
+                intentShare.type = "image/*"
                 intentShare.putExtra(Intent.EXTRA_TEXT, "https://myostuffsmr.com/detail_product?id=$productID")
+                intentShare.putExtra(Intent.EXTRA_STREAM, uri)
+
                 startActivity(Intent.createChooser(intentShare, "Share link using: "))
 
             }

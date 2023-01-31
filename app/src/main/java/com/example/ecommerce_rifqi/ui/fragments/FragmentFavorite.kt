@@ -50,8 +50,6 @@ class FragmentFavorite : Fragment(R.layout.fragment_favorite) {
 
         binding.apply {
 
-
-
             fabFavorite.setOnClickListener {
                 showSimpleDialog()
             }
@@ -132,7 +130,7 @@ class FragmentFavorite : Fragment(R.layout.fragment_favorite) {
         })
 
         binding.apply {
-            rvFavorite.layoutManager = LinearLayoutManager(context)
+//            rvFavorite.layoutManager = LinearLayoutManager(context)
             rvFavorite.setHasFixedSize(true)
             rvFavorite.adapter = listFavoriteProductAdapter
         }
