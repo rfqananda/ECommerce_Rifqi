@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.example.ecommerce_rifqi.databinding.ActivityRatingBinding
+import com.example.ecommerce_rifqi.ui.view.GetProductCartViewModel
 import com.example.ecommerce_rifqi.ui.view.UpdateRateViewModel
 import com.example.ecommerce_rifqi.utils.ViewModelFactory
 
@@ -14,6 +15,9 @@ class RatingActivity : AppCompatActivity() {
     private lateinit var binding: ActivityRatingBinding
 
     private lateinit var viewModel: UpdateRateViewModel
+
+    private lateinit var viewModelCart: GetProductCartViewModel
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,6 +39,8 @@ class RatingActivity : AppCompatActivity() {
                         updateRating(listProductId[i].toInt(), rate.toInt())
                     }
                 }
+                viewModelCart = ViewModelProvider(this@RatingActivity)[GetProductCartViewModel::class.java]
+                viewModelCart.deleteCheckedProducts()
                 val intent = Intent(this@RatingActivity, MainActivity::class.java)
                 startActivity(intent)
                 finish()

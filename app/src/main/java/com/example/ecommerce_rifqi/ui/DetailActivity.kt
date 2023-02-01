@@ -1,17 +1,17 @@
 package com.example.ecommerce_rifqi.ui
 
 import android.content.Intent
-import android.graphics.BitmapFactory
+import android.content.res.Configuration
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import com.bumptech.glide.Glide
 import com.example.ecommerce_rifqi.adapter.ImagePagerAdapter
 import com.example.ecommerce_rifqi.databinding.ActivityDetailBinding
 import com.example.ecommerce_rifqi.helper.Constant
@@ -25,8 +25,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.net.URL
 import java.text.DecimalFormat
+import java.util.*
 
 class DetailActivity : AppCompatActivity() {
 
@@ -108,24 +108,43 @@ class DetailActivity : AppCompatActivity() {
                 }
             }
 
+
             btnShare.setOnClickListener {
-                Log.e("Isi",image)
-                val uri = Uri.parse(image)
 
-                val intentShare = Intent(Intent.ACTION_SEND)
-                intentShare.type = "image/*"
-                intentShare.putExtra(Intent.EXTRA_TEXT, "https://myostuffsmr.com/detail_product?id=$productID")
-                intentShare.putExtra(Intent.EXTRA_STREAM, uri)
+//                val imageShare = DownloadImageTask().execute(image)
+//
+//
+//                val shareImage = doInBackground(image)
+//
+//                val path = MediaStore.Images.Media.insertImage(contentResolver, shareImage, "image desc", null)
+//
+//                val uri = Uri.parse(imageShare)
+//
+//                val intentShare = Intent(Intent.ACTION_SEND)
+//                intentShare.type = "image/*"
+//                intentShare.putExtra(Intent.EXTRA_TEXT, "https://myostuffsmr.com/detail_product?id=$productID")
+//                intentShare.putExtra(Intent.EXTRA_STREAM, uri)
+//
+//                startActivity(Intent.createChooser(intentShare, "Share link using: "))
 
-                startActivity(Intent.createChooser(intentShare, "Share link using: "))
+                shareDeepLink(name, binding.tvPrice.text.toString(), "https://myostuffsmr.com/detail_product?id=$productID")
 
             }
 
             btnBack.setOnClickListener {
                 onBackPressed()
             }
-        }
 
+            swipeRefresh.setOnRefreshListener {
+                showShimmer(true)
+                getDetailProductData()
+            }
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        validationLanguage()
     }
 
     private fun getDetailProductData() {
@@ -190,7 +209,14 @@ class DetailActivity : AppCompatActivity() {
                         showBottomSheet(it)
                     }
 
+                    if (ivContainer != null) {
+                        Glide.with(applicationContext)
+                            .load(image)
+                            .centerCrop()
+                            .into(ivContainer)
+                    }
                 }
+                binding.swipeRefresh.isRefreshing = false
             }
         }
 
@@ -260,4 +286,39 @@ class DetailActivity : AppCompatActivity() {
         val bottomSheetFragment = BottomSheetFragment(dataProduct)
         bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.tag)
     }
+
+    private fun shareDeepLink(name : String, price : String, link : String, ){
+        val image = binding.ivContainer?.drawable
+
+        val mBitmap = (image as BitmapDrawable).bitmap
+        val path = MediaStore.Images.Media.insertImage(contentResolver,mBitmap, "image desc", null)
+
+        val uri = Uri.parse(path)
+
+        val shareIntent = Intent(Intent.ACTION_SEND)
+        shareIntent.type = "image/*"
+        shareIntent.putExtra(Intent.EXTRA_TEXT,
+            "Name : "+ name +"\n"+"Price : "+ price +"\n"+"Link : "+ link
+        )
+        shareIntent.putExtra(Intent.EXTRA_STREAM,uri)
+        startActivity(Intent.createChooser(shareIntent, "Share"))
+    }
+
+    private fun validationLanguage(){
+        val currentPost = sharedPref.getString(Constant.PREF_CURRENT_POSITION)?.toInt()
+        if (currentPost == 1){
+            setLocate("en")
+        } else if (currentPost == 2){
+            setLocate("in")
+        }
+    }
+
+    private fun setLocate(Lang: String){
+        val locale = Locale(Lang)
+        Locale.setDefault(locale)
+        val config = Configuration()
+        config.locale = locale
+        baseContext.resources.updateConfiguration(config, baseContext.resources.displayMetrics)
+    }
+
 }

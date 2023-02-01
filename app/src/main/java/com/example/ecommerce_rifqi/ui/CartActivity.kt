@@ -1,5 +1,6 @@
 package com.example.ecommerce_rifqi.ui
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -41,6 +42,7 @@ class CartActivity : AppCompatActivity() {
 
     private var recyclerViewState: Parcelable? = null
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityCartBinding.inflate(layoutInflater)
@@ -70,9 +72,18 @@ class CartActivity : AppCompatActivity() {
                 lifecycleScope.launch {
                     if (cbCartActivity.isChecked) {
                         viewModel.selectAll(1)
+                        for(i in 0 until rvCart.childCount){
+                            val child = rvCart.getChildAt(i)
+                            val recyclerViewCB = child.findViewById<CheckBox>(R.id.cb_cart)
+                            recyclerViewCB.isChecked = cbCartActivity.isChecked
+                        }
                     } else {
                         viewModel.selectAll(0)
-
+                        for(i in 0 until rvCart.childCount){
+                            val child = rvCart.getChildAt(i)
+                            val recyclerViewCB = child.findViewById<CheckBox>(R.id.cb_cart)
+                            recyclerViewCB.isChecked = cbCartActivity.isChecked
+                        }
                     }
                 }
 
@@ -84,34 +95,6 @@ class CartActivity : AppCompatActivity() {
                     cbCartActivity.isChecked = result.size == filterData.size
                 }
             }
-//            cbCartActivity.setOnCheckedChangeListener { _, isChecked ->
-//
-//                for(i in 0 until rvCart.childCount){
-//                    val child = rvCart.getChildAt(i)
-//                    val recyclerViewCB = child.findViewById<CheckBox>(R.id.cb_cart)
-//
-//                    if (isChecked){
-//                        viewModel.selectAll(1)
-//                        recyclerViewCB.isChecked = isChecked
-//
-//                    } else{
-//                        viewModel.unselectAll(0)
-//                        if (!recyclerViewCB.isChecked){
-//                            !isChecked
-//                        } else {
-//                            recyclerViewCB.isChecked = isChecked
-//                        }
-//
-//                        lifecycleScope.launch {
-//                            viewModel.getProduct()?.observe(this@CartActivity){ result ->
-//                                val filterData = result.filter { it.check_button }
-//                                cbCartActivity.isChecked = result.size == filterData.size
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-
 
             btnBuy.setOnClickListener {
 
@@ -142,7 +125,6 @@ class CartActivity : AppCompatActivity() {
                     updateStock(data, listOfProductId)
 
                 }
-                viewModel.deleteCheckedProducts()
             }
 
             btnBack.setOnClickListener {

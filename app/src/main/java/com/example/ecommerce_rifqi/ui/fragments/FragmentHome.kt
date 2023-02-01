@@ -75,6 +75,8 @@ class FragmentHome : Fragment(R.layout.fragment_home) {
                 showShimmer(true)
                 viewModel.setProductList("")
                 getListProduct(null)
+                etSearchHome.text?.clear()
+                etSearchHome.isEnabled = false
             }
         }
     }
@@ -178,7 +180,6 @@ class FragmentHome : Fragment(R.layout.fragment_home) {
                 if (data.isEmpty()){
                     isDataEmpty(true)
                 }
-
             }
         }
     }
@@ -197,9 +198,7 @@ class FragmentHome : Fragment(R.layout.fragment_home) {
 
     private fun animationFAB(isDataNotEmpty: Boolean){
         if (isDataNotEmpty){
-
             binding.fabHome.hide()
-
             binding.rvHome.addOnScrollListener(object : RecyclerView.OnScrollListener(){
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     super.onScrolled(recyclerView, dx, dy)

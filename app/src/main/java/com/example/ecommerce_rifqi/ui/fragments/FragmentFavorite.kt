@@ -7,19 +7,15 @@ import android.widget.Toast
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ecommerce_rifqi.R
-import com.example.ecommerce_rifqi.adapter.ListProductAdapter
 import com.example.ecommerce_rifqi.adapter.ListProductFavoriteAdapter
 import com.example.ecommerce_rifqi.databinding.FragmentFavoriteBinding
 import com.example.ecommerce_rifqi.helper.Constant
 import com.example.ecommerce_rifqi.helper.PreferencesHelper
 import com.example.ecommerce_rifqi.model.DataProduct
 import com.example.ecommerce_rifqi.ui.DetailActivity
-import com.example.ecommerce_rifqi.ui.MyScrollListener
 import com.example.ecommerce_rifqi.ui.view.GetListFavoriteProductViewModel
-import com.example.ecommerce_rifqi.ui.view.GetListProductViewModel
 import com.example.ecommerce_rifqi.utils.ViewModelFactory
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.*
@@ -46,9 +42,10 @@ class FragmentFavorite : Fragment(R.layout.fragment_favorite) {
         sharedPref = PreferencesHelper(requireContext())
 
         setupListProduct()
-        setListProduct("")
+        getListProduct("")
 
         binding.apply {
+            val userID = sharedPref.getString(Constant.PREF_ID)
 
             fabFavorite.setOnClickListener {
                 showSimpleDialog()
@@ -57,7 +54,6 @@ class FragmentFavorite : Fragment(R.layout.fragment_favorite) {
             etSearchFavorite.doOnTextChanged { text, start, before, count ->
                 searchJob?.cancel()
 
-                val userID = sharedPref.getString(Constant.PREF_ID)
 
                 searchJob = coroutineScope.launch{
                     text?.let {
@@ -72,13 +68,21 @@ class FragmentFavorite : Fragment(R.layout.fragment_favorite) {
                     }
                 }
             }
+
+            swipeRefresh!!.setOnRefreshListener{
+                showShimmer(true)
+                viewModel.setFavoriteProductList("", userID!!.toInt())
+                getListProduct(null)
+                etSearchFavorite.text?.clear()
+                etSearchFavorite.isEnabled = false
+            }
         }
     }
 
     override fun onStart() {
         super.onStart()
         viewModel.setFavoriteProductList("", sharedPref.getString(Constant.PREF_ID)!!.toInt())
-        setListProduct(null)
+        getListProduct(null)
     }
 
     private fun isDataEmpty(isEmpty: Boolean){
@@ -106,8 +110,8 @@ class FragmentFavorite : Fragment(R.layout.fragment_favorite) {
             }
             .setPositiveButton("Ok"){ _, _->
                 when (selectedOption) {
-                    resources.getString(R.string.txt_sortirAZ) -> setListProduct(resources.getString(R.string.txt_sortirAZ))
-                    resources.getString(R.string.txt_sortirZA) -> setListProduct(resources.getString(R.string.txt_sortirZA))
+                    resources.getString(R.string.txt_sortirAZ) -> getListProduct(resources.getString(R.string.txt_sortirAZ))
+                    resources.getString(R.string.txt_sortirZA) -> getListProduct(resources.getString(R.string.txt_sortirZA))
                 }
             }
             .setNegativeButton("Cancel"){ dialog, _ ->
@@ -136,7 +140,7 @@ class FragmentFavorite : Fragment(R.layout.fragment_favorite) {
         }
     }
 
-    private fun setListProduct(query: String?){
+    private fun getListProduct(query: String?){
         viewModel = ViewModelProvider(
             requireActivity(),
             ViewModelFactory(requireContext())
@@ -162,6 +166,7 @@ class FragmentFavorite : Fragment(R.layout.fragment_favorite) {
                     else -> {
                         showShimmer(false)
                         listFavoriteProductAdapter.setData(data)
+                        binding.swipeRefresh!!.isRefreshing = false
                     }
                 }
 
