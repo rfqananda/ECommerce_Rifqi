@@ -81,26 +81,6 @@
 
     </com.facebook.shimmer.ShimmerFrameLayout>
 
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/fab_home"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
-        android:backgroundTint="@color/pink"
-        android:elevation="4dp"
-        android:paddingStart="30dp"
-        android:paddingEnd="30dp"
-        android:text="@string/txt_sort"
-        android:textAllCaps="false"
-        android:textSize="16sp"
-        app:icon="@drawable/ic_sort"
-        app:iconSize="14dp"
-        app:iconGravity="end"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"/>
-
-
     <LinearLayout
         android:id="@+id/empty_data"
         android:layout_width="wrap_content"

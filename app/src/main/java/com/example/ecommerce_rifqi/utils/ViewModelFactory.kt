@@ -15,8 +15,6 @@ class ViewModelFactory(private val context: Context) : ViewModelProvider.Factory
             return ChangePasswordViewModel(context) as T
         } else if (modelClass.isAssignableFrom(ChangePhotoViewModel::class.java)){
             return ChangePhotoViewModel(context) as T
-        } else if (modelClass.isAssignableFrom(GetListProductViewModel::class.java)){
-            return GetListProductViewModel(context) as T
         } else if (modelClass.isAssignableFrom(GetListFavoriteProductViewModel::class.java)){
             return GetListFavoriteProductViewModel(context) as T
         } else if (modelClass.isAssignableFrom(GetDetailProductViewModel::class.java)){

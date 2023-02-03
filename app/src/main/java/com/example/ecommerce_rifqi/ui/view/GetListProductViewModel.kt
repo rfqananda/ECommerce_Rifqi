@@ -2,48 +2,49 @@ package com.example.ecommerce_rifqi.ui.view
 
 import android.content.Context
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
+import com.example.ecommerce_rifqi.di.Injection
 import com.example.ecommerce_rifqi.helper.Event
 import com.example.ecommerce_rifqi.model.*
 import com.example.ecommerce_rifqi.networking.APIClient
 import com.example.ecommerce_rifqi.networking.APIInterface
+import com.example.ecommerce_rifqi.paging.ProductRepository
 import com.google.gson.Gson
 import com.google.gson.JsonObject
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class GetListProductViewModel(context: Context): ViewModel(){
+class GetListProductViewModel(private val productRepository: ProductRepository): ViewModel(){
 
-    private val api = APIClient.getClient(context)
+//    val _query = MutableStateFlow("")
+//    private val query: StateFlow<String> = _query
 
-    val productList = MutableLiveData<List<DataProduct>>()
+    val _query = MutableLiveData<String>()
+    private val query: LiveData<String> = _query
 
-    fun setProductList(search: String){
-        val apiInterface = api?.create(APIInterface::class.java)
-
-        apiInterface!!.getListProduct(search).enqueue(object: Callback<ListDataProduct>{
-            override fun onResponse(
-                call: Call<ListDataProduct>,
-                response: Response<ListDataProduct>
-            ) {
-                if (response.isSuccessful){
-                    productList.postValue(response.body()!!.success.data)
-                }
-            }
-
-            override fun onFailure(call: Call<ListDataProduct>, t: Throwable) {
-                Log.e("Failure", t.message!!)
-            }
-        })
-
+    val search = query.switchMap {
+        productRepository.getProduct(
+            it
+        ).cachedIn(viewModelScope)
     }
 
-    fun getProductList(): LiveData<List<DataProduct>>{
-        return productList
-    }
+    fun productListPaging(search: String?): LiveData<PagingData<DataProduct>> =
+        productRepository.getProduct(search).cachedIn(viewModelScope)
 
+}
+
+class ViewModelFactoryProduct(private val context: Context) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(GetListProductViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return GetListProductViewModel(Injection.provideRepository(context)) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
+    }
 }

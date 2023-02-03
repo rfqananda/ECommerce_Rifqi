@@ -141,37 +141,37 @@ class FragmentFavorite : Fragment(R.layout.fragment_favorite) {
     }
 
     private fun getListProduct(query: String?){
-        viewModel = ViewModelProvider(
-            requireActivity(),
-            ViewModelFactory(requireContext())
-        )[GetListFavoriteProductViewModel::class.java]
+        viewModel = ViewModelProvider(requireActivity(),ViewModelFactory(requireContext()))[GetListFavoriteProductViewModel::class.java]
 
-        viewModel.getFavoriteProductList().observe(viewLifecycleOwner){ data ->
-            if (data != null){
-                isDataEmpty(false)
-                when (query) {
-                    resources.getString(R.string.txt_sortirAZ) -> {
-                        showShimmer(false)
-                        listFavoriteProductAdapter.setData(data.sortedBy { name ->
-                            name.name_product
-                        }.toList())
+        view?.let {
+            val lifecycleOwner = viewLifecycleOwner
+            viewModel.getFavoriteProductList().observe(lifecycleOwner){ data ->
+                if (data != null){
+                    isDataEmpty(false)
+                    when (query) {
+                        resources.getString(R.string.txt_sortirAZ) -> {
+                            showShimmer(false)
+                            listFavoriteProductAdapter.setData(data.sortedBy { name ->
+                                name.name_product
+                            }.toList())
 
+                        }
+                        resources.getString(R.string.txt_sortirZA) -> {
+                            showShimmer(false)
+                            listFavoriteProductAdapter.setData(data.sortedByDescending { name ->
+                                name.name_product
+                            }.toList())
+                        }
+                        else -> {
+                            showShimmer(false)
+                            listFavoriteProductAdapter.setData(data)
+                            binding.swipeRefresh!!.isRefreshing = false
+                        }
                     }
-                    resources.getString(R.string.txt_sortirZA) -> {
-                        showShimmer(false)
-                        listFavoriteProductAdapter.setData(data.sortedByDescending { name ->
-                            name.name_product
-                        }.toList())
-                    }
-                    else -> {
-                        showShimmer(false)
-                        listFavoriteProductAdapter.setData(data)
-                        binding.swipeRefresh!!.isRefreshing = false
-                    }
-                }
 
-                if (data.isEmpty()){
-                    isDataEmpty(true)
+                    if (data.isEmpty()){
+                        isDataEmpty(true)
+                    }
                 }
             }
         }

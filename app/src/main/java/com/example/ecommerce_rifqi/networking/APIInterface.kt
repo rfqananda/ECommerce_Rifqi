@@ -54,10 +54,12 @@ interface APIInterface {
     ) : Response<ResponseRefreshToken>
 
 
-    @GET("api/ecommerce/get_list_product")
-    fun getListProduct(
-        @Query("search") search: String
-    ): Call<ListDataProduct>
+    //ini
+    @GET("api/ecommerce/get_list_product_paging")
+    suspend fun getListProduct(
+        @Query("search") search : String?,
+        @Query("offset") offset : Int?
+    ): ListDataProduct
 
     @GET("api/ecommerce/get_list_product_favorite")
     fun getFavorite(

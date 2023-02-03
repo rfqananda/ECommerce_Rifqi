@@ -2,23 +2,26 @@ package com.example.ecommerce_rifqi.ui.fragments
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.RecyclerView
+import androidx.paging.LoadState
+import androidx.paging.PagingSource
 import com.example.ecommerce_rifqi.R
 import com.example.ecommerce_rifqi.adapter.ListProductAdapter
+import com.example.ecommerce_rifqi.adapter.LoadingStateAdapter
 import com.example.ecommerce_rifqi.databinding.FragmentHomeBinding
 import com.example.ecommerce_rifqi.helper.PreferencesHelper
 import com.example.ecommerce_rifqi.model.DataProduct
+import com.example.ecommerce_rifqi.paging.ProductPagingSource
 import com.example.ecommerce_rifqi.ui.DetailActivity
 import com.example.ecommerce_rifqi.ui.view.GetListProductViewModel
+import com.example.ecommerce_rifqi.ui.view.ViewModelFactoryProduct
 import com.example.ecommerce_rifqi.utils.Communicator
-import com.example.ecommerce_rifqi.utils.ViewModelFactory
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.*
 
 class FragmentHome : Fragment(R.layout.fragment_home) {
@@ -36,7 +39,6 @@ class FragmentHome : Fragment(R.layout.fragment_home) {
 
     private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main)
     private var searchJob: Job? = null
-    private var febJob: Job? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -46,50 +48,17 @@ class FragmentHome : Fragment(R.layout.fragment_home) {
 
         sharedPref = PreferencesHelper(requireContext())
 
-        setupListProduct()
-        getListProduct("")
+        val factory = ViewModelFactoryProduct(requireContext().applicationContext)
+        viewModel = ViewModelProvider(this, factory)[GetListProductViewModel::class.java]
 
-        binding.apply {
-            fabHome.setOnClickListener {
-                showSimpleDialog()
+
+
+        listProductAdapter = ListProductAdapter()
+        binding.rvHome.adapter = listProductAdapter.withLoadStateFooter(
+            footer = LoadingStateAdapter{
+                listProductAdapter.retry()
             }
-
-            etSearchHome.doOnTextChanged { text, start, before, count ->
-                searchJob?.cancel()
-
-                searchJob = coroutineScope.launch{
-                    text?.let {
-                        showShimmer(true)
-                        isDataEmpty(false)
-                        delay(2000)
-                        if (it.isEmpty()) {
-                            viewModel.setProductList("")
-                        } else {
-                            viewModel.setProductList(text.toString())
-                        }
-                    }
-                }
-            }
-
-            swipeRefresh!!.setOnRefreshListener{
-                showShimmer(true)
-                viewModel.setProductList("")
-                getListProduct(null)
-                etSearchHome.text?.clear()
-                etSearchHome.isEnabled = false
-            }
-        }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        viewModel.setProductList("")
-        getListProduct(null)
-    }
-
-    private fun setupListProduct(){
-        listProductAdapter = ListProductAdapter(requireContext())
-
+        )
         listProductAdapter.setOnItemClick(object : ListProductAdapter.OnAdapterListenerListProduct{
             override fun onClick(data: DataProduct) {
                 val productID = data.id
@@ -100,86 +69,65 @@ class FragmentHome : Fragment(R.layout.fragment_home) {
             }
         })
 
-        binding.apply {
-//            rvHome.layoutManager = LinearLayoutManager(context)
-            rvHome.setHasFixedSize(true)
-            rvHome.adapter = listProductAdapter
+        listProductAdapter.addLoadStateListener { loadState ->
+            showShimmer(loadState.refresh is LoadState.Loading)
+            binding.swipeRefresh.isRefreshing = loadState.refresh is LoadState.Loading
         }
-    }
 
-    private fun showSimpleDialog(){
-        val options = arrayOf(resources.getString(R.string.txt_sortirAZ), resources.getString(R.string.txt_sortirZA))
-        var selectedOption = ""
+        binding.apply {
 
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle(resources.getString(R.string.txt_sort))
-            .setSingleChoiceItems(options, -1){ _, which ->
-                selectedOption = options[which]
-            }
-            .setPositiveButton("Ok"){ _, _->
-                when (selectedOption) {
-                    resources.getString(R.string.txt_sortirAZ) -> getListProduct(resources.getString(R.string.txt_sortirAZ))
-                    resources.getString(R.string.txt_sortirZA) -> getListProduct(resources.getString(R.string.txt_sortirZA))
+            etSearchHome.doOnTextChanged { text, start, before, count ->
+                searchJob?.cancel()
+
+                searchJob = coroutineScope.launch{
+                    text?.let {
+                        isDataEmpty(false)
+                        delay(2000)
+                        if (it.isEmpty()) {
+                            getListProduct(null)
+                        } else {
+                            getListProduct(text.toString())
+                        }
+                    }
                 }
             }
-            .setNegativeButton("Cancel"){ dialog, _ ->
-                dialog.dismiss()
-            }
 
-            .show()
+            swipeRefresh.setOnRefreshListener{
+                showShimmer(true)
+                getListProduct(null)
+                searchJob?.cancel()
+                etSearchHome.text?.clear()
+                etSearchHome.isEnabled = false
+            }
+        }
+
+        getListProduct(null)
+    }
+
+    override fun onStart() {
+        super.onStart()
     }
 
     private fun isDataEmpty(isEmpty: Boolean){
         binding.apply {
             if (isEmpty){
-                animationFAB(false)
-                fabHome.visibility = View.GONE
                 emptyData.visibility = View.VISIBLE
             } else {
-                animationFAB(true)
-                fabHome.visibility = View.VISIBLE
                 emptyData.visibility = View.GONE }
         }
     }
 
-    private fun showMessage(message: String) {
-        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
-    }
 
     private fun getListProduct(query: String?){
-        viewModel = ViewModelProvider(
-            requireActivity(),
-            ViewModelFactory(requireContext())
-        )[GetListProductViewModel::class.java]
+        view?.let {
+            val lifecycleOwner = viewLifecycleOwner
+            viewModel.productListPaging(query).observe(lifecycleOwner){
+                if (it != null){
+                    isDataEmpty(false)
+                    listProductAdapter.submitData(lifecycle, it)
+                    binding.swipeRefresh.isRefreshing = false
 
-        viewModel.getProductList().observe(viewLifecycleOwner){ data ->
-            if (data != null){
-
-                isDataEmpty(false)
-                when (query) {
-                    resources.getString(R.string.txt_sortirAZ) -> {
-                        showShimmer(false)
-                        listProductAdapter.setData(data.sortedBy { name ->
-                            name.name_product
-                        }.toList())
-
-                    }
-                    resources.getString(R.string.txt_sortirZA) -> {
-                        showShimmer(false)
-                        listProductAdapter.setData(data.sortedByDescending { name ->
-                            name.name_product
-                        }.toList())
-                    }
-                    else -> {
-                        showShimmer(false)
-                        listProductAdapter.setData(data)
-                        binding.swipeRefresh!!.isRefreshing = false
-                    }
-                }
-
-                if (data.isEmpty()){
-                    isDataEmpty(true)
-                }
+                } else isDataEmpty(true)
             }
         }
     }
@@ -195,33 +143,4 @@ class FragmentHome : Fragment(R.layout.fragment_home) {
             }
         }
     }
-
-    private fun animationFAB(isDataNotEmpty: Boolean){
-        if (isDataNotEmpty){
-            binding.fabHome.hide()
-            binding.rvHome.addOnScrollListener(object : RecyclerView.OnScrollListener(){
-                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                    super.onScrolled(recyclerView, dx, dy)
-                    binding.fabHome.hide()
-                    if (dy >= 0) {
-                        febJob?.cancel()
-                        febJob = coroutineScope.launch {
-                            delay(1000)
-                            binding.fabHome.show()
-                        }
-                    } else if (dy <= 0) {
-                        febJob?.cancel()
-                        febJob = coroutineScope.launch {
-                            delay(1000)
-                            binding.fabHome.show()
-                        }
-                    }
-                }
-
-            })
-        } else binding.fabHome.hide()
-
-
-    }
-
 }
