@@ -6,20 +6,22 @@ import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.viewpager.widget.ViewPager
 import com.bumptech.glide.Glide
 import com.example.ecommerce_rifqi.adapter.ImagePagerAdapter
+import com.example.ecommerce_rifqi.adapter.ListProductDetailAdapter
 import com.example.ecommerce_rifqi.databinding.ActivityDetailBinding
 import com.example.ecommerce_rifqi.helper.Constant
 import com.example.ecommerce_rifqi.helper.PreferencesHelper
 import com.example.ecommerce_rifqi.model.DetailDataProduct
-import com.example.ecommerce_rifqi.ui.view.AddToFavoriteViewModel
-import com.example.ecommerce_rifqi.ui.view.GetDetailProductViewModel
-import com.example.ecommerce_rifqi.ui.view.RemoveFromFavoriteViewModel
+import com.example.ecommerce_rifqi.ui.view.*
 import com.example.ecommerce_rifqi.utils.ViewModelFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -28,13 +30,24 @@ import kotlinx.coroutines.withContext
 import java.text.DecimalFormat
 import java.util.*
 
-class DetailActivity : AppCompatActivity() {
+class DetailActivity : AppCompatActivity(), ImagePagerAdapter.OnPageClickListener {
 
     private lateinit var viewModel: GetDetailProductViewModel
 
     private lateinit var viewModelAddToFav: AddToFavoriteViewModel
 
     private lateinit var viewModelRemoveFromFav: RemoveFromFavoriteViewModel
+
+    private lateinit var viewModelOtherProduct: GetOtherProductsViewModel
+
+    private lateinit var viewModelHistorySearch: GetProductSearchHistoryViewModel
+
+    private lateinit var listProductAdapter: ListProductDetailAdapter
+
+    private lateinit var imagePagerAdapter: ImagePagerAdapter
+
+
+    private lateinit var seePhoto: PhotoDialog
 
     lateinit var sharedPref: PreferencesHelper
 
@@ -53,15 +66,22 @@ class DetailActivity : AppCompatActivity() {
         binding = ActivityDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        listProductAdapter = ListProductDetailAdapter()
+
         sharedPref = PreferencesHelper(this)
+
+        seePhoto = PhotoDialog(this)
 
         showShimmer(true)
 
         getDetailProductData()
         val productID = intent.getIntExtra("id", 0)
+        val userID = sharedPref.getString(Constant.PREF_ID)
+
+        getOtherProductData(userID!!.toInt())
+        getHistoryProductData(userID.toInt())
 
         binding.apply {
-            val userID = sharedPref.getString(Constant.PREF_ID)
 
             btnBack.setOnClickListener {
                 finish()
@@ -83,8 +103,8 @@ class DetailActivity : AppCompatActivity() {
                     val isProductHasBeenAdded = viewModel.checkProduct(productID)
                     withContext(Dispatchers.Main) {
 
-                        if (isProductHasBeenAdded != null){
-                            if (isProductHasBeenAdded.toInt() > 0){
+                        if (isProductHasBeenAdded != null) {
+                            if (isProductHasBeenAdded.toInt() > 0) {
                                 val alertDialog = AlertDialog.Builder(this@DetailActivity)
                                 alertDialog.apply {
                                     setTitle("Product Is Already In the Trolley")
@@ -93,13 +113,22 @@ class DetailActivity : AppCompatActivity() {
                                         dialogInterface.dismiss()
                                     }
                                     setPositiveButton("Go to Trolley") { dialogInterface, i ->
-                                        val intent = Intent(this@DetailActivity, CartActivity::class.java)
+                                        val intent =
+                                            Intent(this@DetailActivity, CartActivity::class.java)
                                         startActivity(intent)
                                         finish()
                                     }
                                 }.show()
-                            }else{
-                                viewModel.addToCart(productID, name, price, image, 1, price.toInt(), false)
+                            } else {
+                                viewModel.addToCart(
+                                    productID,
+                                    name,
+                                    price,
+                                    image,
+                                    1,
+                                    price.toInt(),
+                                    false
+                                )
                                 showMessage("Product Has Been Added To Trolley!")
                             }
                         }
@@ -127,7 +156,11 @@ class DetailActivity : AppCompatActivity() {
 //
 //                startActivity(Intent.createChooser(intentShare, "Share link using: "))
 
-                shareDeepLink(name, binding.tvPrice.text.toString(), "https://myostuffsmr.com/detail_product?id=$productID")
+                shareDeepLink(
+                    name,
+                    binding.tvPrice.text.toString(),
+                    "https://myostuffsmr.com/detail_product?id=$productID"
+                )
 
             }
 
@@ -139,7 +172,17 @@ class DetailActivity : AppCompatActivity() {
                 showShimmer(true)
                 getDetailProductData()
             }
+
+            rvOtherProduct!!.layoutManager = LinearLayoutManager(this@DetailActivity)
+            rvOtherProduct.setHasFixedSize(true)
+            rvOtherProduct.adapter = listProductAdapter
+
+            rvHistorySearchProduct!!.layoutManager = LinearLayoutManager(this@DetailActivity)
+            rvHistorySearchProduct.setHasFixedSize(true)
+            rvHistorySearchProduct.adapter = listProductAdapter
         }
+
+
     }
 
     override fun onStart() {
@@ -192,7 +235,8 @@ class DetailActivity : AppCompatActivity() {
                 }
 
                 binding.apply {
-                    viewPager.adapter = ImagePagerAdapter(it.image_product)
+                    viewPager.adapter = ImagePagerAdapter(it.image_product, this@DetailActivity)
+
                     springDotsIndicator.attachTo(viewPager)
                     tvProductNameHead.text = it.name_product
                     tvProductName.text = it.name_product
@@ -204,10 +248,15 @@ class DetailActivity : AppCompatActivity() {
                     tvTypeValue.text = it.type
                     tvDetailValue.text = it.desc
 
+                    toolBarDp.isSelected = true
+
                     btnBuy.setOnClickListener { view ->
                         sharedPref.put(Constant.PREF_ID_PRODUCT, productID.toString())
                         showBottomSheet(it)
+
                     }
+
+
 
                     if (ivContainer != null) {
                         Glide.with(applicationContext)
@@ -220,6 +269,40 @@ class DetailActivity : AppCompatActivity() {
             }
         }
 
+    }
+
+    private fun getOtherProductData(id_user: Int) {
+        viewModelOtherProduct = ViewModelProvider(
+            this,
+            ViewModelFactory(this)
+        )[GetOtherProductsViewModel::class.java]
+        viewModelOtherProduct.setOtherProductList(id_user)
+        viewModelOtherProduct.getOtherProductList().observe(this) {
+            if (it != null) {
+//                isDataOtherEmpty(false)
+                listProductAdapter.setData(it)
+//                if (it.isEmpty()){
+//                    isDataOtherEmpty(true)
+//                }
+            }
+        }
+    }
+
+    private fun getHistoryProductData(id_user: Int) {
+        viewModelHistorySearch = ViewModelProvider(
+            this,
+            ViewModelFactory(this)
+        )[GetProductSearchHistoryViewModel::class.java]
+        viewModelHistorySearch.setHistoryProductList(id_user)
+        viewModelHistorySearch.getHistoryProductList().observe(this) {
+            if (it != null) {
+//                isDataHistoryEmpty(false)
+                listProductAdapter.setData(it)
+//                if (it.isEmpty()){
+//                    isDataHistoryEmpty(true)
+//                }
+            }
+        }
     }
 
     private fun addToFav(productID: Int, userID: Int) {
@@ -287,38 +370,61 @@ class DetailActivity : AppCompatActivity() {
         bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.tag)
     }
 
-    private fun shareDeepLink(name : String, price : String, link : String, ){
+    private fun shareDeepLink(name: String, price: String, link: String) {
         val image = binding.ivContainer?.drawable
 
         val mBitmap = (image as BitmapDrawable).bitmap
-        val path = MediaStore.Images.Media.insertImage(contentResolver,mBitmap, "image desc", null)
+        val path = MediaStore.Images.Media.insertImage(contentResolver, mBitmap, "image desc", null)
 
         val uri = Uri.parse(path)
 
         val shareIntent = Intent(Intent.ACTION_SEND)
         shareIntent.type = "image/*"
-        shareIntent.putExtra(Intent.EXTRA_TEXT,
-            "Name : "+ name +"\n"+"Price : "+ price +"\n"+"Link : "+ link
+        shareIntent.putExtra(
+            Intent.EXTRA_TEXT,
+            "Name : " + name + "\n" + "Price : " + price + "\n" + "Link : " + link
         )
-        shareIntent.putExtra(Intent.EXTRA_STREAM,uri)
+        shareIntent.putExtra(Intent.EXTRA_STREAM, uri)
         startActivity(Intent.createChooser(shareIntent, "Share"))
     }
 
-    private fun validationLanguage(){
+    private fun validationLanguage() {
         val currentPost = sharedPref.getString(Constant.PREF_CURRENT_POSITION)?.toInt()
-        if (currentPost == 1){
+        if (currentPost == 1) {
             setLocate("en")
-        } else if (currentPost == 2){
+        } else if (currentPost == 2) {
             setLocate("in")
         }
     }
 
-    private fun setLocate(Lang: String){
+    private fun setLocate(Lang: String) {
         val locale = Locale(Lang)
         Locale.setDefault(locale)
         val config = Configuration()
         config.locale = locale
         baseContext.resources.updateConfiguration(config, baseContext.resources.displayMetrics)
     }
+
+    override fun onClick(image: String) {
+        seePhoto.showPhoto(image)
+    }
+
+//    private fun isDataOtherEmpty(isEmpty: Boolean){
+//        binding.apply {
+//            if (isEmpty){
+//                emptyData!!.visibility = View.VISIBLE
+//            } else {
+//                emptyData!!.visibility = View.GONE }
+//        }
+//    }
+
+//    private fun isDataHistoryEmpty(isEmpty: Boolean){
+//        binding.apply {
+//            if (isEmpty){
+//                emptyData2!!.visibility = View.VISIBLE
+//            } else {
+//                emptyData2!!.visibility = View.GONE }
+//        }
+//    }
 
 }

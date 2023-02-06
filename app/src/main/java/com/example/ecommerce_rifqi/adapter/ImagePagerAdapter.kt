@@ -10,8 +10,9 @@ import androidx.viewpager.widget.PagerAdapter
 import com.bumptech.glide.Glide
 import com.example.ecommerce_rifqi.R
 import com.example.ecommerce_rifqi.model.ImageProduct
+import com.example.ecommerce_rifqi.ui.PhotoDialog
 
-class ImagePagerAdapter(private val images: List<ImageProduct>) : PagerAdapter() {
+class ImagePagerAdapter(private val images: List<ImageProduct>, private val listener: OnPageClickListener) : PagerAdapter() {
 
     @SuppressLint("MissingInflatedId")
     override fun instantiateItem(container: ViewGroup, position: Int): Any {
@@ -24,6 +25,10 @@ class ImagePagerAdapter(private val images: List<ImageProduct>) : PagerAdapter()
             .centerCrop()
             .into(imageView)
         titleView.text = images[position].title_product
+
+        view.setOnClickListener {
+            listener.onClick(images[position].image_product)
+        }
         container.addView(view)
         return view
     }
@@ -39,4 +44,10 @@ class ImagePagerAdapter(private val images: List<ImageProduct>) : PagerAdapter()
     override fun isViewFromObject(view: View, `object`: Any): Boolean {
         return view == `object`
     }
+
+
+    interface OnPageClickListener {
+        fun onClick(image: String)
+    }
+
 }

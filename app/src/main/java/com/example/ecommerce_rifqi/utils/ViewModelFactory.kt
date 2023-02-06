@@ -27,6 +27,10 @@ class ViewModelFactory(private val context: Context) : ViewModelProvider.Factory
             return UpdateStockViewModel(context) as T
         } else if (modelClass.isAssignableFrom(UpdateRateViewModel::class.java)){
             return UpdateRateViewModel(context) as T
+        } else if (modelClass.isAssignableFrom(GetOtherProductsViewModel::class.java)){
+            return GetOtherProductsViewModel(context) as T
+        } else if (modelClass.isAssignableFrom(GetProductSearchHistoryViewModel::class.java)){
+            return GetProductSearchHistoryViewModel(context) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

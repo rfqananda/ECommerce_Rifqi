@@ -105,4 +105,15 @@ interface APIInterface {
         @Field("rate") rate: Int
     ) : Call<UpdateRateSuccess>
 
+    @GET("api/ecommerce/get_list_product_other")
+    fun getOtherProducts(
+        @Query("id_user") iduser: Int?
+    ) : Call<ResponseOtherProductSuccess>
+
+    @GET("api/ecommerce/get_list_product_riwayat")
+    fun getProductSearchHistory(
+        @Query("id_user") iduser: Int?
+    ) : Call<ResponseOtherProductSuccess>
+
+
 }

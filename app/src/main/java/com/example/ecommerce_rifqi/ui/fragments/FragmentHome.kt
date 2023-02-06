@@ -11,6 +11,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.paging.LoadState
 import androidx.paging.PagingSource
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.ecommerce_rifqi.R
 import com.example.ecommerce_rifqi.adapter.ListProductAdapter
 import com.example.ecommerce_rifqi.adapter.LoadingStateAdapter
@@ -51,28 +53,7 @@ class FragmentHome : Fragment(R.layout.fragment_home) {
         val factory = ViewModelFactoryProduct(requireContext().applicationContext)
         viewModel = ViewModelProvider(this, factory)[GetListProductViewModel::class.java]
 
-
-
-        listProductAdapter = ListProductAdapter()
-        binding.rvHome.adapter = listProductAdapter.withLoadStateFooter(
-            footer = LoadingStateAdapter{
-                listProductAdapter.retry()
-            }
-        )
-        listProductAdapter.setOnItemClick(object : ListProductAdapter.OnAdapterListenerListProduct{
-            override fun onClick(data: DataProduct) {
-                val productID = data.id
-
-                val intent = Intent(requireActivity(), DetailActivity::class.java)
-                intent.putExtra("id", productID)
-                startActivity(intent)
-            }
-        })
-
-        listProductAdapter.addLoadStateListener { loadState ->
-            showShimmer(loadState.refresh is LoadState.Loading)
-            binding.swipeRefresh.isRefreshing = loadState.refresh is LoadState.Loading
-        }
+        getListProduct(null)
 
         binding.apply {
 
@@ -93,20 +74,16 @@ class FragmentHome : Fragment(R.layout.fragment_home) {
             }
 
             swipeRefresh.setOnRefreshListener{
-                showShimmer(true)
-                getListProduct(null)
+                getListProduct("")
                 searchJob?.cancel()
                 etSearchHome.text?.clear()
-                etSearchHome.isEnabled = false
+                etSearchHome.clearFocus()
+                swipeRefresh.isRefreshing = false
             }
         }
 
-        getListProduct(null)
     }
 
-    override fun onStart() {
-        super.onStart()
-    }
 
     private fun isDataEmpty(isEmpty: Boolean){
         binding.apply {
@@ -120,11 +97,36 @@ class FragmentHome : Fragment(R.layout.fragment_home) {
 
     private fun getListProduct(query: String?){
         view?.let {
+            listProductAdapter = ListProductAdapter()
+            binding.rvHome.adapter = listProductAdapter.withLoadStateFooter(
+                footer = LoadingStateAdapter{
+                    listProductAdapter.retry()
+                }
+            )
+
+            listProductAdapter.addLoadStateListener { loadState ->
+                showShimmer(loadState.refresh is LoadState.Loading)
+                binding.swipeRefresh.isEnabled = loadState.source.refresh is LoadState.NotLoading
+
+                if (loadState.source.refresh is LoadState.NotLoading && loadState.append.endOfPaginationReached && listProductAdapter.itemCount < 1){
+                    isDataEmpty(true)
+                } else isDataEmpty(false)
+            }
+
             val lifecycleOwner = viewLifecycleOwner
             viewModel.productListPaging(query).observe(lifecycleOwner){
                 if (it != null){
                     isDataEmpty(false)
                     listProductAdapter.submitData(lifecycle, it)
+                    listProductAdapter.setOnItemClick(object : ListProductAdapter.OnAdapterListenerListProduct{
+                        override fun onClick(data: DataProduct) {
+                            val productID = data.id
+
+                            val intent = Intent(requireActivity(), DetailActivity::class.java)
+                            intent.putExtra("id", productID)
+                            startActivity(intent)
+                        }
+                    })
                     binding.swipeRefresh.isRefreshing = false
 
                 } else isDataEmpty(true)
@@ -143,4 +145,22 @@ class FragmentHome : Fragment(R.layout.fragment_home) {
             }
         }
     }
+
+    override fun onDetach() {
+        super.onDetach()
+        searchJob?.cancel()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        searchJob?.cancel()
+        getListProduct(null)
+    }
+
+
+    override fun onPause() {
+        super.onPause()
+        searchJob?.cancel()
+    }
+
 }

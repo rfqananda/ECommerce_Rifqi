@@ -106,7 +106,7 @@ class FragmentDetail : Fragment(R.layout.fragment_detail) {
                 }
 
                 binding.apply {
-                    viewPager.adapter = ImagePagerAdapter(it.image_product)
+//                    viewPager.adapter = ImagePagerAdapter(it.image_product, this@FragmentDetail)
                     springDotsIndicator.attachTo(viewPager)
                     tvProductNameHead.text = it.name_product
                     tvProductName.text = it.name_product

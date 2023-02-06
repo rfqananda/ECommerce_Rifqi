@@ -97,4 +97,10 @@ dependencies {
     //Paging
     implementation "androidx.paging:paging-runtime-ktx:3.1.1"
 
+    //Sticky
+    implementation 'com.github.didikk:sticky-nestedscrollview:1.0.1'
+
+    //Photo Dialog
+    implementation 'com.github.MikeOrtiz:TouchImageView:1.4.1'
+
 }

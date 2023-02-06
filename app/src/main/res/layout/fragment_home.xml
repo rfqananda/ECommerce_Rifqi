@@ -50,9 +50,6 @@
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-
-
-
     <com.facebook.shimmer.ShimmerFrameLayout
         android:id="@+id/shimmer_list"
         android:layout_width="match_parent"

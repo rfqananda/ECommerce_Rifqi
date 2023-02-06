@@ -13,7 +13,6 @@ class ProductPagingSource(private val apiService: APIInterface, private val sear
     }
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, DataProduct> {
-        Log.d("paging2", "loadPagingsource")
         return try {
             val position = params.key ?: INITIAL_PAGE_INDEX
             val responseData = apiService.getListProduct(search, position)

@@ -74,7 +74,7 @@ class FragmentFavorite : Fragment(R.layout.fragment_favorite) {
                 viewModel.setFavoriteProductList("", userID!!.toInt())
                 getListProduct(null)
                 etSearchFavorite.text?.clear()
-                etSearchFavorite.isEnabled = false
+                etSearchFavorite.clearFocus()
             }
         }
     }

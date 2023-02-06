@@ -22,18 +22,6 @@ import retrofit2.Response
 
 class GetListProductViewModel(private val productRepository: ProductRepository): ViewModel(){
 
-//    val _query = MutableStateFlow("")
-//    private val query: StateFlow<String> = _query
-
-    val _query = MutableLiveData<String>()
-    private val query: LiveData<String> = _query
-
-    val search = query.switchMap {
-        productRepository.getProduct(
-            it
-        ).cachedIn(viewModelScope)
-    }
-
     fun productListPaging(search: String?): LiveData<PagingData<DataProduct>> =
         productRepository.getProduct(search).cachedIn(viewModelScope)
 
