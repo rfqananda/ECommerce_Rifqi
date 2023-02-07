@@ -95,9 +95,6 @@ class BottomSheetFragment(val dataProduct: DetailDataProduct): BottomSheetDialog
 
             btnBuy.setOnClickListener {
                 updateStock(productID.toString(), quantity)
-                val intent = Intent(requireActivity(), RatingActivity::class.java)
-                intent.putExtra("id", productID)
-                startActivity(intent)
             }
 
         }
@@ -140,13 +137,18 @@ class BottomSheetFragment(val dataProduct: DetailDataProduct): BottomSheetDialog
         )[UpdateStockViewModel::class.java]
 
         viewModelUpdateStock.setUpdateStock(productID, stock)
-        viewModelUpdateStock.updateStockSuccess.observe(requireActivity()) {
+        viewModelUpdateStock.updateStockSuccess.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { response ->
                 showMessage(response.success.message)
+                val intent = Intent(requireActivity(), RatingActivity::class.java)
+                if (productID != null) {
+                    intent.putExtra("id", productID.toInt())
+                }
+                startActivity(intent)
             }
 
         }
-        viewModelUpdateStock.toast.observe(requireActivity()) {
+        viewModelUpdateStock.toast.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { response ->
                 showMessage(response)
             }

@@ -21,7 +21,7 @@ class AuthAuthenticator constructor(
             val refreshToken = sharedPref.getString(Constant.PREF_REFRESH)
             val userID = sharedPref.getString(Constant.PREF_ID)
 
-            val newToken = getNewToken(accessToken, refreshToken, userID!!.toInt())
+            val newToken = getNewToken(accessToken!!, refreshToken!!, userID!!.toInt())
 
             if (!newToken.isSuccessful || newToken.body() == null || newToken.code() == 401) {
                 //response.close()
@@ -44,8 +44,8 @@ class AuthAuthenticator constructor(
     }
 
     private suspend fun getNewToken(
-        accessToken: String?,
-        refreshToken: String?,
+        accessToken: String,
+        refreshToken: String,
         userID: Int
     ): retrofit2.Response<ResponseRefreshToken>{
 

@@ -30,6 +30,7 @@ class CartAdapter(private val context: Context): RecyclerView.Adapter<CartAdapte
         listData.clear()
         listData.addAll(data)
         notifyItemRemoved(data.size)
+        notifyDataSetChanged()
     }
 
     class ViewHolder(val binding: AdapterListCartBinding) : RecyclerView.ViewHolder(binding.root) {

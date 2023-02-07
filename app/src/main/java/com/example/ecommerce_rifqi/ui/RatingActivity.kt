@@ -35,12 +35,14 @@ class RatingActivity : AppCompatActivity() {
                 if (productID != 0){
                     updateRating(productID, rate.toInt())
                 } else {
-                    for (i in listProductId!!.indices) {
-                        updateRating(listProductId[i].toInt(), rate.toInt())
+                    if (listProductId != null) {
+                        for (i in listProductId.indices) {
+                            updateRating(listProductId[i].toInt(), rate.toInt())
+                        }
                     }
                 }
                 viewModelCart = ViewModelProvider(this@RatingActivity)[GetProductCartViewModel::class.java]
-                viewModelCart.deleteCheckedProducts()
+                
                 val intent = Intent(this@RatingActivity, MainActivity::class.java)
                 startActivity(intent)
                 finish()

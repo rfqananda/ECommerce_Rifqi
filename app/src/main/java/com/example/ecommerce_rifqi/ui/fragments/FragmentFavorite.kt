@@ -102,11 +102,19 @@ class FragmentFavorite : Fragment(R.layout.fragment_favorite) {
     private fun showSimpleDialog(){
         val options = arrayOf(resources.getString(R.string.txt_sortirAZ), resources.getString(R.string.txt_sortirZA))
         var selectedOption = ""
+        val checkedItem = sharedPref.getString(Constant.PREF_SORTIR)
+        var userChoice = -1
+
+        if (checkedItem != null) {
+            userChoice = checkedItem.toInt()
+        }
+
 
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(resources.getString(R.string.txt_sort))
-            .setSingleChoiceItems(options, -1){ _, which ->
+            .setSingleChoiceItems(options, userChoice){ _, which ->
                 selectedOption = options[which]
+                sharedPref.put(Constant.PREF_SORTIR, which.toString())
             }
             .setPositiveButton("Ok"){ _, _->
                 when (selectedOption) {

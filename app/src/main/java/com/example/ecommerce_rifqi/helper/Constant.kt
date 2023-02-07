@@ -19,5 +19,6 @@ class Constant {
         val PREF_PRODUCT_PRICE = "PREF_PRODUCT_PRICE"
         val PREF_PRODUCT_STOCK = "PREF_PRODUCT_STOCK"
 
+        val PREF_SORTIR = "PREF_SORTIR"
     }
 }

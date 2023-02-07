@@ -23,6 +23,7 @@ import com.example.ecommerce_rifqi.helper.PreferencesHelper
 import com.example.ecommerce_rifqi.model.DetailDataProduct
 import com.example.ecommerce_rifqi.ui.view.*
 import com.example.ecommerce_rifqi.utils.ViewModelFactory
+import com.squareup.picasso.Picasso
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -60,6 +61,9 @@ class DetailActivity : AppCompatActivity(), ImagePagerAdapter.OnPageClickListene
     private var price: String = ""
 
     private var image: String = ""
+
+    private var imageViewPager: String = ""
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -242,11 +246,17 @@ class DetailActivity : AppCompatActivity(), ImagePagerAdapter.OnPageClickListene
                     tvProductName.text = it.name_product
                     tvPrice.text = formatRupiah(it.harga.toInt())
                     ratingBar.rating = it.rate.toFloat()
-                    tvStockValue.text = it.stock.toString()
                     tvSizeValue.text = it.size
                     tvWeightValue.text = it.weight
                     tvTypeValue.text = it.type
                     tvDetailValue.text = it.desc
+                    if (it.stock == 1) {
+                        tvStockValue.text = "Out of stock"
+                    } else tvStockValue.text = it.stock.toString()
+
+                    tvProductName.setOnClickListener {
+                        Log.e("View Pager Value", imageViewPager)
+                    }
 
                     toolBarDp.isSelected = true
 
@@ -371,7 +381,8 @@ class DetailActivity : AppCompatActivity(), ImagePagerAdapter.OnPageClickListene
     }
 
     private fun shareDeepLink(name: String, price: String, link: String) {
-        val image = binding.ivContainer?.drawable
+
+        val image = binding.ivContainer.drawable
 
         val mBitmap = (image as BitmapDrawable).bitmap
         val path = MediaStore.Images.Media.insertImage(contentResolver, mBitmap, "image desc", null)
@@ -407,6 +418,7 @@ class DetailActivity : AppCompatActivity(), ImagePagerAdapter.OnPageClickListene
 
     override fun onClick(image: String) {
         seePhoto.showPhoto(image)
+        imageViewPager = image
     }
 
 //    private fun isDataOtherEmpty(isEmpty: Boolean){

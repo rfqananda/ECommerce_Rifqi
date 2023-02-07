@@ -14,6 +14,7 @@ import com.example.ecommerce_rifqi.ui.view.LoginViewModel
 import com.example.ecommerce_rifqi.helper.Constant
 import com.example.ecommerce_rifqi.helper.PreferencesHelper
 import com.example.ecommerce_rifqi.utils.ViewModelFactory
+import com.google.firebase.messaging.FirebaseMessaging
 
 class LoginActivity : AppCompatActivity() {
 
@@ -61,6 +62,8 @@ class LoginActivity : AppCompatActivity() {
                     loading.startLoading()
                     loginUser(etEmail.text.toString(), etPass.text.toString())
                 }
+
+                getTokenFirebase()
 
             }
 
@@ -140,4 +143,12 @@ class LoginActivity : AppCompatActivity() {
             }
         }.show()
     }
+
+    fun getTokenFirebase(){
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            val token = task.result
+            Log.d("tokenfirebase", token)
+        }
+    }
+
 }

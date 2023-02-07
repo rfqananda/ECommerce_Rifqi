@@ -2,9 +2,7 @@ package com.example.ecommerce_rifqi.ui
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.os.Build
-import android.os.Bundle
-import android.os.Parcelable
+import android.os.*
 import android.util.Log
 import android.view.View
 import android.widget.CheckBox
@@ -24,6 +22,7 @@ import com.example.ecommerce_rifqi.ui.view.BuyProductViewModel
 import com.example.ecommerce_rifqi.ui.view.GetProductCartViewModel
 import com.example.ecommerce_rifqi.ui.view.UpdateStockViewModel
 import com.example.ecommerce_rifqi.utils.ViewModelFactory
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.DecimalFormat
 
@@ -41,6 +40,10 @@ class CartActivity : AppCompatActivity() {
     private lateinit var viewModelUpdateStock: UpdateStockViewModel
 
     private var recyclerViewState: Parcelable? = null
+
+    private var data = HashMap<String, Any>()
+
+    private var listOfProductId = arrayListOf<String>()
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,7 +67,7 @@ class CartActivity : AppCompatActivity() {
             rvCart.adapter = dataProductAdapter
             rvCart.layoutManager?.onRestoreInstanceState(recyclerViewState)
 
-            viewModelBuy.totalPrice.observe(this@CartActivity){
+            viewModelBuy.totalPrice.observe(this@CartActivity) {
                 tvTotal.text = it.toString()
             }
 
@@ -72,14 +75,14 @@ class CartActivity : AppCompatActivity() {
                 lifecycleScope.launch {
                     if (cbCartActivity.isChecked) {
                         viewModel.selectAll(1)
-                        for(i in 0 until rvCart.childCount){
+                        for (i in 0 until rvCart.childCount) {
                             val child = rvCart.getChildAt(i)
                             val recyclerViewCB = child.findViewById<CheckBox>(R.id.cb_cart)
                             recyclerViewCB.isChecked = cbCartActivity.isChecked
                         }
                     } else {
                         viewModel.selectAll(0)
-                        for(i in 0 until rvCart.childCount){
+                        for (i in 0 until rvCart.childCount) {
                             val child = rvCart.getChildAt(i)
                             val recyclerViewCB = child.findViewById<CheckBox>(R.id.cb_cart)
                             recyclerViewCB.isChecked = cbCartActivity.isChecked
@@ -90,41 +93,39 @@ class CartActivity : AppCompatActivity() {
             }
 
             lifecycleScope.launch {
-                viewModel.getProduct()?.observe(this@CartActivity){ result ->
+                viewModel.getProduct()?.observe(this@CartActivity) { result ->
                     val filterData = result.filter { it.check_button }
                     cbCartActivity.isChecked = result.size == filterData.size
                 }
             }
 
-            btnBuy.setOnClickListener {
+            viewModel.getCheckedProducts()!!.observe(this@CartActivity) {
 
-                viewModel.getCheckedProducts()!!.observe(this@CartActivity){
-                    val data = HashMap<String, Any>()
-
-                    if (it != null){
-                        val list = mapListChecked(it)
-                        if (list.isNotEmpty()){
-                            val dataStockList = ArrayList<HashMap<String, Any>>()
-                            for (product in list) {
-                                val dataStock = HashMap<String, Any>()
-                                dataStock["id_product"] = product.id
-                                dataStock["stock"] = product.quantity
-                                dataStockList.add(dataStock)
-                            }
-                            data["data_stock"] = dataStockList
+                if (it != null) {
+                    val list = mapListChecked(it)
+                    if (list.isNotEmpty()) {
+                        val dataStockList = ArrayList<HashMap<String, Any>>()
+                        for (product in list) {
+                            val dataStock = HashMap<String, Any>()
+                            dataStock["id_product"] = product.id
+                            dataStock["stock"] = product.quantity
+                            dataStockList.add(dataStock)
                         }
+                        data["data_stock"] = dataStockList
                     }
-
-                    val dataStockItems = arrayListOf<CheckedProduct>()
-                    val listOfProductId = arrayListOf<String>()
-                    for (i in it.indices) {
-                        dataStockItems.add(CheckedProduct(it[i].id, it[i].quantity))
-                        listOfProductId.add(it[i].id.toString())
-                    }
-
-                    updateStock(data, listOfProductId)
-
                 }
+
+                val dataStockItems = arrayListOf<CheckedProduct>()
+
+                for (i in it.indices) {
+                    dataStockItems.add(CheckedProduct(it[i].id, it[i].quantity))
+                    listOfProductId.add(it[i].id.toString())
+                }
+
+            }
+
+            btnBuy.setOnClickListener {
+                updateStock(data, listOfProductId)
             }
 
             btnBack.setOnClickListener {
@@ -133,7 +134,7 @@ class CartActivity : AppCompatActivity() {
 
         }
 
-        dataProductAdapter.setOnItemClick(object : CartAdapter.OnAdapterListener{
+        dataProductAdapter.setOnItemClick(object : CartAdapter.OnAdapterListener {
             override fun onClick(data: Product) {
                 val productID = data.id
 
@@ -161,10 +162,9 @@ class CartActivity : AppCompatActivity() {
             override fun onIncrease(data: Product, position: Int) {
                 viewModel.incrementQuantity(data.id)
                 viewModel.totalPriceItem(data.id)
-                val updatedData = data.copy(quantity = data.quantity + 1)
-                dataProductAdapter.updateData(updatedData)
+//                val updatedData = data.copy(quantity = data.quantity + 1)
+//                dataProductAdapter.updateData(updatedData)
 
-                binding.rvCart.layoutManager!!.scrollToPosition(position)
 
                 Log.e("Quantity btnPlus", data.quantity.toString())
             }
@@ -173,10 +173,10 @@ class CartActivity : AppCompatActivity() {
             override fun onDecrease(data: Product, position: Int) {
                 viewModel.decrementQuantity(data.id)
                 viewModel.totalPriceItem(data.id)
-                val updatedData = data.copy(quantity = data.quantity - 1)
-                dataProductAdapter.updateData(updatedData)
+//                val updatedData = data.copy(quantity = data.quantity - 1)
+//                dataProductAdapter.updateData(updatedData)
 
-                binding.rvCart.layoutManager!!.scrollToPosition(position)
+//                binding.rvCart.layoutManager!!.scrollToPosition(position)
 
                 Log.e("Quantity btnMinus", data.quantity.toString())
             }
@@ -185,7 +185,7 @@ class CartActivity : AppCompatActivity() {
                 viewModel.buttonCheck(data.id, isChecked)
                 Log.e("Quantity Check Box", data.quantity.toString())
 
-                if (binding.cbCartActivity.isChecked != isChecked){
+                if (binding.cbCartActivity.isChecked != isChecked) {
                     !binding.cbCartActivity.isChecked
                 }
             }
@@ -209,20 +209,20 @@ class CartActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         getProduct()
-        viewModel.getTotalItemByCheckButton(1)!!.observe(this@CartActivity){
-            if (it == null){
+        viewModel.getTotalItemByCheckButton(1)!!.observe(this@CartActivity) {
+            if (it == null) {
                 binding.tvTotal.text = formatRupiah(0)
             } else binding.tvTotal.text = formatRupiah(it)
         }
     }
 
-    private fun getProduct(){
+    private fun getProduct() {
 
-        viewModel.getProduct()?.observe(this){
-            if (it != null){
+        viewModel.getProduct()?.observe(this) {
+            if (it != null) {
                 isDataEmpty(true)
                 val list = mapList(it)
-                if (list.isNotEmpty()){
+                if (list.isNotEmpty()) {
                     isDataEmpty(false)
                     dataProductAdapter.setData(list)
                 }
@@ -230,9 +230,9 @@ class CartActivity : AppCompatActivity() {
         }
     }
 
-    private fun mapList(product: List<Product>): ArrayList<Product>{
+    private fun mapList(product: List<Product>): ArrayList<Product> {
         val listProduct = ArrayList<Product>()
-        for (data in product){
+        for (data in product) {
             val dataMapped = Product(
                 data.id,
                 data.name,
@@ -247,9 +247,9 @@ class CartActivity : AppCompatActivity() {
         return listProduct
     }
 
-    private fun mapListChecked(product: List<CheckedProduct>): ArrayList<CheckedProduct>{
+    private fun mapListChecked(product: List<CheckedProduct>): ArrayList<CheckedProduct> {
         val listProduct = ArrayList<CheckedProduct>()
-        for (data in product){
+        for (data in product) {
             val dataMapped = CheckedProduct(
                 data.id,
                 data.quantity
@@ -260,7 +260,8 @@ class CartActivity : AppCompatActivity() {
     }
 
     private fun updateStock(productData: HashMap<String, Any>, listProductID: ArrayList<String>) {
-        viewModelUpdateStock = ViewModelProvider(this, ViewModelFactory(this))[UpdateStockViewModel::class.java]
+        viewModelUpdateStock =
+            ViewModelProvider(this, ViewModelFactory(this))[UpdateStockViewModel::class.java]
 
         viewModelUpdateStock.setUpdateStockCart(productData)
         viewModelUpdateStock.updateStockSuccess.observe(this) {
@@ -270,12 +271,18 @@ class CartActivity : AppCompatActivity() {
                 val intent = Intent(this, RatingActivity::class.java)
                 intent.putExtra("list_id", listProductID)
                 startActivity(intent)
+
+//                val handler = Handler(Looper.getMainLooper())
+//                handler.postDelayed({
+//                    viewModel.deleteCheckedProducts()
+//                }, 1000)
+
             }
 
         }
         viewModelUpdateStock.toast.observe(this) {
             it.getContentIfNotHandled()?.let { response ->
-                showMessage(response)
+               showMessage("You have not selected any product!")
             }
         }
     }
@@ -285,13 +292,13 @@ class CartActivity : AppCompatActivity() {
     }
 
     private fun formatRupiah(angka: Int): String {
-        val formatRupiah =  DecimalFormat("Rp #,###")
+        val formatRupiah = DecimalFormat("Rp #,###")
         return formatRupiah.format(angka)
     }
 
-    private fun isDataEmpty(isEmpty: Boolean){
+    private fun isDataEmpty(isEmpty: Boolean) {
         binding.apply {
-            if (isEmpty){
+            if (isEmpty) {
                 emptyData.visibility = View.VISIBLE
                 rvCart.visibility = View.GONE
                 layoutCheck.visibility = View.GONE

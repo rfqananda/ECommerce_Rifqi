@@ -46,6 +46,7 @@ class UpdateStockViewModel(context: Context): ViewModel() {
                     val jsonObject = gson.fromJson(jObjError, JsonObject::class.java)
                     val error = gson.fromJson(jsonObject, UpdateStockError::class.java)
                     _toast.value = Event(error.error?.message.toString())
+
                 }
             }
 
