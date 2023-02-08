@@ -29,8 +29,6 @@
     <string name="txt_empty">Data Kosong</string>
     <string name="txt_sortirAZ">Dari A sampai Z</string>
     <string name="txt_sortirZA">Dari Z sampai A</string>
-
-
-
+    <string name="txt_notification">Notifikasi</string>
 
 </resources>

@@ -54,17 +54,19 @@ class LoginActivity : AppCompatActivity() {
             }
 
             btnLogin.setOnClickListener {
+
+                val token_fcm = sharedPref.getString(Constant.PREF_FB)
+
                 if (etEmail.text!!.isEmpty()){
                     inputEmail.error = "Email cannot be empty!"
                 } else if(etPass.text!!.isEmpty()){
                     inputPass.error = "Password cannot be empty!"
                 } else {
                     loading.startLoading()
-                    loginUser(etEmail.text.toString(), etPass.text.toString())
+                    if (token_fcm != null) {
+                        loginUser(etEmail.text.toString(), etPass.text.toString(), token_fcm)
+                    }
                 }
-
-                getTokenFirebase()
-
             }
 
             btnSignup.setOnClickListener {
@@ -74,9 +76,9 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    private fun loginUser(email: String, password: String) {
+    private fun loginUser(email: String, password: String, token: String) {
         viewModel = ViewModelProvider(this@LoginActivity, ViewModelFactory(applicationContext))[LoginViewModel::class.java]
-        viewModel.setLogin(email, password)
+        viewModel.setLogin(email, password, token)
 
         viewModel.loginSuccess.observe(this){
             it.getContentIfNotHandled()?.let { response ->
@@ -144,11 +146,5 @@ class LoginActivity : AppCompatActivity() {
         }.show()
     }
 
-    fun getTokenFirebase(){
-        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
-            val token = task.result
-            Log.d("tokenfirebase", token)
-        }
-    }
 
 }

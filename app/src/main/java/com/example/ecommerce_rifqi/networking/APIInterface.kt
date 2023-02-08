@@ -14,7 +14,8 @@ interface APIInterface {
     @POST("api/ecommerce/authentication")
     fun login(
         @Field("email") email: String,
-        @Field("password") password: String
+        @Field("password") password: String,
+        @Field("token_fcm") token_fcm: String
     ) : Call<LoginSuccess>
 
     @Multipart
@@ -114,6 +115,4 @@ interface APIInterface {
     fun getProductSearchHistory(
         @Query("id_user") iduser: Int?
     ) : Call<ResponseOtherProductSuccess>
-
-
 }

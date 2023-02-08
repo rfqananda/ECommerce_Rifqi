@@ -26,14 +26,14 @@ class UpdateStockViewModel(context: Context): ViewModel() {
     private var _toast = MutableLiveData<Event<String>>()
     val toast: LiveData<Event<String>> = _toast
 
-    fun setUpdateStock(productID: String?, stock: Int){
-        val requestBody = DataStock(listOf(DataStockItem(productID.toString(), stock)))
+    fun setUpdateStock(data: DataStock){
+//        val requestBody = DataStock(userID, listOf(DataStockItem(productID.toString(), stock)))
 
-        Log.e("Buy", "$productID, $stock")
+//        Log.e("Buy", "$productID, $stock")
 
         val apiInterface = api?.create(APIInterface::class.java)
 
-        apiInterface!!.updateStock(requestBody).enqueue(object : Callback<UpdateStockSuccess>{
+        apiInterface!!.updateStock(data).enqueue(object : Callback<UpdateStockSuccess>{
             override fun onResponse(
                 call: Call<UpdateStockSuccess>,
                 response: Response<UpdateStockSuccess>

@@ -51,10 +51,4 @@ interface ProductDAO {
     @Query("DELETE FROM item_product WHERE check_button = 1")
     fun deleteCheckedProducts()
 
-//    DELETE FROM item_product
-
-    //SELECT SUM(total_item) FROM data_prodcut WHERE check_button = 1
-
-
-
 }

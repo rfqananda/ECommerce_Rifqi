@@ -14,11 +14,9 @@ import com.example.ecommerce_rifqi.R
 import com.example.ecommerce_rifqi.databinding.ActivityMainBinding
 import com.example.ecommerce_rifqi.helper.Constant
 import com.example.ecommerce_rifqi.helper.PreferencesHelper
-import com.example.ecommerce_rifqi.ui.fragments.FragmentDetail
 import com.example.ecommerce_rifqi.ui.view.GetProductCartViewModel
 import com.example.ecommerce_rifqi.utils.Communicator
 import com.google.android.material.badge.BadgeDrawable
-import com.google.android.material.badge.BadgeUtils
 import java.util.*
 
 @Suppress("DEPRECATION")
@@ -62,6 +60,11 @@ class MainActivity : AppCompatActivity(), Communicator {
                 startActivity(intent)
             }
 
+            btnNotification.setOnClickListener {
+                val intent = Intent(this@MainActivity, NotificationActivity::class.java)
+                startActivity(intent)
+            }
+
         }
     }
 
@@ -74,6 +77,11 @@ class MainActivity : AppCompatActivity(), Communicator {
         super.onStart()
         validationLanguage()
         countData()
+        val title = sharedPref.getString(Constant.PREF_GET_TITLE)
+        val message = sharedPref.getString(Constant.PREF_GET_MESSAGE)
+        Log.e("Title", title.toString())
+        Log.e("Message", message.toString())
+
     }
 
     private fun countData(){
@@ -81,9 +89,9 @@ class MainActivity : AppCompatActivity(), Communicator {
         viewModel.getProductCount()
         viewModel.totalData.observe(this){
             if (it > 0){
-                binding.badgeCount.visibility = View.VISIBLE
-                binding.badgeCount.text = it.toString()
-            } else binding.badgeCount.visibility = View.GONE
+                binding.badgeCountCart.visibility = View.VISIBLE
+                binding.badgeCountCart.text = it.toString()
+            } else binding.badgeCountCart.visibility = View.GONE
         }
 
     }

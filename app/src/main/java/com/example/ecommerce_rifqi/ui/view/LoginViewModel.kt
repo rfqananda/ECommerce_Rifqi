@@ -30,9 +30,9 @@ class LoginViewModel(context: Context) : ViewModel(){
 
 
 
-    fun setLogin(email: String, password:String){
+    fun setLogin(email: String, password:String, token: String){
         val apiInterface = api?.create(APIInterface::class.java)
-        apiInterface!!.login(email, password).enqueue(object : Callback<LoginSuccess>{
+        apiInterface!!.login(email, password, token).enqueue(object : Callback<LoginSuccess>{
             override fun onResponse(call: Call<LoginSuccess>, response: Response<LoginSuccess>) {
 
                 if (response.isSuccessful){

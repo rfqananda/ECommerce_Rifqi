@@ -4,24 +4,21 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.example.ecommerce_rifqi.data.local.Product
 import com.example.ecommerce_rifqi.databinding.AdapterListCartBinding
-import com.example.ecommerce_rifqi.model.DataProduct
-import com.example.ecommerce_rifqi.ui.view.BuyProductViewModel
 import java.text.DecimalFormat
 
-class CartAdapter(private val context: Context): RecyclerView.Adapter<CartAdapter.ViewHolder>() {
+class ListCartAdapter(private val context: Context): RecyclerView.Adapter<ListCartAdapter.ViewHolder>() {
 
     private val listData = ArrayList<Product>()
 
-    private var onItemClick: CartAdapter.OnAdapterListener? = null
+    private var onItemClick: ListCartAdapter.OnAdapterListener? = null
 
 
-    fun setOnItemClick(onItemClick: CartAdapter.OnAdapterListener){
+    fun setOnItemClick(onItemClick: ListCartAdapter.OnAdapterListener){
         this.onItemClick = onItemClick
     }
 

@@ -14,24 +14,29 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.ecommerce_rifqi.R
-import com.example.ecommerce_rifqi.adapter.CartAdapter
+import com.example.ecommerce_rifqi.adapter.ListCartAdapter
 import com.example.ecommerce_rifqi.data.local.CheckedProduct
 import com.example.ecommerce_rifqi.data.local.Product
 import com.example.ecommerce_rifqi.databinding.ActivityCartBinding
+import com.example.ecommerce_rifqi.helper.Constant
+import com.example.ecommerce_rifqi.helper.PreferencesHelper
+import com.example.ecommerce_rifqi.model.DataStock
+import com.example.ecommerce_rifqi.model.DataStockItem
 import com.example.ecommerce_rifqi.ui.view.BuyProductViewModel
 import com.example.ecommerce_rifqi.ui.view.GetProductCartViewModel
 import com.example.ecommerce_rifqi.ui.view.UpdateStockViewModel
 import com.example.ecommerce_rifqi.utils.ViewModelFactory
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.DecimalFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 
 class CartActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityCartBinding
 
-    private lateinit var dataProductAdapter: CartAdapter
+    private lateinit var dataProductAdapter: ListCartAdapter
 
     private lateinit var viewModel: GetProductCartViewModel
 
@@ -39,26 +44,29 @@ class CartActivity : AppCompatActivity() {
 
     private lateinit var viewModelUpdateStock: UpdateStockViewModel
 
-    private var recyclerViewState: Parcelable? = null
+    lateinit var sharedPref: PreferencesHelper
 
-    private var data = HashMap<String, Any>()
+
+    private var recyclerViewState: Parcelable? = null
 
     private var listOfProductId = arrayListOf<String>()
 
+
+    @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityCartBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        dataProductAdapter = CartAdapter(this)
+        dataProductAdapter = ListCartAdapter(this)
+
+        sharedPref = PreferencesHelper(this)
 
         viewModel = ViewModelProvider(this)[GetProductCartViewModel::class.java]
         viewModelBuy = ViewModelProvider(this)[BuyProductViewModel::class.java]
 
         recyclerViewState = savedInstanceState?.getParcelable("recycler_view_state")
-
-
 
 
         binding.apply {
@@ -99,33 +107,66 @@ class CartActivity : AppCompatActivity() {
                 }
             }
 
-            viewModel.getCheckedProducts()!!.observe(this@CartActivity) {
 
-                if (it != null) {
-                    val list = mapListChecked(it)
-                    if (list.isNotEmpty()) {
-                        val dataStockList = ArrayList<HashMap<String, Any>>()
-                        for (product in list) {
-                            val dataStock = HashMap<String, Any>()
-                            dataStock["id_product"] = product.id
-                            dataStock["stock"] = product.quantity
-                            dataStockList.add(dataStock)
-                        }
-                        data["data_stock"] = dataStockList
-                    }
-                }
-
-                val dataStockItems = arrayListOf<CheckedProduct>()
-
-                for (i in it.indices) {
-                    dataStockItems.add(CheckedProduct(it[i].id, it[i].quantity))
-                    listOfProductId.add(it[i].id.toString())
-                }
-
-            }
 
             btnBuy.setOnClickListener {
-                updateStock(data, listOfProductId)
+
+                val data = HashMap<String, Any>()
+
+                viewModel.getCheckedProducts()!!.observe(this@CartActivity) { result ->
+
+                    val dataStockItems = arrayListOf<DataStockItem>()
+                    val listOfProductId = arrayListOf<String>()
+                    for (i in result.indices) {
+                        dataStockItems.add(
+                            DataStockItem(
+                                result[i].id.toString(),
+                                result[i].quantity
+                            )
+                        )
+                        listOfProductId.add(result[i].id.toString())
+                    }
+
+
+//                    val dataStockItems = arrayListOf<DataStockItem>()
+////        val listOfProductId = arrayListOf<String>()
+//                    for (i in result.indices) {
+//                        dataStockItems.add(
+//                            DataStockItem(
+//                                result[i].id.toString(),
+//                                result[i].quantity
+//                            )
+//                        )
+//                        listOfProductId.add(result[i].id.toString())
+//                    }
+
+                    val userID = sharedPref.getString(Constant.PREF_ID)
+                    var productID = ""
+                    var quantity = 0
+
+//                    if (result != null) {
+//                        val list = mapListChecked(result)
+//                        if (list.isNotEmpty()) {
+//                            val dataStockList = ArrayList<HashMap<String, Any>>()
+//                            for (product in list) {
+//                                productID = product.id.toString()
+//                                quantity = product.quantity
+////                                val dataStock = HashMap<String, Any>()
+////                                dataStock["id_product"] = product.id
+////                                dataStock["stock"] = product.quantity
+////                                dataStockList.add(dataStock)
+//                            }
+//                            data["data_stock"] = dataStockList
+//                        }
+//                    }
+
+//                    val dataStockItems = arrayListOf<CheckedProduct>()
+//                    for (i in it.indices) {
+//                        dataStockItems.add(CheckedProduct(it[i].id, it[i].quantity))
+//                        listOfProductId.add(it[i].id.toString())
+//                    }
+                    updateStock(DataStock(userID!!, dataStockItems), listOfProductId)
+                }
             }
 
             btnBack.setOnClickListener {
@@ -134,7 +175,7 @@ class CartActivity : AppCompatActivity() {
 
         }
 
-        dataProductAdapter.setOnItemClick(object : CartAdapter.OnAdapterListener {
+        dataProductAdapter.setOnItemClick(object : ListCartAdapter.OnAdapterListener {
             override fun onClick(data: Product) {
                 val productID = data.id
 
@@ -259,11 +300,15 @@ class CartActivity : AppCompatActivity() {
         return listProduct
     }
 
-    private fun updateStock(productData: HashMap<String, Any>, listProductID: ArrayList<String>) {
+    private fun updateStock(dataStock: DataStock, listProductID: ArrayList<String>) {
+
+
         viewModelUpdateStock =
             ViewModelProvider(this, ViewModelFactory(this))[UpdateStockViewModel::class.java]
 
-        viewModelUpdateStock.setUpdateStockCart(productData)
+        viewModelUpdateStock.setUpdateStock(dataStock)
+//        Log.e("Data Stock Product", productData.toString())
+
         viewModelUpdateStock.updateStockSuccess.observe(this) {
             it.getContentIfNotHandled()?.let { response ->
                 showMessage(response.success.message)
@@ -282,7 +327,7 @@ class CartActivity : AppCompatActivity() {
         }
         viewModelUpdateStock.toast.observe(this) {
             it.getContentIfNotHandled()?.let { response ->
-               showMessage("You have not selected any product!")
+                showMessage(response)
             }
         }
     }

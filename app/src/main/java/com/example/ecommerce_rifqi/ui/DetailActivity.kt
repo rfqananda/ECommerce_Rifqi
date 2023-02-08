@@ -4,16 +4,17 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.viewpager.widget.ViewPager
 import com.bumptech.glide.Glide
 import com.example.ecommerce_rifqi.adapter.ImagePagerAdapter
 import com.example.ecommerce_rifqi.adapter.ListProductDetailAdapter
@@ -23,12 +24,13 @@ import com.example.ecommerce_rifqi.helper.PreferencesHelper
 import com.example.ecommerce_rifqi.model.DetailDataProduct
 import com.example.ecommerce_rifqi.ui.view.*
 import com.example.ecommerce_rifqi.utils.ViewModelFactory
-import com.squareup.picasso.Picasso
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.DecimalFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 class DetailActivity : AppCompatActivity(), ImagePagerAdapter.OnPageClickListener {
@@ -42,6 +44,8 @@ class DetailActivity : AppCompatActivity(), ImagePagerAdapter.OnPageClickListene
     private lateinit var viewModelOtherProduct: GetOtherProductsViewModel
 
     private lateinit var viewModelHistorySearch: GetProductSearchHistoryViewModel
+
+    private lateinit var viewModelNotification: NotificationViewModel
 
     private lateinit var listProductAdapter: ListProductDetailAdapter
 
@@ -65,6 +69,7 @@ class DetailActivity : AppCompatActivity(), ImagePagerAdapter.OnPageClickListene
     private var imageViewPager: String = ""
 
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDetailBinding.inflate(layoutInflater)
@@ -194,6 +199,7 @@ class DetailActivity : AppCompatActivity(), ImagePagerAdapter.OnPageClickListene
         validationLanguage()
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun getDetailProductData() {
 
         var productID = intent.getIntExtra("id", 0)
@@ -264,6 +270,16 @@ class DetailActivity : AppCompatActivity(), ImagePagerAdapter.OnPageClickListene
                         sharedPref.put(Constant.PREF_ID_PRODUCT, productID.toString())
                         showBottomSheet(it)
 
+                        val title = sharedPref.getString(Constant.PREF_GET_TITLE)
+                        val message = sharedPref.getString(Constant.PREF_GET_MESSAGE)
+
+
+
+                        sharedPref.put(Constant.PREF_SEND_TITLE, "Pembelian Sukses")
+                        sharedPref.put(Constant.PREF_SEND_MESSAGE, "Anda berhasil membeli ${it.name_product}")
+
+
+//                        sendNotification("Pembelian Sukses", "Anda berhasil membeli ${it.name_product}", date)
                     }
 
 
@@ -352,6 +368,11 @@ class DetailActivity : AppCompatActivity(), ImagePagerAdapter.OnPageClickListene
                 showMessage(response)
             }
         }
+    }
+
+    private fun sendNotification(title: String, message: String, date: String){
+        viewModelNotification = ViewModelProvider(this)[NotificationViewModel::class.java]
+        viewModelNotification.addToNotification(0, title, message, date)
     }
 
     private fun showMessage(message: String) {

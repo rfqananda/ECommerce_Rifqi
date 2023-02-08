@@ -3,6 +3,7 @@ package com.example.ecommerce_rifqi.ui
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -40,6 +41,7 @@ class BottomSheetFragment(val dataProduct: DetailDataProduct): BottomSheetDialog
 
     private var quantity by Delegates.notNull<Int>()
 
+    lateinit var sharedPref: PreferencesHelper
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -56,6 +58,7 @@ class BottomSheetFragment(val dataProduct: DetailDataProduct): BottomSheetDialog
 
         viewModel = ViewModelProvider(requireActivity())[BuyProductViewModel::class.java]
 
+        sharedPref = PreferencesHelper(requireContext())
 
         val image = dataProduct.image
         val price = dataProduct.harga
@@ -94,7 +97,8 @@ class BottomSheetFragment(val dataProduct: DetailDataProduct): BottomSheetDialog
             val productID = dataProduct.id
 
             btnBuy.setOnClickListener {
-                updateStock(productID.toString(), quantity)
+                val userID = sharedPref.getString(Constant.PREF_ID)
+                updateStock(userID!!, productID.toString(), quantity)
             }
 
         }
@@ -130,13 +134,18 @@ class BottomSheetFragment(val dataProduct: DetailDataProduct): BottomSheetDialog
         return formatRupiah.format(number)
     }
 
-    private fun updateStock(productID: String?, stock: Int) {
+    private fun updateStock(userID: String, productID: String?, stock: Int) {
         viewModelUpdateStock = ViewModelProvider(
             requireActivity(),
             ViewModelFactory(requireContext())
         )[UpdateStockViewModel::class.java]
 
-        viewModelUpdateStock.setUpdateStock(productID, stock)
+        val dataStockItem = DataStockItem(id_product = productID.toString(), stock = stock)
+        val listData = listOf(dataStockItem)
+
+        Log.e("Coba Stock", listData.toString())
+
+        viewModelUpdateStock.setUpdateStock(DataStock(userID, listData))
         viewModelUpdateStock.updateStockSuccess.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { response ->
                 showMessage(response.success.message)

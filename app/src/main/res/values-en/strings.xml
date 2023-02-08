@@ -29,9 +29,7 @@
     <string name="txt_empty">Data is empty</string>
     <string name="txt_sortirAZ">From A to Z</string>
     <string name="txt_sortirZA">From Z to A</string>
-
-
-
+    <string name="txt_notification">Notification</string>
 
 
 </resources>

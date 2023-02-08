@@ -6,8 +6,8 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 @Database(
-    entities = [Product::class],
-    version = 2
+    entities = [Product::class, Notification::class],
+    version = 3
 )
 
 abstract class ProductDatabase : RoomDatabase() {
@@ -30,4 +30,6 @@ abstract class ProductDatabase : RoomDatabase() {
     }
 
     abstract fun productDAO(): ProductDAO
+    abstract fun notificationDAO(): NotificationDAO
+
 }
