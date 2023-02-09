@@ -9,10 +9,10 @@
     <group android:id="@+id/multiple_select"
         android:visible="false">
 
-        <item android:id="@+id/read_all"
+        <item android:id="@+id/read_notification"
             app:showAsAction="ifRoom"
             android:icon="@drawable/ic_read_all"
-            android:title="read all" />
+            android:title="read notification" />
 
         <item android:id="@+id/delete"
             app:showAsAction="ifRoom"

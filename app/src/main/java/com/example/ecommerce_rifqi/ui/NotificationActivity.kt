@@ -1,13 +1,16 @@
 package com.example.ecommerce_rifqi.ui
 
+import android.annotation.SuppressLint
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.widget.CheckBox
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.cardview.widget.CardView
-import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,7 +20,6 @@ import com.example.ecommerce_rifqi.data.local.Notification
 import com.example.ecommerce_rifqi.databinding.ActivityNotificationBinding
 import com.example.ecommerce_rifqi.ui.view.NotificationViewModel
 import kotlinx.coroutines.launch
-import okhttp3.internal.checkOffsetAndCount
 
 class NotificationActivity : AppCompatActivity() {
 
@@ -27,6 +29,7 @@ class NotificationActivity : AppCompatActivity() {
 
     private var isMultipleSelect = false
     private lateinit var myMenu: Menu
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,13 +54,13 @@ class NotificationActivity : AppCompatActivity() {
 //                isDataEmpty(true)
                 val list = mapList(it)
                 if (list.isNotEmpty()) {
-//                    isDataEmpty(false)
+                    isDataEmpty(false)
                     notificationAdapter.setData(list)
 
                     notificationAdapter.setOnItemClick(object : ListNotificationAdapter.OnAdapterListenerListProductFavorite{
                         override fun onClick(data: Notification) {
 
-                            isRead(data.id, true)
+                            isRead(data.id)
 
                             val coba = data.isRead
                             Log.e("Test Doang", coba.toString())
@@ -73,7 +76,7 @@ class NotificationActivity : AppCompatActivity() {
                         }
 
                         override fun onChecked(data: Notification, isChecked: Boolean) {
-
+                            isChecked(data.id, isChecked)
                         }
                     })
 
@@ -82,7 +85,7 @@ class NotificationActivity : AppCompatActivity() {
                         rvNotification.layoutManager = LinearLayoutManager(applicationContext)
                         rvNotification.adapter = notificationAdapter
                     }
-                }
+                } else isDataEmpty(true)
             }
         }
     }
@@ -91,22 +94,63 @@ class NotificationActivity : AppCompatActivity() {
         menuInflater.inflate(R.menu.notification, menu)
         if (menu != null) {
             myMenu = menu
+            myMenu.findItem(R.id.set_notification_item)?.isVisible = !binding.emptyData.isVisible
         }
         return true
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
+
             R.id.set_notification_item -> {
                 setMultipleSelect()
             }
-            R.id.read_all -> {
-                viewModel.readAllNotification()
+            R.id.read_notification -> {
+                var isChecked = false
+                for (i in 0 until binding.rvNotification.childCount) {
+                    val child = binding.rvNotification.getChildAt(i)
+                    val rvCheckBox = child.findViewById<CheckBox>(R.id.cb_notification)
+                    if (rvCheckBox.isChecked) {
+                        isChecked = true
+                        break
+                    }
+                }
+
+                if (!isChecked) {
+                    showMessage("Belum Ada Satupun yang Diceklis")
+                } else viewModel.readAllNotification()
+
                 onBackPressed()
             }
             R.id.delete -> {
-                viewModel.deleteNotification()
-                onBackPressed()
+                var isChecked = false
+                for (i in 0 until binding.rvNotification.childCount) {
+                    val child = binding.rvNotification.getChildAt(i)
+                    val rvCheckBox = child.findViewById<CheckBox>(R.id.cb_notification)
+                    if (rvCheckBox.isChecked) {
+                        isChecked = true
+                        break
+                    }
+                }
+
+                if (!isChecked) {
+                    showMessage("Belum Ada Satupun yang Diceklis")
+                } else {
+                    val alertDialog = AlertDialog.Builder(this)
+                    alertDialog.apply {
+                        setTitle("Delete Product?")
+                        setMessage("Are you sure you want to delete this notification?")
+                        setNegativeButton("Cancel") { dialogInterface, i ->
+                            dialogInterface.dismiss()
+                        }
+                        setPositiveButton("Delete") { dialogInterface, i ->
+                            viewModel.deleteNotification()
+                            binding.rvNotification.adapter?.notifyDataSetChanged()
+                            onBackPressed()
+                        }
+                    }.show()
+                }
             }
         }
         return super.onOptionsItemSelected(item)
@@ -115,8 +159,12 @@ class NotificationActivity : AppCompatActivity() {
 
 
 
-    private fun isRead(id: Int, isRead: Boolean){
-        viewModel.isRead(id, isRead)
+    private fun isRead(id: Int){
+        viewModel.isRead(id)
+    }
+
+    private fun isChecked(id: Int, isChecked: Boolean){
+        viewModel.isChecked(id, isChecked)
     }
 
     private fun mapList(product: List<Notification>): ArrayList<Notification> {
@@ -127,7 +175,8 @@ class NotificationActivity : AppCompatActivity() {
                 data.title,
                 data.message,
                 data.date,
-                data.isRead
+                data.isRead,
+                data.isChecked
             )
             listNotification.add(dataMapped)
         }
@@ -169,15 +218,14 @@ class NotificationActivity : AppCompatActivity() {
         getNotification()
 
         if (isMultipleSelect) {
-            myMenu.findItem(R.id.read_all)?.isVisible = true
+            myMenu.findItem(R.id.read_notification)?.isVisible = true
             myMenu.findItem(R.id.delete)?.isVisible = true
             myMenu.findItem(R.id.set_notification_item)?.isVisible = false
 
             binding.tvToolbarTitle.text = "Multiple Select"
         } else {
-            myMenu.findItem(R.id.read_all)?.isVisible = false
+            myMenu.findItem(R.id.read_notification)?.isVisible = false
             myMenu.findItem(R.id.delete)?.isVisible = false
-            myMenu.findItem(R.id.set_notification_item)?.isVisible = true
 
             binding.tvToolbarTitle.text = "Notification"
         }
@@ -214,5 +262,21 @@ class NotificationActivity : AppCompatActivity() {
 //            notificationViewModel.setAllUnchecked()
         }
         return true
+    }
+
+    private fun showMessage(message: String) {
+        Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun isDataEmpty(isEmpty: Boolean) {
+        binding.apply {
+            if (isEmpty) {
+                emptyData.visibility = View.VISIBLE
+                rvNotification.visibility = View.GONE
+            } else {
+                emptyData.visibility = View.GONE
+                rvNotification.visibility = View.VISIBLE
+            }
+        }
     }
 }

@@ -14,15 +14,18 @@ interface NotificationDAO {
     @Query("SELECT * FROM notification ORDER BY isRead = 1 ASC, id DESC")
     fun getDataNotification(): LiveData<List<Notification>>
 
-    @Query("UPDATE notification SET isRead = :condition WHERE id = :id")
-    fun updateRead(id: Int, condition: Boolean)
+    @Query("UPDATE notification SET isRead = 1 WHERE id = :id")
+    fun updateRead(id: Int)
 
     @Query("SELECT COUNT(*) FROM notification WHERE isRead = 0")
     fun countNotification(): Int
 
-    @Query("UPDATE notification SET isRead = 1")
+    @Query("UPDATE notification SET isRead = 1 WHERE isChecked = 1")
     fun readAll()
 
     @Query("DELETE FROM notification WHERE isChecked = 1")
     fun deleteCheckedProducts()
+
+    @Query("UPDATE notification SET isChecked = :condition  WHERE id = :id")
+    fun isChecked(id: Int, condition: Boolean)
 }

@@ -35,9 +35,9 @@ class NotificationViewModel(application: Application): AndroidViewModel(applicat
         return notificationDAO?.getDataNotification()
     }
 
-    fun isRead(id: Int, isRead: Boolean){
+    fun isRead(id: Int){
         CoroutineScope(Dispatchers.IO).launch {
-            notificationDAO?.updateRead(id, isRead)
+            notificationDAO?.updateRead(id)
         }
     }
 
@@ -56,6 +56,12 @@ class NotificationViewModel(application: Application): AndroidViewModel(applicat
     fun deleteNotification() {
         CoroutineScope(Dispatchers.IO).launch {
             notificationDAO?.deleteCheckedProducts()
+        }
+    }
+
+    fun isChecked(id: Int, isChecked: Boolean){
+        CoroutineScope(Dispatchers.IO).launch {
+            notificationDAO?.isChecked(id, isChecked)
         }
     }
 

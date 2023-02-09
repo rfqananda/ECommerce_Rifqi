@@ -33,37 +33,34 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
+    <LinearLayout
+        android:id="@+id/empty_data"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent">
 
-<!--    <RelativeLayout-->
-<!--        android:id="@+id/tool_bar_notification"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="?attr/actionBarSize"-->
-<!--        android:background="@color/pink"-->
-<!--        app:layout_constraintTop_toTopOf="parent"-->
-<!--        android:elevation="6dp">-->
+        <ImageView
+            android:layout_width="215dp"
+            android:layout_height="200dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_empty"/>
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/medium"
+            android:layout_gravity="center"
+            android:textSize="20sp"
+            android:textColor="@color/black"
+            android:text="@string/txt_empty"/>
 
-<!--        <ImageView-->
-<!--            android:id="@+id/btn_back"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_centerVertical="true"-->
-<!--            android:layout_marginStart="16dp"-->
-<!--            android:src="@drawable/ic_back" />-->
+    </LinearLayout>
 
-<!--        <TextView-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:textColor="@color/black"-->
-<!--            android:layout_marginStart="20dp"-->
-<!--            android:text="@string/txt_notification"-->
-<!--            android:layout_centerVertical="true"-->
-<!--            android:textAllCaps="false"-->
-<!--            android:layout_toEndOf="@+id/btn_back"-->
-<!--            android:textSize="18sp"-->
-<!--            android:fontFamily="@font/bold"/>-->
-
-<!--    </RelativeLayout>-->
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_notification"
