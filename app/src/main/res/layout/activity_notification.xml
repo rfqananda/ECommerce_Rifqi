@@ -6,36 +6,64 @@
     android:layout_height="match_parent"
     tools:context=".ui.NotificationActivity">
 
-    <RelativeLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/tool_bar_notification"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
+        android:layout_width="0dp"
+        android:layout_height="?actionBarSize"
         android:background="@color/pink"
-        app:layout_constraintTop_toTopOf="parent"
-        android:elevation="6dp">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/custom_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/tv_toolbar_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/bold"
+                android:text="Notification"
+                android:textColor="@color/black"
+                android:textSize="18sp" />
+
+        </com.google.android.material.appbar.MaterialToolbar>
+
+    </com.google.android.material.appbar.AppBarLayout>
 
 
-        <ImageView
-            android:id="@+id/btn_back"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="16dp"
-            android:src="@drawable/ic_back" />
+<!--    <RelativeLayout-->
+<!--        android:id="@+id/tool_bar_notification"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="?attr/actionBarSize"-->
+<!--        android:background="@color/pink"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        android:elevation="6dp">-->
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/black"
-            android:layout_marginStart="20dp"
-            android:text="@string/txt_notification"
-            android:layout_centerVertical="true"
-            android:textAllCaps="false"
-            android:layout_toEndOf="@+id/btn_back"
-            android:textSize="18sp"
-            android:fontFamily="@font/bold"/>
 
-    </RelativeLayout>
+<!--        <ImageView-->
+<!--            android:id="@+id/btn_back"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_centerVertical="true"-->
+<!--            android:layout_marginStart="16dp"-->
+<!--            android:src="@drawable/ic_back" />-->
+
+<!--        <TextView-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:textColor="@color/black"-->
+<!--            android:layout_marginStart="20dp"-->
+<!--            android:text="@string/txt_notification"-->
+<!--            android:layout_centerVertical="true"-->
+<!--            android:textAllCaps="false"-->
+<!--            android:layout_toEndOf="@+id/btn_back"-->
+<!--            android:textSize="18sp"-->
+<!--            android:fontFamily="@font/bold"/>-->
+
+<!--    </RelativeLayout>-->
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_notification"

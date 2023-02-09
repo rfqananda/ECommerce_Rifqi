@@ -8,6 +8,8 @@ import com.example.ecommerce_rifqi.data.local.CheckedProduct
 import com.example.ecommerce_rifqi.data.local.Product
 import com.example.ecommerce_rifqi.data.local.ProductDAO
 import com.example.ecommerce_rifqi.data.local.ProductDatabase
+import com.example.ecommerce_rifqi.helper.Event
+import com.example.ecommerce_rifqi.helper.SingleLiveEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -15,19 +17,13 @@ import kotlinx.coroutines.launch
 class GetProductCartViewModel(application: Application): AndroidViewModel(application) {
     private var productDAO: ProductDAO?
     private var productDB: ProductDatabase?
-    var checkedProducts: MutableLiveData<List<CheckedProduct>> = MutableLiveData()
+//    var checkedProducts: MutableLiveData<List<CheckedProduct>> = MutableLiveData()
+
+    var checkedProducts = SingleLiveEvent<List<CheckedProduct>>()
 
     init {
         productDB = ProductDatabase.getDatabase(application)
         productDAO = productDB?.productDAO()
-//        productDAO?.getCheckedProducts()?.observeForever {
-//            checkedProducts.value = it.map { product ->
-//                CheckedProduct(
-//                    id = product.id,
-//                    quantity = product.quantity
-//                )
-//            }
-//        }
     }
 
     private var _quantity = MutableLiveData<Int>()
@@ -43,6 +39,12 @@ class GetProductCartViewModel(application: Application): AndroidViewModel(applic
     fun deleteProduct(id: Int){
         CoroutineScope(Dispatchers.IO).launch {
             productDAO?.deleteProduct(id)
+        }
+    }
+
+    fun buySuccess(){
+        CoroutineScope(Dispatchers.IO).launch {
+            productDAO?.buySuccess()
         }
     }
 

@@ -10,4 +10,5 @@ data class Notification (
     var title: String = "",
     var message: String = "",
     var date: String = "",
-    var isRead : Boolean = false)
+    var isRead : Boolean = false,
+    var isChecked : Boolean = false)

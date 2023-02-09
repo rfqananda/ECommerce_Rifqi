@@ -15,6 +15,7 @@ import com.example.ecommerce_rifqi.databinding.ActivityMainBinding
 import com.example.ecommerce_rifqi.helper.Constant
 import com.example.ecommerce_rifqi.helper.PreferencesHelper
 import com.example.ecommerce_rifqi.ui.view.GetProductCartViewModel
+import com.example.ecommerce_rifqi.ui.view.NotificationViewModel
 import com.example.ecommerce_rifqi.utils.Communicator
 import com.google.android.material.badge.BadgeDrawable
 import java.util.*
@@ -29,7 +30,10 @@ class MainActivity : AppCompatActivity(), Communicator {
 
     lateinit var sharedPref: PreferencesHelper
 
-    private lateinit var viewModel: GetProductCartViewModel
+    private lateinit var viewModelCart: GetProductCartViewModel
+
+    private lateinit var viewModelNotification: NotificationViewModel
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -76,7 +80,8 @@ class MainActivity : AppCompatActivity(), Communicator {
     override fun onStart() {
         super.onStart()
         validationLanguage()
-        countData()
+        countDataProduct()
+        countDataNotification()
         val title = sharedPref.getString(Constant.PREF_GET_TITLE)
         val message = sharedPref.getString(Constant.PREF_GET_MESSAGE)
         Log.e("Title", title.toString())
@@ -84,14 +89,26 @@ class MainActivity : AppCompatActivity(), Communicator {
 
     }
 
-    private fun countData(){
-        viewModel = ViewModelProvider(this)[GetProductCartViewModel::class.java]
-        viewModel.getProductCount()
-        viewModel.totalData.observe(this){
+    private fun countDataProduct(){
+        viewModelCart = ViewModelProvider(this)[GetProductCartViewModel::class.java]
+        viewModelCart.getProductCount()
+        viewModelCart.totalData.observe(this){
             if (it > 0){
                 binding.badgeCountCart.visibility = View.VISIBLE
                 binding.badgeCountCart.text = it.toString()
             } else binding.badgeCountCart.visibility = View.GONE
+        }
+
+    }
+
+    private fun countDataNotification(){
+        viewModelNotification = ViewModelProvider(this)[NotificationViewModel::class.java]
+        viewModelNotification.getNotificationCount()
+        viewModelNotification.totalData.observe(this){
+            if (it > 0){
+                binding.badgeCountNotification.visibility = View.VISIBLE
+                binding.badgeCountNotification.text = it.toString()
+            } else binding.badgeCountNotification.visibility = View.GONE
         }
 
     }

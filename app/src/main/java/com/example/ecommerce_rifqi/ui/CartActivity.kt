@@ -46,18 +46,18 @@ class CartActivity : AppCompatActivity() {
 
     lateinit var sharedPref: PreferencesHelper
 
-
     private var recyclerViewState: Parcelable? = null
 
-    private var listOfProductId = arrayListOf<String>()
-
+    private lateinit var loading: LoadingDialog
 
     @RequiresApi(Build.VERSION_CODES.O)
-    @SuppressLint("NotifyDataSetChanged")
+    @SuppressLint("NotifyDataSetChanged", "CutPasteId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityCartBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        loading = LoadingDialog(this)
 
         dataProductAdapter = ListCartAdapter(this)
 
@@ -107,66 +107,23 @@ class CartActivity : AppCompatActivity() {
                 }
             }
 
-
-
             btnBuy.setOnClickListener {
-
-                val data = HashMap<String, Any>()
-
-                viewModel.getCheckedProducts()!!.observe(this@CartActivity) { result ->
-
-                    val dataStockItems = arrayListOf<DataStockItem>()
-                    val listOfProductId = arrayListOf<String>()
-                    for (i in result.indices) {
-                        dataStockItems.add(
-                            DataStockItem(
-                                result[i].id.toString(),
-                                result[i].quantity
-                            )
-                        )
-                        listOfProductId.add(result[i].id.toString())
+                loading.startLoading()
+                var isChecked = false
+                for (i in 0 until rvCart.childCount) {
+                    val child = rvCart.getChildAt(i)
+                    val rvCheckBox = child.findViewById<CheckBox>(R.id.cb_cart)
+                    if (rvCheckBox.isChecked) {
+                        isChecked = true
+                        break
                     }
-
-
-//                    val dataStockItems = arrayListOf<DataStockItem>()
-////        val listOfProductId = arrayListOf<String>()
-//                    for (i in result.indices) {
-//                        dataStockItems.add(
-//                            DataStockItem(
-//                                result[i].id.toString(),
-//                                result[i].quantity
-//                            )
-//                        )
-//                        listOfProductId.add(result[i].id.toString())
-//                    }
-
-                    val userID = sharedPref.getString(Constant.PREF_ID)
-                    var productID = ""
-                    var quantity = 0
-
-//                    if (result != null) {
-//                        val list = mapListChecked(result)
-//                        if (list.isNotEmpty()) {
-//                            val dataStockList = ArrayList<HashMap<String, Any>>()
-//                            for (product in list) {
-//                                productID = product.id.toString()
-//                                quantity = product.quantity
-////                                val dataStock = HashMap<String, Any>()
-////                                dataStock["id_product"] = product.id
-////                                dataStock["stock"] = product.quantity
-////                                dataStockList.add(dataStock)
-//                            }
-//                            data["data_stock"] = dataStockList
-//                        }
-//                    }
-
-//                    val dataStockItems = arrayListOf<CheckedProduct>()
-//                    for (i in it.indices) {
-//                        dataStockItems.add(CheckedProduct(it[i].id, it[i].quantity))
-//                        listOfProductId.add(it[i].id.toString())
-//                    }
-                    updateStock(DataStock(userID!!, dataStockItems), listOfProductId)
                 }
+
+                if (!isChecked) {
+                    loading.isDismiss()
+                    showMessage("Belum Ada Satupun yang Diceklis")
+                } else getCheckedProducts()
+
             }
 
             btnBack.setOnClickListener {
@@ -199,25 +156,17 @@ class CartActivity : AppCompatActivity() {
                 }.show()
             }
 
-            @RequiresApi(Build.VERSION_CODES.N)
             override fun onIncrease(data: Product, position: Int) {
                 viewModel.incrementQuantity(data.id)
                 viewModel.totalPriceItem(data.id)
-//                val updatedData = data.copy(quantity = data.quantity + 1)
-//                dataProductAdapter.updateData(updatedData)
-
 
                 Log.e("Quantity btnPlus", data.quantity.toString())
             }
 
-            @RequiresApi(Build.VERSION_CODES.N)
+
             override fun onDecrease(data: Product, position: Int) {
                 viewModel.decrementQuantity(data.id)
                 viewModel.totalPriceItem(data.id)
-//                val updatedData = data.copy(quantity = data.quantity - 1)
-//                dataProductAdapter.updateData(updatedData)
-
-//                binding.rvCart.layoutManager!!.scrollToPosition(position)
 
                 Log.e("Quantity btnMinus", data.quantity.toString())
             }
@@ -226,9 +175,9 @@ class CartActivity : AppCompatActivity() {
                 viewModel.buttonCheck(data.id, isChecked)
                 Log.e("Quantity Check Box", data.quantity.toString())
 
-                if (binding.cbCartActivity.isChecked != isChecked) {
-                    !binding.cbCartActivity.isChecked
-                }
+//                if (binding.cbCartActivity.isChecked != isChecked) {
+//                    !binding.cbCartActivity.isChecked
+//                }
             }
         })
     }
@@ -288,45 +237,49 @@ class CartActivity : AppCompatActivity() {
         return listProduct
     }
 
-    private fun mapListChecked(product: List<CheckedProduct>): ArrayList<CheckedProduct> {
-        val listProduct = ArrayList<CheckedProduct>()
-        for (data in product) {
-            val dataMapped = CheckedProduct(
-                data.id,
-                data.quantity
-            )
-            listProduct.add(dataMapped)
+    private fun getCheckedProducts() {
+        viewModel.getCheckedProducts()!!.observe(this@CartActivity) { result ->
+            val dataStockItems = arrayListOf<DataStockItem>()
+            val listOfProductId = arrayListOf<String>()
+            for (j in result.indices) {
+                dataStockItems.add(
+                    DataStockItem(
+                        result[j].id.toString(),
+                        result[j].quantity
+                    )
+                )
+                listOfProductId.add(result[j].id.toString())
+            }
+            val userID = sharedPref.getString(Constant.PREF_ID)
+            Log.d("StockProduct", dataStockItems.toString())
+            updateStock(DataStock(userID!!, dataStockItems), listOfProductId)
         }
-        return listProduct
+    }
+
+    private fun buySuccess() {
+        viewModel.buySuccess()
     }
 
     private fun updateStock(dataStock: DataStock, listProductID: ArrayList<String>) {
-
-
-        viewModelUpdateStock =
-            ViewModelProvider(this, ViewModelFactory(this))[UpdateStockViewModel::class.java]
+        viewModelUpdateStock = ViewModelProvider(this, ViewModelFactory(this))[UpdateStockViewModel::class.java]
 
         viewModelUpdateStock.setUpdateStock(dataStock)
-//        Log.e("Data Stock Product", productData.toString())
 
         viewModelUpdateStock.updateStockSuccess.observe(this) {
             it.getContentIfNotHandled()?.let { response ->
-                showMessage(response.success.message)
-
+                loading.isDismiss()
                 val intent = Intent(this, RatingActivity::class.java)
                 intent.putExtra("list_id", listProductID)
                 startActivity(intent)
-
-//                val handler = Handler(Looper.getMainLooper())
-//                handler.postDelayed({
-//                    viewModel.deleteCheckedProducts()
-//                }, 1000)
-
+                showMessage(response.success.message)
+                finish()
+                buySuccess()
             }
 
         }
         viewModelUpdateStock.toast.observe(this) {
             it.getContentIfNotHandled()?.let { response ->
+                loading.isDismiss()
                 showMessage(response)
             }
         }

@@ -21,6 +21,9 @@ interface ProductDAO {
     @Query("DELETE FROM item_product WHERE item_product.id = :id")
     fun deleteProduct(id: Int)
 
+    @Query("DELETE FROM item_product WHERE item_product.check_button = 1")
+    fun buySuccess()
+
     @Query("UPDATE item_product SET quantity = quantity + 1 WHERE id = :id")
     fun incrementQuantity(id: Int)
 
