@@ -35,6 +35,7 @@ class LoginActivity : AppCompatActivity() {
             startActivity(Intent(this, MainActivity::class.java))
             finish()
         }
+        getTokenFirebase()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -135,16 +136,11 @@ class LoginActivity : AppCompatActivity() {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
-    private fun dialog(message: String) {
-        val alertDialog = AlertDialog.Builder(this@LoginActivity)
-        alertDialog.apply {
-            setTitle("Message")
-            setMessage(message)
-            setPositiveButton("Ok") { dialogInterface, i ->
-                dialogInterface.dismiss()
-            }
-        }.show()
+    private fun getTokenFirebase(){
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            val token = task.result
+            sharedPref.put(Constant.PREF_FB, token)
+            Log.d("tokenfirebase", token)
+        }
     }
-
-
 }

@@ -3,7 +3,6 @@ package com.example.ecommerce_rifqi.helper
 class Constant {
 
     companion object{
-
         val PREF_IS_LOGIN = "PREF_IS_LOGIN"
         val PREF_ACCESS = "PREF_ACCESS"
         val PREF_REFRESH = "PREF_REFRESH"
@@ -19,7 +18,6 @@ class Constant {
 
         val PREF_SEND_TITLE = "PREF_SEND_TITLE"
         val PREF_SEND_MESSAGE = "PREF_SEND_MESSAGE"
-
 
         val PREF_GET_TITLE = "PREF_GET_TITLE"
         val PREF_GET_MESSAGE = "PREF_MESSAGE"

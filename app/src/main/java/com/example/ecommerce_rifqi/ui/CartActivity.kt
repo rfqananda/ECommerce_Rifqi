@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -43,6 +44,8 @@ class CartActivity : AppCompatActivity() {
     private lateinit var viewModelBuy: BuyProductViewModel
 
     private lateinit var viewModelUpdateStock: UpdateStockViewModel
+
+    private var isFirstTime = true
 
     lateinit var sharedPref: PreferencesHelper
 
@@ -122,7 +125,10 @@ class CartActivity : AppCompatActivity() {
                 if (!isChecked) {
                     loading.isDismiss()
                     showMessage("Belum Ada Satupun yang Diceklis")
-                } else getCheckedProducts()
+                } else {
+                    isFirstTime = true
+                    getCheckedProducts()
+                }
 
             }
 
@@ -165,10 +171,12 @@ class CartActivity : AppCompatActivity() {
 
 
             override fun onDecrease(data: Product, position: Int) {
-                viewModel.decrementQuantity(data.id)
-                viewModel.totalPriceItem(data.id)
+                if (data.quantity > 1){
+                    viewModel.decrementQuantity(data.id)
+                    viewModel.totalPriceItem(data.id)
 
-                Log.e("Quantity btnMinus", data.quantity.toString())
+                    Log.e("Quantity btnMinus", data.quantity.toString())
+                }
             }
 
             override fun onChecked(data: Product, isChecked: Boolean) {
@@ -238,23 +246,32 @@ class CartActivity : AppCompatActivity() {
     }
 
     private fun getCheckedProducts() {
+        val userID = sharedPref.getString(Constant.PREF_ID)
         viewModel.getCheckedProducts()!!.observe(this@CartActivity) { result ->
-            val dataStockItems = arrayListOf<DataStockItem>()
-            val listOfProductId = arrayListOf<String>()
-            for (j in result.indices) {
-                dataStockItems.add(
-                    DataStockItem(
-                        result[j].id.toString(),
-                        result[j].quantity
+            if (isFirstTime) {
+                val dataStockItems = arrayListOf<DataStockItem>()
+                val listOfProductId = arrayListOf<String>()
+
+                for (j in result.indices) {
+                    dataStockItems.add(
+                        DataStockItem(
+                            result[j].id.toString(),
+                            result[j].quantity
+                        )
                     )
-                )
-                listOfProductId.add(result[j].id.toString())
+                    listOfProductId.add(result[j].id.toString())
+                }
+
+                updateStock(DataStock(userID!!, dataStockItems), listOfProductId)
+
+                isFirstTime = false
             }
-            val userID = sharedPref.getString(Constant.PREF_ID)
-            Log.d("StockProduct", dataStockItems.toString())
-            updateStock(DataStock(userID!!, dataStockItems), listOfProductId)
         }
+        loading.isDismiss()
     }
+
+
+
 
     private fun buySuccess() {
         viewModel.buySuccess()

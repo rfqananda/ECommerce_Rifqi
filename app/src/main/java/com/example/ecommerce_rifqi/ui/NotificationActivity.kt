@@ -10,6 +10,7 @@ import android.view.View
 import android.widget.CheckBox
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.view.isNotEmpty
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -46,18 +47,18 @@ class NotificationActivity : AppCompatActivity() {
         getNotification()
     }
 
-    private fun getNotification(){
+    private fun getNotification() {
         notificationAdapter = ListNotificationAdapter(isMultipleSelect)
-        viewModel.getNotification()?.observe(this){
+        viewModel.getNotification()?.observe(this) {
             Log.e("Adakah datanya", it.toString())
             if (it != null) {
-//                isDataEmpty(true)
                 val list = mapList(it)
                 if (list.isNotEmpty()) {
                     isDataEmpty(false)
                     notificationAdapter.setData(list)
 
-                    notificationAdapter.setOnItemClick(object : ListNotificationAdapter.OnAdapterListenerListProductFavorite{
+                    notificationAdapter.setOnItemClick(object :
+                        ListNotificationAdapter.OnAdapterListenerListProductFavorite {
                         override fun onClick(data: Notification) {
 
                             isRead(data.id)
@@ -94,7 +95,6 @@ class NotificationActivity : AppCompatActivity() {
         menuInflater.inflate(R.menu.notification, menu)
         if (menu != null) {
             myMenu = menu
-            myMenu.findItem(R.id.set_notification_item)?.isVisible = !binding.emptyData.isVisible
         }
         return true
     }
@@ -104,7 +104,10 @@ class NotificationActivity : AppCompatActivity() {
         when (item.itemId) {
 
             R.id.set_notification_item -> {
-                setMultipleSelect()
+                if (binding.emptyData.isVisible) {
+                    showMessage(resources.getString(R.string.txt_no_notification))
+                } else setMultipleSelect()
+
             }
             R.id.read_notification -> {
                 var isChecked = false
@@ -157,14 +160,16 @@ class NotificationActivity : AppCompatActivity() {
     }
 
 
-
-
-    private fun isRead(id: Int){
+    private fun isRead(id: Int) {
         viewModel.isRead(id)
     }
 
-    private fun isChecked(id: Int, isChecked: Boolean){
+    private fun isChecked(id: Int, isChecked: Boolean) {
         viewModel.isChecked(id, isChecked)
+    }
+
+    private fun unselectNotification() {
+        viewModel.unselectNotification()
     }
 
     private fun mapList(product: List<Notification>): ArrayList<Notification> {
@@ -183,36 +188,6 @@ class NotificationActivity : AppCompatActivity() {
         return listNotification
     }
 
-    private fun setNotificationListData() {
-        lifecycleScope.launch {
-//            notificationViewModel.getAllNotification().collect() { data ->
-//                with(binding) {
-//                    tvNoNotifMsg.isVisible = data.isNullOrEmpty()
-//                    rvNotification.isVisible = !data.isNullOrEmpty()
-//
-//                    if (!data.isNullOrEmpty()) {
-//                        adapter = NotificationListAdapter(
-//                            isMultipleSelect = isMultipleSelect,
-//                            context = this@NotificationActivity,
-//                            onItemClicked = { data ->
-//                                onNotificationItemClicked(data)
-//                            },
-//                            onCheckboxChecked = { data ->
-//                                onCheckboxChecked(data)
-//                            }
-//                        )
-//                        val linearLayoutManager = LinearLayoutManager(this@NotificationActivity)
-//                        adapter.submitList(data)
-//                        rvNotification.adapter = adapter
-//                        rvNotification.layoutManager = linearLayoutManager
-//                        rvNotification.setHasFixedSize(true)
-//                    }
-//                }
-//            }
-        }
-    }
-
-
     private fun setMultipleSelect() {
         isMultipleSelect = !isMultipleSelect
         getNotification()
@@ -222,12 +197,16 @@ class NotificationActivity : AppCompatActivity() {
             myMenu.findItem(R.id.delete)?.isVisible = true
             myMenu.findItem(R.id.set_notification_item)?.isVisible = false
 
+
             binding.tvToolbarTitle.text = "Multiple Select"
         } else {
             myMenu.findItem(R.id.read_notification)?.isVisible = false
             myMenu.findItem(R.id.delete)?.isVisible = false
+            myMenu.findItem(R.id.set_notification_item)?.isVisible = true
 
-            binding.tvToolbarTitle.text = "Notification"
+
+
+            binding.tvToolbarTitle.text = resources.getString(R.string.txt_notification)
         }
     }
 
@@ -248,7 +227,7 @@ class NotificationActivity : AppCompatActivity() {
             onBackPressedDispatcher.onBackPressed()
         }
         lifecycleScope.launch {
-//            notificationViewModel.setAllUnchecked()
+            unselectNotification()
         }
     }
 
@@ -259,7 +238,8 @@ class NotificationActivity : AppCompatActivity() {
             onBackPressedDispatcher.onBackPressed()
         }
         lifecycleScope.launch {
-//            notificationViewModel.setAllUnchecked()
+            unselectNotification()
+
         }
         return true
     }

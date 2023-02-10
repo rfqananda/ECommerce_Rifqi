@@ -65,4 +65,10 @@ class NotificationViewModel(application: Application): AndroidViewModel(applicat
         }
     }
 
+    fun unselectNotification() {
+        CoroutineScope(Dispatchers.IO).launch {
+            notificationDAO?.unselectNotification()
+        }
+    }
+
 }

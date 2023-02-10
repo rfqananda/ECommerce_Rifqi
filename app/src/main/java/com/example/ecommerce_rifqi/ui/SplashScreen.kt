@@ -34,7 +34,6 @@ class SplashScreen : AppCompatActivity() {
         Handler(Looper.getMainLooper()).postDelayed({
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
-            getTokenFirebase()
             finish()
         }, 2500)
 
@@ -47,11 +46,4 @@ class SplashScreen : AppCompatActivity() {
         }.start()
     }
 
-    private fun getTokenFirebase(){
-        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
-            val token = task.result
-            sharedPref.put(Constant.PREF_FB, token)
-            Log.d("tokenfirebase", token)
-        }
-    }
 }

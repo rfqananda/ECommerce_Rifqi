@@ -45,7 +45,7 @@ class RatingActivity : AppCompatActivity() {
                 
                 val intent = Intent(this@RatingActivity, MainActivity::class.java)
                 startActivity(intent)
-                finish()
+                finishAffinity()
             }
         }
     }

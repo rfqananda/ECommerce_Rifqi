@@ -49,9 +49,6 @@ class DetailActivity : AppCompatActivity(), ImagePagerAdapter.OnPageClickListene
 
     private lateinit var listProductAdapter: ListProductDetailAdapter
 
-    private lateinit var imagePagerAdapter: ImagePagerAdapter
-
-
     private lateinit var seePhoto: PhotoDialog
 
     lateinit var sharedPref: PreferencesHelper
@@ -65,6 +62,9 @@ class DetailActivity : AppCompatActivity(), ImagePagerAdapter.OnPageClickListene
     private var price: String = ""
 
     private var image: String = ""
+
+    private var stock: Int? = null
+
 
     private var imageViewPager: String = ""
 
@@ -111,34 +111,37 @@ class DetailActivity : AppCompatActivity(), ImagePagerAdapter.OnPageClickListene
                 CoroutineScope(Dispatchers.IO).launch {
                     val isProductHasBeenAdded = viewModel.checkProduct(productID)
                     withContext(Dispatchers.Main) {
-
-                        if (isProductHasBeenAdded != null) {
-                            if (isProductHasBeenAdded.toInt() > 0) {
-                                val alertDialog = AlertDialog.Builder(this@DetailActivity)
-                                alertDialog.apply {
-                                    setTitle("Product Is Already In the Trolley")
-                                    setMessage("Want to see the trolley?")
-                                    setNegativeButton("Cancel") { dialogInterface, i ->
-                                        dialogInterface.dismiss()
-                                    }
-                                    setPositiveButton("Go to Trolley") { dialogInterface, i ->
-                                        val intent =
-                                            Intent(this@DetailActivity, CartActivity::class.java)
-                                        startActivity(intent)
-                                        finish()
-                                    }
-                                }.show()
-                            } else {
-                                viewModel.addToCart(
-                                    productID,
-                                    name,
-                                    price,
-                                    image,
-                                    1,
-                                    price.toInt(),
-                                    false
-                                )
-                                showMessage("Product Has Been Added To Trolley!")
+                        if (stock == 1){
+                            showMessage("Out of Stock!")
+                        } else {
+                            if (isProductHasBeenAdded != null) {
+                                if (isProductHasBeenAdded.toInt() > 0) {
+                                    val alertDialog = AlertDialog.Builder(this@DetailActivity)
+                                    alertDialog.apply {
+                                        setTitle("Product Is Already In the Trolley")
+                                        setMessage("Want to see the trolley?")
+                                        setNegativeButton("Cancel") { dialogInterface, i ->
+                                            dialogInterface.dismiss()
+                                        }
+                                        setPositiveButton("Go to Trolley") { dialogInterface, i ->
+                                            val intent =
+                                                Intent(this@DetailActivity, CartActivity::class.java)
+                                            startActivity(intent)
+                                            finish()
+                                        }
+                                    }.show()
+                                } else {
+                                    viewModel.addToCart(
+                                        productID,
+                                        name,
+                                        price,
+                                        image,
+                                        1,
+                                        price.toInt(),
+                                        false
+                                    )
+                                    showMessage("Product Has Been Added To Trolley!")
+                                }
                             }
                         }
                     }
@@ -230,6 +233,7 @@ class DetailActivity : AppCompatActivity(), ImagePagerAdapter.OnPageClickListene
                 name = it.name_product
                 price = it.harga
                 image = it.image
+                stock = it.stock
 
                 if (it.isFavorite) {
                     isFavorite = true
@@ -414,7 +418,7 @@ class DetailActivity : AppCompatActivity(), ImagePagerAdapter.OnPageClickListene
         shareIntent.type = "image/*"
         shareIntent.putExtra(
             Intent.EXTRA_TEXT,
-            "Name : " + name + "\n" + "Price : " + price + "\n" + "Link : " + link
+            "Name : $name\nPrice : $price\nLink : $link"
         )
         shareIntent.putExtra(Intent.EXTRA_STREAM, uri)
         startActivity(Intent.createChooser(shareIntent, "Share"))

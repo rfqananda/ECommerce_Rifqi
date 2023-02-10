@@ -28,4 +28,7 @@ interface NotificationDAO {
 
     @Query("UPDATE notification SET isChecked = :condition  WHERE id = :id")
     fun isChecked(id: Int, condition: Boolean)
+
+    @Query("UPDATE notification SET isChecked = 0")
+    fun unselectNotification()
 }

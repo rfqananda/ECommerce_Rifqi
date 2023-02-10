@@ -118,7 +118,6 @@ class FragmentChangePassword : Fragment(R.layout.fragment_change_password) {
                 loading.isDismiss()
                 showMessage(response)
             }
-
         }
     }
 
