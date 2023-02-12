@@ -189,7 +189,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="30dp"
                     android:fontFamily="@font/semi_bold"
-                    android:text="Detail Product"
+                    android:text="@string/txt_detail_product"
                     android:textColor="@color/black"
                     android:textSize="14sp"
                     app:layout_constraintStart_toStartOf="@id/tv_product_name"
@@ -238,7 +238,7 @@
                         android:layout_columnWeight="1"
                         android:fontFamily="@font/regular"
                         android:paddingBottom="20dp"
-                        android:text="Stock"
+                        android:text="@string/txt_stock"
                         android:textSize="13sp"
                         tools:ignore="RtlSymmetry" />
 
@@ -272,7 +272,7 @@
                         android:fontFamily="@font/regular"
                         android:maxEms="1"
                         android:paddingBottom="20dp"
-                        android:text="Size"
+                        android:text="@string/txt_size"
                         android:textColor="@color/light_grey"
                         android:textSize="13sp"
                         tools:ignore="RtlSymmetry" />
@@ -307,7 +307,7 @@
                         android:fontFamily="@font/regular"
                         android:maxEms="1"
                         android:paddingBottom="20dp"
-                        android:text="Weight"
+                        android:text="@string/txt_weight"
                         android:textSize="13sp"
                         tools:ignore="RtlSymmetry" />
 
@@ -340,7 +340,7 @@
                         android:layout_columnWeight="1"
                         android:fontFamily="@font/regular"
                         android:paddingBottom="20dp"
-                        android:text="Type"
+                        android:text="@string/txt_type"
                         android:textSize="13sp"
                         tools:ignore="RtlSymmetry" />
 
@@ -372,7 +372,7 @@
                         android:layout_column="0"
                         android:layout_columnWeight="2"
                         android:fontFamily="@font/regular"
-                        android:text="Description"
+                        android:text="@string/txt_desc"
                         android:textSize="13sp"
                         tools:ignore="RtlSymmetry" />
 
@@ -433,7 +433,7 @@
                         android:layout_marginTop="20dp"
                         android:layout_marginBottom="20dp"
                         android:fontFamily="@font/medium"
-                        android:text="Other Product"
+                        android:text="@string/txt_other_product"
                         android:textColor="@color/black" />
 
                     <View
@@ -503,7 +503,7 @@
                         android:layout_marginTop="20dp"
                         android:layout_marginBottom="20dp"
                         android:fontFamily="@font/medium"
-                        android:text="Search History"
+                        android:text="@string/txt_search_history"
                         android:textColor="@color/black" />
 
                     <View
@@ -571,7 +571,7 @@
             android:layout_marginEnd="10dp"
             android:background="@drawable/bg_btn"
             android:fontFamily="@font/bold"
-            android:text="Buy"
+            android:text="@string/txt_buy"
             android:textAllCaps="false"
             android:textColor="@color/white" />
 
@@ -582,7 +582,7 @@
             android:layout_gravity="end"
             android:layout_marginEnd="10dp"
             android:background="@drawable/bg_btn3"
-            android:text="+Trolley"
+            android:text="@string/txt_trolley"
             android:textAllCaps="false"
             android:textColor="@color/pink" />
 

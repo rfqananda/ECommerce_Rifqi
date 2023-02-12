@@ -19,7 +19,6 @@ import com.example.ecommerce_rifqi.model.DataStock
 import com.example.ecommerce_rifqi.model.DataStockItem
 import com.example.ecommerce_rifqi.model.DetailDataProduct
 import com.example.ecommerce_rifqi.ui.view.BuyProductViewModel
-import com.example.ecommerce_rifqi.ui.view.GetDetailProductViewModel
 import com.example.ecommerce_rifqi.ui.view.UpdateStockViewModel
 import com.example.ecommerce_rifqi.utils.ViewModelFactory
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -34,10 +33,6 @@ class BottomSheetFragment(val dataProduct: DetailDataProduct): BottomSheetDialog
     private lateinit var viewModel: BuyProductViewModel
 
     private lateinit var viewModelUpdateStock: UpdateStockViewModel
-
-    private lateinit var dataStock: DataStock
-
-    private lateinit var dataStockItem: DataStockItem
 
     private var quantity by Delegates.notNull<Int>()
 
@@ -69,16 +64,16 @@ class BottomSheetFragment(val dataProduct: DetailDataProduct): BottomSheetDialog
                 .load(image)
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .into(ivProduct)
-            tvPriceProduct.text = formatRupiah(price!!.toInt())
-            tvStockProduct.text = "Stock: $stock"
+            tvPriceProduct.text = formatRupiah(price.toInt())
+            tvStockProduct.text = "${resources.getString(R.string.txt_stock)}: $stock"
 
 
 
             viewModel.setPrice(price.toInt())
 
-            viewModel.totalPrice.observe(requireActivity()){ it ->
-                val totalPrice = formatRupiah(it)
-                btnBuy.text = "Buy Now - $totalPrice"
+            viewModel.totalPrice.observe(requireActivity()){ result ->
+                val totalPrice = formatRupiah(result)
+                btnBuy.text = "${resources.getString(R.string.txt_buy_now)} - $totalPrice"
             }
 
             viewModel.quantity.observe(requireActivity()){
@@ -100,33 +95,7 @@ class BottomSheetFragment(val dataProduct: DetailDataProduct): BottomSheetDialog
                 val userID = sharedPref.getString(Constant.PREF_ID)
                 updateStock(userID!!, productID.toString(), quantity)
             }
-
         }
-
-        binding.apply {
-
-
-
-//            var valueText = 1
-//            totalValue.text = valueText.toString()
-//            val totalPrice = price.toInt()
-//
-//            btnPlus.setOnClickListener {
-//                valueText += 1
-//                totalValue.text = valueText.toString()
-//                totalPrice * valueText
-//            }
-//
-//            btnMinus.setOnClickListener {
-//                valueText -= 1
-//                totalValue.text = valueText.toString()
-//                totalPrice * valueText
-//            }
-//
-//            btnBuy.text = "Buy Now - ${formatRupiah(totalPrice)}"
-
-        }
-
     }
 
     private fun formatRupiah(number: Int): String {
@@ -143,8 +112,6 @@ class BottomSheetFragment(val dataProduct: DetailDataProduct): BottomSheetDialog
         val dataStockItem = DataStockItem(id_product = productID.toString(), stock = stock)
         val listData = listOf(dataStockItem)
 
-        Log.e("Coba Stock", listData.toString())
-
         viewModelUpdateStock.setUpdateStock(DataStock(userID, listData))
         viewModelUpdateStock.updateStockSuccess.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { response ->
@@ -155,7 +122,6 @@ class BottomSheetFragment(val dataProduct: DetailDataProduct): BottomSheetDialog
                 }
                 startActivity(intent)
             }
-
         }
         viewModelUpdateStock.toast.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { response ->

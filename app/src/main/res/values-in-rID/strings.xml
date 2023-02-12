@@ -31,5 +31,33 @@
     <string name="txt_sortirZA">Dari Z sampai A</string>
     <string name="txt_notification">Notifikasi</string>
     <string name="txt_no_notification">Tidak ada notifikasi</string>
+    <string name="txt_detail_product">Detil Produk</string>
+    <string name="txt_stock">Stok</string>
+    <string name="txt_size">Ukuran</string>
+    <string name="txt_weight">Berat</string>
+    <string name="txt_type">Tipe</string>
+    <string name="txt_desc">Deskripsi</string>
+    <string name="txt_buy">Beli</string>
+    <string name="txt_trolley">+Keranjang</string>
+    <string name="txt_laptop">Laptop</string>
+    <string name="txt_price">Harga</string>
+    <string name="txt_other_product">Produk Lainnya</string>
+    <string name="txt_search_history">Riwayat Pencarian</string>
+    <string name="txt_out_stock">Stok Habis</string>
+    <string name="txt_buy_now">Beli Sekarang</string>
+    <string name="txt_buy_success">Pesanan Anda Berhasil</string>
+    <string name="txt_give_rating">Berikan Penilaian Anda</string>
+    <string name="txt_submit">KIRIM</string>
+    <string name="txt_product_in_cart">Produk sudah ada di keranjang</string>
+    <string name="txt_want_see">Mau melihat keranjang?</string>
+    <string name="txt_cancel">Batal</string>
+    <string name="txt_to_cart">Pergi ke keranjang</string>
+    <string name="txt_add_cart">Produk telah ditambahkan ke keranjang!</string>
+    <string name="txt_delete_notification">Apa anda yakin ingin menghapus notifikasi ini?</string>
+    <string name="txt_delete">Hapus</string>
+    <string name="txt_delete_product">Hapus Produk</string>
+    <string name="txt_checked">Belum ada satupun yang diceklis</string>
+    <string name="txt_multiple">Pilih Ganda</string>
+
 
 </resources>

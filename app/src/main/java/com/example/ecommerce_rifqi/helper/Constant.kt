@@ -16,9 +16,6 @@ class Constant {
         val PREF_SORTIR = "PREF_SORTIR"
         val PREF_FB = "PREF_FB"
 
-        val PREF_SEND_TITLE = "PREF_SEND_TITLE"
-        val PREF_SEND_MESSAGE = "PREF_SEND_MESSAGE"
-
         val PREF_GET_TITLE = "PREF_GET_TITLE"
         val PREF_GET_MESSAGE = "PREF_MESSAGE"
     }

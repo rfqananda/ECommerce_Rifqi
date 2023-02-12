@@ -27,18 +27,14 @@ class NotificationActivity : AppCompatActivity() {
     private lateinit var binding: ActivityNotificationBinding
     private lateinit var viewModel: NotificationViewModel
     private lateinit var notificationAdapter: ListNotificationAdapter
-
     private var isMultipleSelect = false
     private lateinit var myMenu: Menu
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityNotificationBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         setCustomToolbar()
-
     }
 
     override fun onStart() {
@@ -60,32 +56,30 @@ class NotificationActivity : AppCompatActivity() {
                     notificationAdapter.setOnItemClick(object :
                         ListNotificationAdapter.OnAdapterListenerListProductFavorite {
                         override fun onClick(data: Notification) {
-
                             isRead(data.id)
-
-                            val coba = data.isRead
-                            Log.e("Test Doang", coba.toString())
 
                             val builder = AlertDialog.Builder(this@NotificationActivity)
                             builder.setTitle(data.title)
                             builder.setMessage(data.message)
-                            builder.setPositiveButton("OK") { dialog, which ->
+                            builder.setPositiveButton("OK") { dialog, _ ->
                                 dialog.dismiss()
                             }
                             val dialog = builder.create()
                             dialog.show()
                         }
 
-                        override fun onChecked(data: Notification, isChecked: Boolean) {
+                        override fun onChecked(data: Notification, isChecked: Boolean, position: Int) {
                             isChecked(data.id, isChecked)
+                            binding.rvNotification.layoutManager!!.scrollToPosition(position)
                         }
                     })
 
                     binding.apply {
                         rvNotification.setHasFixedSize(true)
-                        rvNotification.layoutManager = LinearLayoutManager(applicationContext)
+                        rvNotification.layoutManager = LinearLayoutManager(this@NotificationActivity)
                         rvNotification.adapter = notificationAdapter
                     }
+
                 } else isDataEmpty(true)
             }
         }
@@ -102,12 +96,10 @@ class NotificationActivity : AppCompatActivity() {
     @SuppressLint("NotifyDataSetChanged")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-
             R.id.set_notification_item -> {
                 if (binding.emptyData.isVisible) {
                     showMessage(resources.getString(R.string.txt_no_notification))
                 } else setMultipleSelect()
-
             }
             R.id.read_notification -> {
                 var isChecked = false
@@ -121,9 +113,8 @@ class NotificationActivity : AppCompatActivity() {
                 }
 
                 if (!isChecked) {
-                    showMessage("Belum Ada Satupun yang Diceklis")
+                    showMessage(resources.getString(R.string.txt_checked))
                 } else viewModel.readAllNotification()
-
                 onBackPressed()
             }
             R.id.delete -> {
@@ -138,16 +129,16 @@ class NotificationActivity : AppCompatActivity() {
                 }
 
                 if (!isChecked) {
-                    showMessage("Belum Ada Satupun yang Diceklis")
+                    showMessage(resources.getString(R.string.txt_checked))
                 } else {
                     val alertDialog = AlertDialog.Builder(this)
                     alertDialog.apply {
-                        setTitle("Delete Product?")
-                        setMessage("Are you sure you want to delete this notification?")
-                        setNegativeButton("Cancel") { dialogInterface, i ->
+                        setTitle(resources.getString(R.string.txt_delete_product))
+                        setMessage(resources.getString(R.string.txt_delete_notification))
+                        setNegativeButton(resources.getString(R.string.txt_cancel)) { dialogInterface, _ ->
                             dialogInterface.dismiss()
                         }
-                        setPositiveButton("Delete") { dialogInterface, i ->
+                        setPositiveButton(resources.getString(R.string.txt_delete)) { _, _ ->
                             viewModel.deleteNotification()
                             binding.rvNotification.adapter?.notifyDataSetChanged()
                             onBackPressed()
@@ -158,7 +149,6 @@ class NotificationActivity : AppCompatActivity() {
         }
         return super.onOptionsItemSelected(item)
     }
-
 
     private fun isRead(id: Int) {
         viewModel.isRead(id)
@@ -197,19 +187,15 @@ class NotificationActivity : AppCompatActivity() {
             myMenu.findItem(R.id.delete)?.isVisible = true
             myMenu.findItem(R.id.set_notification_item)?.isVisible = false
 
-
-            binding.tvToolbarTitle.text = "Multiple Select"
+            binding.tvToolbarTitle.text = resources.getString(R.string.txt_multiple)
         } else {
             myMenu.findItem(R.id.read_notification)?.isVisible = false
             myMenu.findItem(R.id.delete)?.isVisible = false
             myMenu.findItem(R.id.set_notification_item)?.isVisible = true
 
-
-
             binding.tvToolbarTitle.text = resources.getString(R.string.txt_notification)
         }
     }
-
 
     private fun setCustomToolbar() {
         setSupportActionBar(binding.customToolbar)
@@ -239,7 +225,6 @@ class NotificationActivity : AppCompatActivity() {
         }
         lifecycleScope.launch {
             unselectNotification()
-
         }
         return true
     }

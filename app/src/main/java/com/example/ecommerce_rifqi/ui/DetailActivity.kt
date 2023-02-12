@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import com.example.ecommerce_rifqi.R
 import com.example.ecommerce_rifqi.adapter.ImagePagerAdapter
 import com.example.ecommerce_rifqi.adapter.ListProductDetailAdapter
 import com.example.ecommerce_rifqi.databinding.ActivityDetailBinding
@@ -29,8 +30,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.DecimalFormat
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import java.util.*
 
 class DetailActivity : AppCompatActivity(), ImagePagerAdapter.OnPageClickListener {
@@ -44,8 +43,6 @@ class DetailActivity : AppCompatActivity(), ImagePagerAdapter.OnPageClickListene
     private lateinit var viewModelOtherProduct: GetOtherProductsViewModel
 
     private lateinit var viewModelHistorySearch: GetProductSearchHistoryViewModel
-
-    private lateinit var viewModelNotification: NotificationViewModel
 
     private lateinit var listProductAdapter: ListProductDetailAdapter
 
@@ -65,9 +62,7 @@ class DetailActivity : AppCompatActivity(), ImagePagerAdapter.OnPageClickListene
 
     private var stock: Int? = null
 
-
     private var imageViewPager: String = ""
-
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -100,9 +95,9 @@ class DetailActivity : AppCompatActivity(), ImagePagerAdapter.OnPageClickListene
                 isFavorite = !isFavorite
 
                 if (isFavorite) {
-                    addToFav(productID!!, userID!!.toInt())
+                    addToFav(productID, userID.toInt())
                 } else {
-                    removeFromFav(productID!!, userID!!.toInt())
+                    removeFromFav(productID, userID.toInt())
                 }
                 toggleButton.isChecked = isFavorite
             }
@@ -111,21 +106,24 @@ class DetailActivity : AppCompatActivity(), ImagePagerAdapter.OnPageClickListene
                 CoroutineScope(Dispatchers.IO).launch {
                     val isProductHasBeenAdded = viewModel.checkProduct(productID)
                     withContext(Dispatchers.Main) {
-                        if (stock == 1){
-                            showMessage("Out of Stock!")
+                        if (stock == 1) {
+                            showMessage(resources.getString(R.string.txt_out_stock))
                         } else {
                             if (isProductHasBeenAdded != null) {
                                 if (isProductHasBeenAdded.toInt() > 0) {
                                     val alertDialog = AlertDialog.Builder(this@DetailActivity)
                                     alertDialog.apply {
-                                        setTitle("Product Is Already In the Trolley")
-                                        setMessage("Want to see the trolley?")
-                                        setNegativeButton("Cancel") { dialogInterface, i ->
+                                        setTitle(resources.getString(R.string.txt_product_in_cart))
+                                        setMessage(resources.getString(R.string.txt_want_see))
+                                        setNegativeButton(resources.getString(R.string.txt_cancel)) { dialogInterface, _ ->
                                             dialogInterface.dismiss()
                                         }
-                                        setPositiveButton("Go to Trolley") { dialogInterface, i ->
+                                        setPositiveButton(resources.getString(R.string.txt_to_cart)) { _, _ ->
                                             val intent =
-                                                Intent(this@DetailActivity, CartActivity::class.java)
+                                                Intent(
+                                                    this@DetailActivity,
+                                                    CartActivity::class.java
+                                                )
                                             startActivity(intent)
                                             finish()
                                         }
@@ -140,7 +138,7 @@ class DetailActivity : AppCompatActivity(), ImagePagerAdapter.OnPageClickListene
                                         price.toInt(),
                                         false
                                     )
-                                    showMessage("Product Has Been Added To Trolley!")
+                                    showMessage(resources.getString(R.string.txt_add_cart))
                                 }
                             }
                         }
@@ -200,6 +198,7 @@ class DetailActivity : AppCompatActivity(), ImagePagerAdapter.OnPageClickListene
     override fun onStart() {
         super.onStart()
         validationLanguage()
+        isDataShowing(false)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -220,9 +219,7 @@ class DetailActivity : AppCompatActivity(), ImagePagerAdapter.OnPageClickListene
             ViewModelFactory(this)
         )[GetDetailProductViewModel::class.java]
 
-        if (productID != null) {
-            viewModel.setDetailProduct(productID, userID!!.toInt())
-        }
+        viewModel.setDetailProduct(productID, userID!!.toInt())
 
         viewModel.getDetailProduct().observe(this) {
 
@@ -249,9 +246,10 @@ class DetailActivity : AppCompatActivity(), ImagePagerAdapter.OnPageClickListene
                 }
 
                 binding.apply {
+                    isDataShowing(true)
                     viewPager.adapter = ImagePagerAdapter(it.image_product, this@DetailActivity)
-
                     springDotsIndicator.attachTo(viewPager)
+
                     tvProductNameHead.text = it.name_product
                     tvProductName.text = it.name_product
                     tvPrice.text = formatRupiah(it.harga.toInt())
@@ -261,7 +259,7 @@ class DetailActivity : AppCompatActivity(), ImagePagerAdapter.OnPageClickListene
                     tvTypeValue.text = it.type
                     tvDetailValue.text = it.desc
                     if (it.stock == 1) {
-                        tvStockValue.text = "Out of stock"
+                        tvStockValue.text = resources.getString(R.string.txt_out_stock)
                     } else tvStockValue.text = it.stock.toString()
 
                     tvProductName.setOnClickListener {
@@ -270,30 +268,17 @@ class DetailActivity : AppCompatActivity(), ImagePagerAdapter.OnPageClickListene
 
                     toolBarDp.isSelected = true
 
-                    btnBuy.setOnClickListener { view ->
+                    btnBuy.setOnClickListener { _ ->
                         sharedPref.put(Constant.PREF_ID_PRODUCT, productID.toString())
                         showBottomSheet(it)
-
-                        val title = sharedPref.getString(Constant.PREF_GET_TITLE)
-                        val message = sharedPref.getString(Constant.PREF_GET_MESSAGE)
-
-
-
-                        sharedPref.put(Constant.PREF_SEND_TITLE, "Pembelian Sukses")
-                        sharedPref.put(Constant.PREF_SEND_MESSAGE, "Anda berhasil membeli ${it.name_product}")
-
-
-//                        sendNotification("Pembelian Sukses", "Anda berhasil membeli ${it.name_product}", date)
                     }
 
 
 
-                    if (ivContainer != null) {
-                        Glide.with(applicationContext)
-                            .load(image)
-                            .centerCrop()
-                            .into(ivContainer)
-                    }
+                    Glide.with(applicationContext)
+                        .load(image)
+                        .centerCrop()
+                        .into(ivContainer)
                 }
                 binding.swipeRefresh.isRefreshing = false
             }
@@ -344,13 +329,13 @@ class DetailActivity : AppCompatActivity(), ImagePagerAdapter.OnPageClickListene
         viewModelAddToFav.setAddToFav(productID, userID)
         viewModelAddToFav.addFavSuccess.observe(this) {
             it.getContentIfNotHandled()?.let { response ->
-                showMessage(response.message!!)
+                showMessage(response.message)
             }
         }
 
         viewModelAddToFav.toast.observe(this) {
             it.getContentIfNotHandled()?.let { response ->
-                showMessage(response!!)
+                showMessage(response)
             }
         }
     }
@@ -372,11 +357,6 @@ class DetailActivity : AppCompatActivity(), ImagePagerAdapter.OnPageClickListene
                 showMessage(response)
             }
         }
-    }
-
-    private fun sendNotification(title: String, message: String, date: String){
-        viewModelNotification = ViewModelProvider(this)[NotificationViewModel::class.java]
-        viewModelNotification.addToNotification(0, title, message, date)
     }
 
     private fun showMessage(message: String) {
@@ -418,10 +398,10 @@ class DetailActivity : AppCompatActivity(), ImagePagerAdapter.OnPageClickListene
         shareIntent.type = "image/*"
         shareIntent.putExtra(
             Intent.EXTRA_TEXT,
-            "Name : $name\nPrice : $price\nLink : $link"
+            "${resources.getString(R.string.txt_laptop)}: $name\n${resources.getString(R.string.txt_price)} : $price\nLink : $link"
         )
         shareIntent.putExtra(Intent.EXTRA_STREAM, uri)
-        startActivity(Intent.createChooser(shareIntent, "Share"))
+        startActivity(Intent.createChooser(shareIntent, resources.getString(R.string.txt_laptop)))
     }
 
     private fun validationLanguage() {
@@ -446,6 +426,19 @@ class DetailActivity : AppCompatActivity(), ImagePagerAdapter.OnPageClickListene
         imageViewPager = image
     }
 
+
+    private fun isDataShowing(isShowing: Boolean) {
+        binding.apply {
+            if (isShowing) {
+                btnShare.visibility = View.VISIBLE
+                btnBuy.visibility = View.VISIBLE
+                btnCart.visibility = View.VISIBLE
+            } else {
+                btnShare.visibility = View.GONE
+                btnBuy.visibility = View.GONE
+                btnCart.visibility = View.GONE
+            }
+        }
 //    private fun isDataOtherEmpty(isEmpty: Boolean){
 //        binding.apply {
 //            if (isEmpty){
@@ -464,4 +457,5 @@ class DetailActivity : AppCompatActivity(), ImagePagerAdapter.OnPageClickListene
 //        }
 //    }
 
+    }
 }

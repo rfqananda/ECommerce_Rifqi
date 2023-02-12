@@ -2,7 +2,9 @@ package com.example.ecommerce_rifqi.ui
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.os.*
+import android.os.Build
+import android.os.Bundle
+import android.os.Parcelable
 import android.util.Log
 import android.view.View
 import android.widget.CheckBox
@@ -10,13 +12,11 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.ecommerce_rifqi.R
 import com.example.ecommerce_rifqi.adapter.ListCartAdapter
-import com.example.ecommerce_rifqi.data.local.CheckedProduct
 import com.example.ecommerce_rifqi.data.local.Product
 import com.example.ecommerce_rifqi.databinding.ActivityCartBinding
 import com.example.ecommerce_rifqi.helper.Constant
@@ -29,8 +29,6 @@ import com.example.ecommerce_rifqi.ui.view.UpdateStockViewModel
 import com.example.ecommerce_rifqi.utils.ViewModelFactory
 import kotlinx.coroutines.launch
 import java.text.DecimalFormat
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 
 class CartActivity : AppCompatActivity() {
@@ -49,8 +47,6 @@ class CartActivity : AppCompatActivity() {
 
     lateinit var sharedPref: PreferencesHelper
 
-    private var recyclerViewState: Parcelable? = null
-
     private lateinit var loading: LoadingDialog
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -68,15 +64,12 @@ class CartActivity : AppCompatActivity() {
 
         viewModel = ViewModelProvider(this)[GetProductCartViewModel::class.java]
         viewModelBuy = ViewModelProvider(this)[BuyProductViewModel::class.java]
-
-        recyclerViewState = savedInstanceState?.getParcelable("recycler_view_state")
-
+        viewModelUpdateStock = ViewModelProvider(this, ViewModelFactory(this))[UpdateStockViewModel::class.java]
 
         binding.apply {
             rvCart.setHasFixedSize(true)
             rvCart.layoutManager = LinearLayoutManager(applicationContext)
             rvCart.adapter = dataProductAdapter
-            rvCart.layoutManager?.onRestoreInstanceState(recyclerViewState)
 
             viewModelBuy.totalPrice.observe(this@CartActivity) {
                 tvTotal.text = it.toString()
@@ -165,8 +158,6 @@ class CartActivity : AppCompatActivity() {
             override fun onIncrease(data: Product, position: Int) {
                 viewModel.incrementQuantity(data.id)
                 viewModel.totalPriceItem(data.id)
-
-                Log.e("Quantity btnPlus", data.quantity.toString())
             }
 
 
@@ -174,35 +165,14 @@ class CartActivity : AppCompatActivity() {
                 if (data.quantity > 1){
                     viewModel.decrementQuantity(data.id)
                     viewModel.totalPriceItem(data.id)
-
-                    Log.e("Quantity btnMinus", data.quantity.toString())
                 }
             }
 
             override fun onChecked(data: Product, isChecked: Boolean) {
                 viewModel.buttonCheck(data.id, isChecked)
-                Log.e("Quantity Check Box", data.quantity.toString())
-
-//                if (binding.cbCartActivity.isChecked != isChecked) {
-//                    !binding.cbCartActivity.isChecked
-//                }
             }
         })
     }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        recyclerViewState = binding.rvCart.layoutManager?.onSaveInstanceState()
-        outState.putParcelable("recycler_view_state", recyclerViewState)
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        recyclerViewState = savedInstanceState?.getParcelable("recycler_view_state")
-
-        binding.rvCart.layoutManager?.onRestoreInstanceState(recyclerViewState)
-    }
-
 
     override fun onStart() {
         super.onStart()
@@ -215,7 +185,6 @@ class CartActivity : AppCompatActivity() {
     }
 
     private fun getProduct() {
-
         viewModel.getProduct()?.observe(this) {
             if (it != null) {
                 isDataEmpty(true)
@@ -261,25 +230,18 @@ class CartActivity : AppCompatActivity() {
                     )
                     listOfProductId.add(result[j].id.toString())
                 }
-
                 updateStock(DataStock(userID!!, dataStockItems), listOfProductId)
-
                 isFirstTime = false
             }
         }
         loading.isDismiss()
     }
 
-
-
-
     private fun buySuccess() {
         viewModel.buySuccess()
     }
 
     private fun updateStock(dataStock: DataStock, listProductID: ArrayList<String>) {
-        viewModelUpdateStock = ViewModelProvider(this, ViewModelFactory(this))[UpdateStockViewModel::class.java]
-
         viewModelUpdateStock.setUpdateStock(dataStock)
 
         viewModelUpdateStock.updateStockSuccess.observe(this) {
@@ -293,12 +255,6 @@ class CartActivity : AppCompatActivity() {
                 buySuccess()
             }
 
-        }
-        viewModelUpdateStock.toast.observe(this) {
-            it.getContentIfNotHandled()?.let { response ->
-                loading.isDismiss()
-                showMessage(response)
-            }
         }
     }
 

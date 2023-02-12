@@ -24,11 +24,11 @@ class ListNotificationAdapter(private val isMultipleSelect: Boolean) :
 
     private val listData = ArrayList<Notification>()
 
-
     @SuppressLint("NotifyDataSetChanged")
     fun setData(data: List<Notification>) {
         listData.clear()
         listData.addAll(data)
+        notifyItemRemoved(data.size)
         notifyDataSetChanged()
     }
 
@@ -86,24 +86,16 @@ class ListNotificationAdapter(private val isMultipleSelect: Boolean) :
             cbNotification.isChecked = listProduct.isChecked
             cbNotification.setOnCheckedChangeListener { _, isChecked ->
                 listProduct.isChecked = isChecked
-                onItemClick?.onChecked(listProduct, isChecked)
+                onItemClick?.onChecked(listProduct, isChecked, position)
             }
         }
     }
 
     override fun getItemCount(): Int = listData.size
 
-    fun removeData(id: Int) {
-        val index = listData.indexOfFirst { it.id == id }
-        if (index != -1) {
-            listData.removeAt(index)
-            notifyItemRemoved(index)
-        }
-    }
-
     interface OnAdapterListenerListProductFavorite {
         fun onClick(data: Notification)
-        fun onChecked(data: Notification, isChecked: Boolean)
+        fun onChecked(data: Notification, isChecked: Boolean, position: Int)
     }
 
     @SuppressLint("SimpleDateFormat")
