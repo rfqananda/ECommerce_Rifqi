@@ -67,6 +67,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingBottom="80dp"
+        app:stackFromEnd="true"
         app:layout_constraintTop_toBottomOf="@id/tool_bar_notification"
         tools:listitem="@layout/adapter_notification"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>

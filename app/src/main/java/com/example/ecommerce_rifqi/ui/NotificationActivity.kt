@@ -34,13 +34,14 @@ class NotificationActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityNotificationBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        viewModel = ViewModelProvider(this)[NotificationViewModel::class.java]
+        getNotification()
         setCustomToolbar()
     }
 
     override fun onStart() {
         super.onStart()
-        viewModel = ViewModelProvider(this)[NotificationViewModel::class.java]
-        getNotification()
+
     }
 
     private fun getNotification() {
@@ -76,7 +77,7 @@ class NotificationActivity : AppCompatActivity() {
 
                         override fun onChecked(data: Notification, isChecked: Boolean, position: Int) {
                             isChecked(data.id, isChecked)
-                            binding.rvNotification.layoutManager!!.scrollToPosition(position)
+                            notificationAdapter.notifyItemChanged(position)
                         }
                     })
 

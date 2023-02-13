@@ -3,12 +3,13 @@ package com.example.ecommerce_rifqi.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.example.ecommerce_rifqi.R
 import com.example.ecommerce_rifqi.databinding.AdapterBodyPaymentBinding
 import com.example.ecommerce_rifqi.databinding.AdapterHeaderPaymentBinding
 import com.example.ecommerce_rifqi.model.DataPayment
 import com.example.ecommerce_rifqi.model.PaymentMethod
 
-class PaymentMethodAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class PaymentMethodAdapter(private val listener: OnPaymentMethodClickListener): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
         private const val HEADER = 0
@@ -27,7 +28,7 @@ class PaymentMethodAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
         return if (viewType == HEADER) {
             HeaderViewHolder(AdapterHeaderPaymentBinding.inflate(LayoutInflater.from(parent.context), parent, false))
-        } else ContentViewHolder(AdapterBodyPaymentBinding.inflate(LayoutInflater.from(parent.context), parent, false))
+        } else ContentViewHolder(AdapterBodyPaymentBinding.inflate(LayoutInflater.from(parent.context), parent, false), listener)
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -81,10 +82,34 @@ class PaymentMethodAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         }
     }
 
-    class ContentViewHolder(private val binding: AdapterBodyPaymentBinding) : RecyclerView.ViewHolder(binding.root) {
+    class ContentViewHolder(private val binding: AdapterBodyPaymentBinding, private val listener: OnPaymentMethodClickListener?) : RecyclerView.ViewHolder(binding.root) {
         fun bind(content: DataPayment?) {
             binding.tvName.text = content?.name
+
+            val drawableId = when (content?.id) {
+                "va_bca" -> R.drawable.ic_bca
+                "va_mandiri" -> R.drawable.ic_mandiri
+                "va_bri" -> R.drawable.ic_bri
+                "va_bni" -> R.drawable.ic_bni
+                "va_btn" -> R.drawable.ic_btn
+                "va_danamon" -> R.drawable.ic_danamon
+                "ewallet_gopay" -> R.drawable.ic_gopay
+                "ewallet_ovo" -> R.drawable.ic_ovo
+                "ewallet_dana" -> R.drawable.ic_dana
+
+
+                else -> R.drawable.ic_launcher_background
+            }
+            binding.ivPhoto.setImageResource(drawableId)
+            itemView.setOnClickListener {
+                if (content != null) {
+                    listener?.onPaymentMethodClick(content)
+                }
+            }
         }
     }
 
+    interface OnPaymentMethodClickListener {
+        fun onPaymentMethodClick(data: DataPayment)
+    }
 }
