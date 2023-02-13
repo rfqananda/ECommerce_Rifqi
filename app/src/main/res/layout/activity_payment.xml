@@ -7,12 +7,9 @@
     android:layout_height="match_parent"
     tools:context=".ui.PaymentActivity">
 
-    <TextView
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_payment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:fontFamily="@font/bold"
-        android:textSize="22sp"
-        android:textColor="@color/black"
-        android:text="HELLO WORLD"/>
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
