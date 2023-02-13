@@ -53,6 +53,12 @@ class NotificationActivity : AppCompatActivity() {
                     isDataEmpty(false)
                     notificationAdapter.setData(list)
 
+                    binding.apply {
+                        rvNotification.setHasFixedSize(true)
+                        rvNotification.layoutManager = LinearLayoutManager(this@NotificationActivity)
+                        rvNotification.adapter = notificationAdapter
+                    }
+
                     notificationAdapter.setOnItemClick(object :
                         ListNotificationAdapter.OnAdapterListenerListProductFavorite {
                         override fun onClick(data: Notification) {
@@ -74,11 +80,7 @@ class NotificationActivity : AppCompatActivity() {
                         }
                     })
 
-                    binding.apply {
-                        rvNotification.setHasFixedSize(true)
-                        rvNotification.layoutManager = LinearLayoutManager(this@NotificationActivity)
-                        rvNotification.adapter = notificationAdapter
-                    }
+
 
                 } else isDataEmpty(true)
             }

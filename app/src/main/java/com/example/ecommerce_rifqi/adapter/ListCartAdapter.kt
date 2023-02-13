@@ -15,6 +15,8 @@ class ListCartAdapter(private val context: Context): RecyclerView.Adapter<ListCa
 
     private val listData = ArrayList<Product>()
 
+    private var currentPosition = -1
+
     private var onItemClick: ListCartAdapter.OnAdapterListener? = null
 
 
@@ -30,8 +32,7 @@ class ListCartAdapter(private val context: Context): RecyclerView.Adapter<ListCa
         notifyDataSetChanged()
     }
 
-    class ViewHolder(val binding: AdapterListCartBinding) : RecyclerView.ViewHolder(binding.root) {
-    }
+    class ViewHolder(val binding: AdapterListCartBinding) : RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
@@ -44,7 +45,6 @@ class ListCartAdapter(private val context: Context): RecyclerView.Adapter<ListCa
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-
         val productData = listData[position]
         holder.binding.apply {
             Glide.with(context)
@@ -73,6 +73,7 @@ class ListCartAdapter(private val context: Context): RecyclerView.Adapter<ListCa
                 onItemClick?.onDecrease(productData, position)
             }
 
+            cbCart.setOnCheckedChangeListener(null) // remove listener
             cbCart.isChecked = productData.check_button
             cbCart.setOnCheckedChangeListener { _, isChecked ->
                 productData.check_button = isChecked

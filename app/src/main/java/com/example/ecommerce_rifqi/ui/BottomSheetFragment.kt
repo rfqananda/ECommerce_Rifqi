@@ -92,8 +92,10 @@ class BottomSheetFragment(val dataProduct: DetailDataProduct): BottomSheetDialog
             val productID = dataProduct.id
 
             btnBuy.setOnClickListener {
-                val userID = sharedPref.getString(Constant.PREF_ID)
-                updateStock(userID!!, productID.toString(), quantity)
+                val intent = Intent(requireActivity(), PaymentActivity::class.java)
+                startActivity(intent)
+//                val userID = sharedPref.getString(Constant.PREF_ID)
+//                updateStock(userID!!, productID.toString(), quantity)
             }
         }
     }
@@ -116,11 +118,11 @@ class BottomSheetFragment(val dataProduct: DetailDataProduct): BottomSheetDialog
         viewModelUpdateStock.updateStockSuccess.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { response ->
                 showMessage(response.success.message)
-                val intent = Intent(requireActivity(), RatingActivity::class.java)
-                if (productID != null) {
-                    intent.putExtra("id", productID.toInt())
-                }
-                startActivity(intent)
+//                val intent = Intent(requireActivity(), RatingActivity::class.java)
+//                if (productID != null) {
+//                    intent.putExtra("id", productID.toInt())
+//                }
+//                startActivity(intent)
             }
         }
         viewModelUpdateStock.toast.observe(viewLifecycleOwner) {

@@ -45,6 +45,9 @@ class CartActivity : AppCompatActivity() {
 
     private var isFirstTime = true
 
+    private var checkedFirstTime = true
+
+
     lateinit var sharedPref: PreferencesHelper
 
     private lateinit var loading: LoadingDialog
@@ -122,7 +125,6 @@ class CartActivity : AppCompatActivity() {
                     isFirstTime = true
                     getCheckedProducts()
                 }
-
             }
 
             btnBack.setOnClickListener {
@@ -169,7 +171,9 @@ class CartActivity : AppCompatActivity() {
             }
 
             override fun onChecked(data: Product, isChecked: Boolean) {
-                viewModel.buttonCheck(data.id, isChecked)
+                checkedFirstTime = true
+                checkedProducts(data.id, isChecked)
+                Log.e("CheckedID", data.id.toString() )
             }
         })
     }
@@ -212,6 +216,13 @@ class CartActivity : AppCompatActivity() {
             listProduct.add(dataMapped)
         }
         return listProduct
+    }
+
+    private fun checkedProducts(id: Int, isChecked: Boolean){
+        if (checkedFirstTime){
+            viewModel.buttonCheck(id, isChecked)
+            checkedFirstTime = false
+        }
     }
 
     private fun getCheckedProducts() {
@@ -282,6 +293,4 @@ class CartActivity : AppCompatActivity() {
             }
         }
     }
-
-
 }

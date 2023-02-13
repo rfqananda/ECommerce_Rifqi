@@ -8,11 +8,12 @@ import com.example.ecommerce_rifqi.data.local.CheckedProduct
 import com.example.ecommerce_rifqi.data.local.Product
 import com.example.ecommerce_rifqi.data.local.ProductDAO
 import com.example.ecommerce_rifqi.data.local.ProductDatabase
-import com.example.ecommerce_rifqi.helper.Event
 import com.example.ecommerce_rifqi.helper.SingleLiveEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.util.concurrent.Semaphore
 
 class GetProductCartViewModel(application: Application): AndroidViewModel(application) {
     private var productDAO: ProductDAO?
@@ -20,6 +21,8 @@ class GetProductCartViewModel(application: Application): AndroidViewModel(applic
 //    var checkedProducts: MutableLiveData<List<CheckedProduct>> = MutableLiveData()
 
     var checkedProducts = SingleLiveEvent<List<CheckedProduct>>()
+
+    private val semaphore = Semaphore(1)
 
     init {
         productDB = ProductDatabase.getDatabase(application)
@@ -68,7 +71,12 @@ class GetProductCartViewModel(application: Application): AndroidViewModel(applic
 
     fun buttonCheck(id: Int, btnCheck: Boolean){
         CoroutineScope(Dispatchers.IO).launch {
-            productDAO?.buttonCheck(id, btnCheck)
+            semaphore.acquire()
+            try {
+                productDAO?.buttonCheck(id, btnCheck)
+            } finally {
+                semaphore.release()
+            }
         }
     }
 
