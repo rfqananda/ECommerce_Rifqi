@@ -1,15 +1,15 @@
-package com.example.ecommerce_rifqi.ui
+package com.example.ecommerce_rifqi.ui.fragments
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
+import android.view.View
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.ecommerce_rifqi.R
 import com.example.ecommerce_rifqi.adapter.PaymentMethodAdapter
 import com.example.ecommerce_rifqi.databinding.ActivityPaymentBinding
-import com.example.ecommerce_rifqi.helper.Constant
-import com.example.ecommerce_rifqi.helper.PreferencesHelper
+import com.example.ecommerce_rifqi.databinding.FragmentChangePasswordBinding
 import com.example.ecommerce_rifqi.model.DataPayment
 import com.example.ecommerce_rifqi.model.PaymentMethod
 import com.google.firebase.ktx.Firebase
@@ -19,22 +19,18 @@ import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
-class PaymentActivity : AppCompatActivity(), PaymentMethodAdapter.OnPaymentMethodClickListener {
-    private lateinit var binding: ActivityPaymentBinding
+class FragmentPayment: Fragment(R.layout.activity_payment), PaymentMethodAdapter.OnPaymentMethodClickListener {
+    private var _binding: ActivityPaymentBinding? = null
+    private val binding get() = _binding!!
 
     val remoteConfig: FirebaseRemoteConfig = Firebase.remoteConfig
     var payment_remote_config: String? = null
 
-    lateinit var sharedPref: PreferencesHelper
-
     private lateinit var paymentAdapter: PaymentMethodAdapter
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivityPaymentBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
-        sharedPref = PreferencesHelper(this)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        _binding = ActivityPaymentBinding.bind(view)
 
         val configSettings = remoteConfigSettings {
             minimumFetchIntervalInSeconds = 1
@@ -42,7 +38,7 @@ class PaymentActivity : AppCompatActivity(), PaymentMethodAdapter.OnPaymentMetho
 
 
         remoteConfig.setConfigSettingsAsync(configSettings)
-        remoteConfig.fetchAndActivate().addOnCompleteListener(this) { task ->
+        remoteConfig.fetchAndActivate().addOnCompleteListener(requireActivity()) { task ->
             if (task.isSuccessful) {
                 onFirebaseActivated()
             }
@@ -59,32 +55,17 @@ class PaymentActivity : AppCompatActivity(), PaymentMethodAdapter.OnPaymentMetho
         paymentAdapter = PaymentMethodAdapter(this)
         paymentAdapter.setData(dataList)
         binding.rvPayment.adapter = paymentAdapter
-        binding.rvPayment.layoutManager = LinearLayoutManager(this)
+        binding.rvPayment.layoutManager = LinearLayoutManager(requireContext())
         binding.rvPayment.setHasFixedSize(true)
     }
 
     override fun onPaymentMethodClick(data: DataPayment, drawable: Int) {
-        val productID = intent.getIntExtra("productID", 0)
+        val bundle = Bundle()
+        bundle.putString("name", data.name)
+        bundle.putInt("image", drawable)
 
-        if (productID == 0){
-            val intent = Intent(this, CartActivity::class.java)
-            intent.putExtra("name", data.name)
-            intent.putExtra("image", drawable)
-
-            startActivity(intent)
-            finish()
-        } else{
-            val intent = Intent(this, DetailActivity::class.java)
-            intent.putExtra("name", data.name)
-            intent.putExtra("image", drawable)
-            intent.putExtra("id", productID)
-
-            startActivity(intent)
-            finish()
-        }
+        findNavController().navigate(R.id.action_fragmentPayment_to_bottomSheetFragment, bundle)
     }
 
-    private fun showMessage(message: String) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-    }
+
 }

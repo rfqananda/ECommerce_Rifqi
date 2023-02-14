@@ -201,6 +201,11 @@ class DetailActivity : AppCompatActivity(), ImagePagerAdapter.OnPageClickListene
         isDataShowing(false)
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+        sharedPref.deletePayment()
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     private fun getDetailProductData() {
 
@@ -224,7 +229,6 @@ class DetailActivity : AppCompatActivity(), ImagePagerAdapter.OnPageClickListene
         viewModel.getDetailProduct().observe(this) {
 
             if (it != null) {
-
                 showShimmer(false)
 
                 name = it.name_product
@@ -268,9 +272,25 @@ class DetailActivity : AppCompatActivity(), ImagePagerAdapter.OnPageClickListene
 
                     toolBarDp.isSelected = true
 
+                    val paymentName = intent.getStringExtra("name")
+                    val paymentImage = intent.getIntExtra("image", 0)
+
+                    Log.e("PaymentName", paymentName.toString())
+                    Log.e("PaymentImage", paymentImage.toString())
+
+                    if (paymentName != null) {
+                        if (name.isNotEmpty()){
+                            showBottomSheet(it, paymentName, paymentImage)
+                        }
+                    }
+
                     btnBuy.setOnClickListener { _ ->
                         sharedPref.put(Constant.PREF_ID_PRODUCT, productID.toString())
-                        showBottomSheet(it)
+                        if (paymentName != null) {
+                            if (paymentName.isNotEmpty()){
+                                showBottomSheet(it, paymentName, paymentImage)
+                            }
+                        } else showBottomSheet(it, null, null)
                     }
 
 
@@ -380,8 +400,8 @@ class DetailActivity : AppCompatActivity(), ImagePagerAdapter.OnPageClickListene
         }
     }
 
-    private fun showBottomSheet(dataProduct: DetailDataProduct) {
-        val bottomSheetFragment = BottomSheetFragment(dataProduct)
+    private fun showBottomSheet(dataProduct: DetailDataProduct, name: String?, image: Int?) {
+        val bottomSheetFragment = BottomSheetFragment(dataProduct, name, image)
         bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.tag)
     }
 

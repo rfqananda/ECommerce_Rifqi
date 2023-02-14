@@ -12,6 +12,7 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -47,6 +48,7 @@ class CartActivity : AppCompatActivity() {
 
     private var checkedFirstTime = true
 
+    private var totalPriceItem: String = ""
 
     lateinit var sharedPref: PreferencesHelper
 
@@ -107,24 +109,31 @@ class CartActivity : AppCompatActivity() {
             }
 
             btnBuy.setOnClickListener {
-                loading.startLoading()
-                var isChecked = false
-                for (i in 0 until rvCart.childCount) {
-                    val child = rvCart.getChildAt(i)
-                    val rvCheckBox = child.findViewById<CheckBox>(R.id.cb_cart)
-                    if (rvCheckBox.isChecked) {
-                        isChecked = true
-                        break
+                if (tvPayment.isVisible) {
+                    //ngirim data
+                    loading.startLoading()
+                    var isChecked = false
+                    for (i in 0 until rvCart.childCount) {
+                        val child = rvCart.getChildAt(i)
+                        val rvCheckBox = child.findViewById<CheckBox>(R.id.cb_cart)
+                        if (rvCheckBox.isChecked) {
+                            isChecked = true
+                            break
+                        }
                     }
+
+                    if (!isChecked) {
+                        loading.isDismiss()
+                        showMessage("Belum Ada Satupun yang Diceklis")
+                    } else {
+                        isFirstTime = true
+                        getCheckedProducts()
+                    }
+                } else {
+                    val intent = Intent(this@CartActivity, PaymentActivity::class.java)
+                    startActivity(intent)
                 }
 
-                if (!isChecked) {
-                    loading.isDismiss()
-                    showMessage("Belum Ada Satupun yang Diceklis")
-                } else {
-                    isFirstTime = true
-                    getCheckedProducts()
-                }
             }
 
             btnBack.setOnClickListener {
@@ -184,7 +193,26 @@ class CartActivity : AppCompatActivity() {
         viewModel.getTotalItemByCheckButton(1)!!.observe(this@CartActivity) {
             if (it == null) {
                 binding.tvTotal.text = formatRupiah(0)
-            } else binding.tvTotal.text = formatRupiah(it)
+                totalPriceItem = binding.tvTotal.text.toString()
+            } else {
+                binding.tvTotal.text = formatRupiah(it)
+                totalPriceItem = binding.tvTotal.text.toString()
+            }
+        }
+
+        val paymentName = intent.getStringExtra("name")
+        val paymentImage = intent.getIntExtra("image", 0)
+
+        if (paymentImage != 0) {
+            binding.ivLogo.visibility = View.VISIBLE
+            binding.ivLogo.setImageResource(paymentImage)
+        }
+
+        if (paymentName != null) {
+            if (paymentName.isNotEmpty()) {
+                binding.tvPayment.visibility = View.VISIBLE
+                binding.tvPayment.text = paymentName
+            }
         }
     }
 
@@ -258,8 +286,14 @@ class CartActivity : AppCompatActivity() {
         viewModelUpdateStock.updateStockSuccess.observe(this) {
             it.getContentIfNotHandled()?.let { response ->
                 loading.isDismiss()
+                val paymentName = intent.getStringExtra("name")
+                val paymentImage = intent.getIntExtra("image", 0)
                 val intent = Intent(this, RatingActivity::class.java)
                 intent.putExtra("list_id", listProductID)
+                intent.putExtra("name", paymentName)
+                intent.putExtra("image", paymentImage)
+                intent.putExtra("total", totalPriceItem)
+
                 startActivity(intent)
                 showMessage(response.success.message)
                 finish()

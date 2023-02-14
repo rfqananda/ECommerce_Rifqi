@@ -50,6 +50,10 @@ class PreferencesHelper (context: Context){
         }
     }
 
+    fun deletePayment(){
+        editor.remove(Constant.PREF_NAME_PAYMENT)
+            .apply()
+    }
 
     fun changeLanguage(position: Int){
         editor.putString(Constant.PREF_CURRENT_POSITION, position.toString())

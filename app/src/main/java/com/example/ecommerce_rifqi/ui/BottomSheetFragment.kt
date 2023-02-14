@@ -8,7 +8,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.navGraphViewModels
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.example.ecommerce_rifqi.R
@@ -25,9 +28,13 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import java.text.DecimalFormat
 import kotlin.properties.Delegates
 
-class BottomSheetFragment(val dataProduct: DetailDataProduct): BottomSheetDialogFragment() {
+class BottomSheetFragment(
+    val dataProduct: DetailDataProduct?,
+    val paymentName: String?,
+    val paymentImage: Int?
+) : BottomSheetDialogFragment() {
 
-    private var _binding : BottomSheetLayoutBinding? = null
+    private var _binding: BottomSheetLayoutBinding? = null
     private val binding get() = _binding!!
 
     private lateinit var viewModel: BuyProductViewModel
@@ -37,6 +44,9 @@ class BottomSheetFragment(val dataProduct: DetailDataProduct): BottomSheetDialog
     private var quantity by Delegates.notNull<Int>()
 
     lateinit var sharedPref: PreferencesHelper
+
+    private var totalPriceItem: String = ""
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -55,53 +65,61 @@ class BottomSheetFragment(val dataProduct: DetailDataProduct): BottomSheetDialog
 
         sharedPref = PreferencesHelper(requireContext())
 
-        val image = dataProduct.image
-        val price = dataProduct.harga
-        val stock = dataProduct.stock
+        val image = dataProduct?.image
+        val price = dataProduct?.harga
+        val stock = dataProduct?.stock
 
         binding.apply {
             Glide.with(requireContext())
                 .load(image)
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .into(ivProduct)
-            tvPriceProduct.text = formatRupiah(price.toInt())
+            if (price != null) {
+                tvPriceProduct.text = formatRupiah(price.toInt())
+            }
             tvStockProduct.text = "${resources.getString(R.string.txt_stock)}: $stock"
 
+            if (price != null) {
+                viewModel.setPrice(price.toInt())
+            }
 
-
-            viewModel.setPrice(price.toInt())
-
-            viewModel.totalPrice.observe(requireActivity()){ result ->
+            viewModel.totalPrice.observe(viewLifecycleOwner) { result ->
                 val totalPrice = formatRupiah(result)
+                totalPriceItem = totalPrice
                 btnBuy.text = "${resources.getString(R.string.txt_buy_now)} - $totalPrice"
             }
 
-            viewModel.quantity.observe(requireActivity()){
+            viewModel.quantity.observe(requireActivity()) {
                 tvQuantity.text = it.toString()
                 quantity = it
             }
 
             btnPlus.setOnClickListener {
-                viewModel.increaseQuantity(dataProduct.stock)
+                viewModel.increaseQuantity(dataProduct?.stock)
             }
 
             btnMinus.setOnClickListener {
                 viewModel.decreaseQuantity()
             }
 
-            val productID = dataProduct.id
+            val productID = dataProduct?.id
 
             btnBuy.setOnClickListener {
-                val intent = Intent(requireActivity(), PaymentActivity::class.java)
-                startActivity(intent)
-//                val userID = sharedPref.getString(Constant.PREF_ID)
-//                updateStock(userID!!, productID.toString(), quantity)
+                if (tvPayment.isVisible) {
+                    val userID = sharedPref.getString(Constant.PREF_ID)
+                    updateStock(userID!!, productID.toString(), quantity)
+                } else {
+                    val intent = Intent(requireContext(), PaymentActivity::class.java)
+                    intent.putExtra("productID", productID)
+                    startActivity(intent)
+                    activity?.finish()
+                }
             }
         }
     }
 
     private fun formatRupiah(number: Int): String {
-        val formatRupiah =  DecimalFormat("Rp #,###")
+        val formatRupiah = DecimalFormat("Rp #,###")
         return formatRupiah.format(number)
     }
 
@@ -118,16 +136,35 @@ class BottomSheetFragment(val dataProduct: DetailDataProduct): BottomSheetDialog
         viewModelUpdateStock.updateStockSuccess.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { response ->
                 showMessage(response.success.message)
-//                val intent = Intent(requireActivity(), RatingActivity::class.java)
-//                if (productID != null) {
-//                    intent.putExtra("id", productID.toInt())
-//                }
-//                startActivity(intent)
+                val intent = Intent(requireActivity(), RatingActivity::class.java)
+                if (productID != null) {
+                    intent.putExtra("id", productID.toInt())
+                    intent.putExtra("name", paymentName)
+                    intent.putExtra("image", paymentImage)
+                    intent.putExtra("total", totalPriceItem)
+                }
+                startActivity(intent)
             }
         }
         viewModelUpdateStock.toast.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { response ->
                 showMessage(response)
+            }
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        if (paymentImage != null) {
+            binding.ivPayment.visibility = View.VISIBLE
+            binding.ivPayment.setImageResource(paymentImage)
+        }
+
+        if (paymentName != null) {
+            if (paymentName.isNotEmpty()) {
+                binding.tvPayment.visibility = View.VISIBLE
+                binding.tvPayment.text = paymentName
             }
         }
     }

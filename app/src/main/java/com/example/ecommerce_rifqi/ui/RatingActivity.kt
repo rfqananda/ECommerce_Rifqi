@@ -26,6 +26,14 @@ class RatingActivity : AppCompatActivity() {
 
         binding.apply {
 
+            val paymentName = intent.getStringExtra("name")
+            val paymentImage = intent.getIntExtra("image", 0)
+            val totalPrice = intent.getStringExtra("total")
+
+            tvPayment.text = paymentName
+            tvPrice.text = totalPrice
+            ivLogo.setImageResource(paymentImage)
+
             btnSubmit.setOnClickListener {
                 val listProductId = intent.getStringArrayListExtra("list_id")
 

@@ -13,57 +13,110 @@
         android:layout_height="160dp"
         android:layout_marginTop="20dp"
         android:src="@drawable/ic_rating_activity"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/tv_1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="22sp"
         android:layout_marginTop="30dp"
-        android:text="@string/txt_buy_success"
         android:fontFamily="@font/bold"
+        android:text="@string/txt_buy_success"
         android:textColor="@color/black"
-        app:layout_constraintTop_toBottomOf="@id/iv_success"
+        android:textSize="22sp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintTop_toBottomOf="@id/iv_success" />
+
+    <ImageView
+        android:id="@+id/iv_logo"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="10dp"
+        android:src="@drawable/ic_bca"
+        app:layout_constraintEnd_toStartOf="@id/tv_payment"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_1" />
+
+    <TextView
+        android:id="@+id/tv_payment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:fontFamily="@font/medium"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@id/iv_logo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/iv_logo"
+        app:layout_constraintTop_toTopOf="@id/iv_logo"
+        tools:text="BCA VIRTUAL ACCOUNT" />
+
+    <TextView
+        android:id="@+id/tv_total"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/regular"
+        android:text="Total Price"
+        android:textColor="@color/light_grey"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@id/tv_price"
+        app:layout_constraintEnd_toStartOf="@id/tv_price"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tv_price" />
+
+    <TextView
+        android:id="@+id/tv_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/bold"
+        android:text="Rp. 10.000"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/tv_total"
+        app:layout_constraintTop_toBottomOf="@id/iv_logo" />
 
     <TextView
         android:id="@+id/tv_2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="22sp"
-        android:layout_marginTop="30dp"
-        android:text="@string/txt_give_rating"
+        android:layout_marginTop="100dp"
         android:fontFamily="@font/bold"
+        android:text="@string/txt_give_rating"
         android:textColor="@color/black"
-        app:layout_constraintTop_toBottomOf="@id/tv_1"
+        android:textSize="22sp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintTop_toBottomOf="@id/iv_logo" />
 
     <RatingBar
         android:id="@+id/rating_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/tv_2"
         android:layout_marginTop="30dp"
-        app:layout_constraintStart_toStartOf="parent"
+        android:theme="@style/RatingBar"
         app:layout_constraintEnd_toEndOf="parent"
-        android:theme="@style/RatingBar" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_2" />
 
     <android.widget.Button
         android:id="@+id/btn_submit"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:textColor="@color/white"
-        android:fontFamily="@font/bold"
-        android:text="@string/txt_submit"
-        android:layout_marginBottom="20dp"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
         android:background="@drawable/bg_btn5"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        android:fontFamily="@font/bold"
+        android:text="@string/txt_submit"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

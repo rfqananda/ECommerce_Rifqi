@@ -120,7 +120,7 @@ class FragmentDetail : Fragment(R.layout.fragment_detail) {
 
                     btnBuy.setOnClickListener { view ->
                         sharedPref.put(Constant.PREF_ID_PRODUCT, productID.toString())
-                        showBottomSheet(it)
+
                     }
 
                 }
@@ -189,9 +189,5 @@ class FragmentDetail : Fragment(R.layout.fragment_detail) {
         }
     }
 
-    private fun showBottomSheet(dataProduct: DetailDataProduct) {
-        val bottomSheetFragment = BottomSheetFragment(dataProduct)
-        bottomSheetFragment.show(childFragmentManager, bottomSheetFragment.tag)
-    }
 
 }
