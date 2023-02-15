@@ -121,32 +121,34 @@
         android:elevation="6dp"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <ImageView
-            android:id="@+id/iv_logo"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_marginTop="10dp"
-            android:src="@drawable/ic_bca"
-            android:visibility="gone"
-            app:layout_constraintEnd_toStartOf="@id/tv_payment"
-            app:layout_constraintStart_toStartOf="@id/tv_total"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/tv_tp"/>
-
-        <TextView
-            android:id="@+id/tv_payment"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/btn_payment"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:fontFamily="@font/medium"
-            android:textColor="@color/black"
+            android:orientation="horizontal"
             android:visibility="gone"
+            app:layout_constraintStart_toStartOf="@id/tv_tp"
+            app:layout_constraintEnd_toEndOf="@id/btn_buy"
+            app:layout_constraintBottom_toTopOf="@id/tv_tp">
 
-            android:textSize="20sp"
-            app:layout_constraintBottom_toBottomOf="@id/iv_logo"
-            app:layout_constraintStart_toEndOf="@id/iv_logo"
-            app:layout_constraintTop_toTopOf="@id/iv_logo"
-            tools:text="BCA VIRTUAL ACCOUNT" />
+            <ImageView
+                android:id="@+id/iv_logo"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:src="@drawable/ic_bca" />
+
+            <TextView
+                android:id="@+id/tv_payment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:fontFamily="@font/medium"
+                android:layout_gravity="center"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                tools:text="BCA VIRTUAL ACCOUNT" />
+
+        </LinearLayout>
 
         <TextView
             android:id="@+id/tv_tp"
@@ -157,7 +159,7 @@
             android:layout_marginStart="10dp"
             android:fontFamily="@font/regular"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/iv_logo"
+            app:layout_constraintTop_toBottomOf="@id/btn_payment"
             android:text="Total Price"/>
 
         <TextView

@@ -293,8 +293,6 @@ class DetailActivity : AppCompatActivity(), ImagePagerAdapter.OnPageClickListene
                         } else showBottomSheet(it, null, null)
                     }
 
-
-
                     Glide.with(applicationContext)
                         .load(image)
                         .centerCrop()
@@ -314,8 +312,18 @@ class DetailActivity : AppCompatActivity(), ImagePagerAdapter.OnPageClickListene
         viewModelOtherProduct.setOtherProductList(id_user)
         viewModelOtherProduct.getOtherProductList().observe(this) {
             if (it != null) {
+
+                if (it.isNotEmpty()){
+                    listProductAdapter.setData(it)
+                } else {
+                    binding.apply {
+                        line2?.visibility = View.GONE
+                        headerOtherProduct?.visibility = View.GONE
+                        rvOtherProduct?.visibility = View.GONE
+                    }
+                }
+
 //                isDataOtherEmpty(false)
-                listProductAdapter.setData(it)
 //                if (it.isEmpty()){
 //                    isDataOtherEmpty(true)
 //                }
@@ -331,8 +339,16 @@ class DetailActivity : AppCompatActivity(), ImagePagerAdapter.OnPageClickListene
         viewModelHistorySearch.setHistoryProductList(id_user)
         viewModelHistorySearch.getHistoryProductList().observe(this) {
             if (it != null) {
+                if (it.isNotEmpty()){
+                    listProductAdapter.setData(it)
+                } else {
+                    binding.apply {
+                        line3?.visibility = View.GONE
+                        headerSearchHistory?.visibility = View.GONE
+                        rvHistorySearchProduct?.visibility = View.GONE
+                    }
+                }
 //                isDataHistoryEmpty(false)
-                listProductAdapter.setData(it)
 //                if (it.isEmpty()){
 //                    isDataHistoryEmpty(true)
 //                }

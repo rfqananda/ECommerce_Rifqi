@@ -122,30 +122,33 @@
             android:background="@color/black"
             app:layout_constraintTop_toBottomOf="@id/tv_total" />
 
-        <ImageView
-            android:id="@+id/iv_payment"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
-            android:src="@drawable/ic_bca"
-            android:visibility="gone"
-            app:layout_constraintEnd_toStartOf="@id/tv_payment"
-            app:layout_constraintHorizontal_chainStyle="packed"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/line2" />
-
-        <TextView
-            android:id="@+id/tv_payment"
-            android:layout_width="wrap_content"
+        <RelativeLayout
+            android:id="@+id/btn_payment"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="BCA Virtual Account"
-            android:textColor="@color/black"
-            android:layout_marginStart="10dp"
             android:visibility="gone"
-            android:textSize="22sp"
-            app:layout_constraintBottom_toBottomOf="@id/iv_payment"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/iv_payment"
-            app:layout_constraintTop_toTopOf="@id/iv_payment" />
+            app:layout_constraintTop_toBottomOf="@id/line2"
+            app:layout_constraintStart_toStartOf="@id/tv_total"
+            app:layout_constraintEnd_toEndOf="parent">
+            <ImageView
+                android:id="@+id/iv_payment"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:src="@drawable/ic_bca"
+                android:layout_toStartOf="@id/tv_payment"/>
+
+            <TextView
+                android:id="@+id/tv_payment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="BCA Virtual Account"
+                android:layout_centerInParent="true"
+                android:textColor="@color/black"
+                android:layout_marginStart="10dp"
+                android:textSize="22sp" />
+        </RelativeLayout>
+
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

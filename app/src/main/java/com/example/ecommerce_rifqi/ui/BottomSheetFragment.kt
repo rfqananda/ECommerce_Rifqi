@@ -105,15 +105,22 @@ class BottomSheetFragment(
             val productID = dataProduct?.id
 
             btnBuy.setOnClickListener {
-                if (tvPayment.isVisible) {
+                if (btnPayment.isVisible) {
                     val userID = sharedPref.getString(Constant.PREF_ID)
                     updateStock(userID!!, productID.toString(), quantity)
                 } else {
                     val intent = Intent(requireContext(), PaymentActivity::class.java)
                     intent.putExtra("productID", productID)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK)
                     startActivity(intent)
-                    activity?.finish()
                 }
+            }
+
+            btnPayment.setOnClickListener {
+                val intent = Intent(requireContext(), PaymentActivity::class.java)
+                intent.putExtra("productID", productID)
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                startActivity(intent)
             }
         }
     }
@@ -155,17 +162,10 @@ class BottomSheetFragment(
 
     override fun onStart() {
         super.onStart()
-
-        if (paymentImage != null) {
-            binding.ivPayment.visibility = View.VISIBLE
+        if (paymentImage != null && paymentName != null) {
+            binding.btnPayment.visibility = View.VISIBLE
             binding.ivPayment.setImageResource(paymentImage)
-        }
-
-        if (paymentName != null) {
-            if (paymentName.isNotEmpty()) {
-                binding.tvPayment.visibility = View.VISIBLE
-                binding.tvPayment.text = paymentName
-            }
+            binding.tvPayment.text = paymentName
         }
     }
 

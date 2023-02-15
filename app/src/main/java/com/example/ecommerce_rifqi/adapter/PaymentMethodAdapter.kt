@@ -44,7 +44,7 @@ class PaymentMethodAdapter(private val listener: OnPaymentMethodClickListener): 
                         holder.bind(paymentMethod.type, position, expandedPosition)
                         break
                     }
-                    currentPosition += paymentMethod.data?.size?.let { it + 1 } ?: 1
+                    currentPosition += paymentMethod.data?.sortedBy { it?.order }?.size?.let { it + 1 } ?: 1
                 }
             }
             is ContentViewHolder -> {
@@ -101,20 +101,20 @@ class PaymentMethodAdapter(private val listener: OnPaymentMethodClickListener): 
         @SuppressLint("NotifyDataSetChanged")
         fun bind(header: String?, position: Int, expandedPosition: Int) {
             binding.tvHeader.text = header
-            binding.btnHeader.setOnClickListener {
-                if (expandedPosition == position){
-                    this@PaymentMethodAdapter.expandedPosition = -1
-                } else{
-                    this@PaymentMethodAdapter.expandedPosition = position
-                }
-                notifyDataSetChanged()
-            }
-
-            if (position == expandedPosition) {
-                binding.btnHeader.text = "Hide"
-            } else {
-                binding.btnHeader.text = "Show"
-            }
+//            binding.btnHeader.setOnClickListener {
+//                if (expandedPosition == position){
+//                    this@PaymentMethodAdapter.expandedPosition = -1
+//                } else{
+//                    this@PaymentMethodAdapter.expandedPosition = position
+//                }
+//                notifyDataSetChanged()
+//            }
+//
+//            if (position == expandedPosition) {
+//                binding.btnHeader.text = "Hide"
+//            } else {
+//                binding.btnHeader.text = "Show"
+//            }
         }
     }
 

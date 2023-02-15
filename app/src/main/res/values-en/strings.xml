@@ -58,6 +58,7 @@
     <string name="txt_delete_product">Delete Product</string>
     <string name="txt_checked">None have been checked yet</string>
     <string name="txt_multiple">Multiple Select</string>
+    <string name="txt_payment">Choose Payment Methode</string>
 
 
 </resources>

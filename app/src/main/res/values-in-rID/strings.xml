@@ -58,6 +58,8 @@
     <string name="txt_delete_product">Hapus Produk</string>
     <string name="txt_checked">Belum ada satupun yang diceklis</string>
     <string name="txt_multiple">Pilih Ganda</string>
+    <string name="txt_payment">Pilih Metode Pembayaran</string>
+
 
 
 </resources>

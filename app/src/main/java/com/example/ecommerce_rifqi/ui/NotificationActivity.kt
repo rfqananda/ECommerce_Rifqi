@@ -77,7 +77,7 @@ class NotificationActivity : AppCompatActivity() {
 
                         override fun onChecked(data: Notification, isChecked: Boolean, position: Int) {
                             isChecked(data.id, isChecked)
-                            notificationAdapter.notifyItemChanged(position)
+//                            notificationAdapter.notifyItemChanged(position)
                         }
                     })
 

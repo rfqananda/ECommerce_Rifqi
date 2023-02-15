@@ -6,9 +6,10 @@ import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.ecommerce_rifqi.adapter.CobaAdapter1
+import com.example.ecommerce_rifqi.adapter.CobaAdapter2
 import com.example.ecommerce_rifqi.adapter.PaymentMethodAdapter
 import com.example.ecommerce_rifqi.databinding.ActivityPaymentBinding
-import com.example.ecommerce_rifqi.helper.Constant
 import com.example.ecommerce_rifqi.helper.PreferencesHelper
 import com.example.ecommerce_rifqi.model.DataPayment
 import com.example.ecommerce_rifqi.model.PaymentMethod
@@ -19,7 +20,7 @@ import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
-class PaymentActivity : AppCompatActivity(), PaymentMethodAdapter.OnPaymentMethodClickListener {
+class PaymentActivity : AppCompatActivity(), CobaAdapter1.OnAdapterListenerPaymentList {
     private lateinit var binding: ActivityPaymentBinding
 
     val remoteConfig: FirebaseRemoteConfig = Firebase.remoteConfig
@@ -28,6 +29,9 @@ class PaymentActivity : AppCompatActivity(), PaymentMethodAdapter.OnPaymentMetho
     lateinit var sharedPref: PreferencesHelper
 
     private lateinit var paymentAdapter: PaymentMethodAdapter
+
+    private lateinit var cobaAdapter2: CobaAdapter2
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,7 +43,6 @@ class PaymentActivity : AppCompatActivity(), PaymentMethodAdapter.OnPaymentMetho
         val configSettings = remoteConfigSettings {
             minimumFetchIntervalInSeconds = 1
         }
-
 
         remoteConfig.setConfigSettingsAsync(configSettings)
         remoteConfig.fetchAndActivate().addOnCompleteListener(this) { task ->
@@ -56,20 +59,27 @@ class PaymentActivity : AppCompatActivity(), PaymentMethodAdapter.OnPaymentMetho
             object : TypeToken<ArrayList<PaymentMethod>>() {}.type
         )
         Log.d("paymentMethod", dataList.toString())
-        paymentAdapter = PaymentMethodAdapter(this)
-        paymentAdapter.setData(dataList)
-        binding.rvPayment.adapter = paymentAdapter
+//        paymentAdapter = PaymentMethodAdapter(this)
+//        paymentAdapter.setData(dataList)
+        cobaAdapter2 = CobaAdapter2(this)
+        cobaAdapter2.setData(dataList as List<PaymentMethod>)
+//        binding.rvPayment.adapter = paymentAdapter
+
+        binding.rvPayment.adapter = cobaAdapter2
+
         binding.rvPayment.layoutManager = LinearLayoutManager(this)
         binding.rvPayment.setHasFixedSize(true)
     }
 
-    override fun onPaymentMethodClick(data: DataPayment, drawable: Int) {
+    override fun onClick(data: DataPayment, drawable: Int) {
         val productID = intent.getIntExtra("productID", 0)
 
         if (productID == 0){
             val intent = Intent(this, CartActivity::class.java)
             intent.putExtra("name", data.name)
             intent.putExtra("image", drawable)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+
 
             startActivity(intent)
             finish()
@@ -78,6 +88,7 @@ class PaymentActivity : AppCompatActivity(), PaymentMethodAdapter.OnPaymentMetho
             intent.putExtra("name", data.name)
             intent.putExtra("image", drawable)
             intent.putExtra("id", productID)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK)
 
             startActivity(intent)
             finish()

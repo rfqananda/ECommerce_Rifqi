@@ -69,7 +69,8 @@ class CartActivity : AppCompatActivity() {
 
         viewModel = ViewModelProvider(this)[GetProductCartViewModel::class.java]
         viewModelBuy = ViewModelProvider(this)[BuyProductViewModel::class.java]
-        viewModelUpdateStock = ViewModelProvider(this, ViewModelFactory(this))[UpdateStockViewModel::class.java]
+        viewModelUpdateStock =
+            ViewModelProvider(this, ViewModelFactory(this))[UpdateStockViewModel::class.java]
 
         binding.apply {
             rvCart.setHasFixedSize(true)
@@ -109,31 +110,36 @@ class CartActivity : AppCompatActivity() {
             }
 
             btnBuy.setOnClickListener {
-                if (tvPayment.isVisible) {
-                    //ngirim data
-                    loading.startLoading()
-                    var isChecked = false
-                    for (i in 0 until rvCart.childCount) {
-                        val child = rvCart.getChildAt(i)
-                        val rvCheckBox = child.findViewById<CheckBox>(R.id.cb_cart)
-                        if (rvCheckBox.isChecked) {
-                            isChecked = true
-                            break
-                        }
+                loading.startLoading()
+                var isChecked = false
+                for (i in 0 until rvCart.childCount) {
+                    val child = rvCart.getChildAt(i)
+                    val rvCheckBox = child.findViewById<CheckBox>(R.id.cb_cart)
+                    if (rvCheckBox.isChecked) {
+                        isChecked = true
+                        break
                     }
-
-                    if (!isChecked) {
-                        loading.isDismiss()
-                        showMessage("Belum Ada Satupun yang Diceklis")
-                    } else {
-                        isFirstTime = true
-                        getCheckedProducts()
-                    }
-                } else {
-                    val intent = Intent(this@CartActivity, PaymentActivity::class.java)
-                    startActivity(intent)
                 }
 
+                if (!isChecked) {
+                    loading.isDismiss()
+                    showMessage("Belum Ada Satupun yang Diceklis")
+                } else {
+                    if (btnPayment.isVisible) {
+                        isFirstTime = true
+                        getCheckedProducts()
+                    } else{
+                        val intent = Intent(this@CartActivity, PaymentActivity::class.java)
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                        startActivity(intent)
+                    }
+                }
+            }
+
+            btnPayment.setOnClickListener {
+                val intent = Intent(this@CartActivity, PaymentActivity::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                startActivity(intent)
             }
 
             btnBack.setOnClickListener {
@@ -173,7 +179,7 @@ class CartActivity : AppCompatActivity() {
 
 
             override fun onDecrease(data: Product, position: Int) {
-                if (data.quantity > 1){
+                if (data.quantity > 1) {
                     viewModel.decrementQuantity(data.id)
                     viewModel.totalPriceItem(data.id)
                 }
@@ -182,7 +188,7 @@ class CartActivity : AppCompatActivity() {
             override fun onChecked(data: Product, isChecked: Boolean) {
                 checkedFirstTime = true
                 checkedProducts(data.id, isChecked)
-                Log.e("CheckedID", data.id.toString() )
+                Log.e("CheckedID", data.id.toString())
             }
         })
     }
@@ -203,17 +209,12 @@ class CartActivity : AppCompatActivity() {
         val paymentName = intent.getStringExtra("name")
         val paymentImage = intent.getIntExtra("image", 0)
 
-        if (paymentImage != 0) {
-            binding.ivLogo.visibility = View.VISIBLE
+        if (paymentImage != 0 && paymentName != null) {
+            binding.btnPayment.visibility = View.VISIBLE
             binding.ivLogo.setImageResource(paymentImage)
+            binding.tvPayment.text = paymentName
         }
 
-        if (paymentName != null) {
-            if (paymentName.isNotEmpty()) {
-                binding.tvPayment.visibility = View.VISIBLE
-                binding.tvPayment.text = paymentName
-            }
-        }
     }
 
     private fun getProduct() {
@@ -246,8 +247,8 @@ class CartActivity : AppCompatActivity() {
         return listProduct
     }
 
-    private fun checkedProducts(id: Int, isChecked: Boolean){
-        if (checkedFirstTime){
+    private fun checkedProducts(id: Int, isChecked: Boolean) {
+        if (checkedFirstTime) {
             viewModel.buttonCheck(id, isChecked)
             checkedFirstTime = false
         }
