@@ -73,7 +73,7 @@ class ListCartAdapter(private val context: Context): RecyclerView.Adapter<ListCa
                 onItemClick?.onDecrease(productData, position)
             }
 
-            cbCart.setOnCheckedChangeListener(null) // remove listener
+            cbCart.setOnCheckedChangeListener(null)
             cbCart.isChecked = productData.check_button
             cbCart.setOnCheckedChangeListener { _, isChecked ->
                 productData.check_button = isChecked

@@ -1,6 +1,8 @@
 package com.example.ecommerce_rifqi.ui
 
+import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.util.Log
 import android.util.Patterns
@@ -35,7 +37,6 @@ class LoginActivity : AppCompatActivity() {
             startActivity(Intent(this, MainActivity::class.java))
             finish()
         }
-        getTokenFirebase()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,7 +45,6 @@ class LoginActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         loading = LoadingDialog(this)
-
         sharedPref = PreferencesHelper(this)
         binding.apply {
             etEmail.doOnTextChanged { text, start, before, count ->
@@ -55,7 +55,7 @@ class LoginActivity : AppCompatActivity() {
             }
 
             btnLogin.setOnClickListener {
-
+                getTokenFirebase()
                 val token_fcm = sharedPref.getString(Constant.PREF_FB)
 
                 if (etEmail.text!!.isEmpty()){
@@ -66,6 +66,9 @@ class LoginActivity : AppCompatActivity() {
                     loading.startLoading()
                     if (token_fcm != null) {
                         loginUser(etEmail.text.toString(), etPass.text.toString(), token_fcm)
+                    } else {
+                        loading.isDismiss()
+                        showMessage("Token is not found")
                     }
                 }
             }
@@ -138,9 +141,23 @@ class LoginActivity : AppCompatActivity() {
 
     private fun getTokenFirebase(){
         FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
-            val token = task.result
-            sharedPref.put(Constant.PREF_FB, token)
-            Log.d("tokenfirebase", token)
+
+            if (isNetworkConnected(this)) {
+                val token = task.result
+                sharedPref.put(Constant.PREF_FB, token)
+                Log.d("tokenfirebase", token)
+            } else {
+                showMessage("No internet connection!")
+            }
+
         }
     }
+
+    private fun isNetworkConnected(context: Context): Boolean {
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val activeNetworkInfo = connectivityManager.activeNetworkInfo
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected
+    }
+
 }

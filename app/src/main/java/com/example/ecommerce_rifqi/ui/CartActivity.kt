@@ -54,8 +54,8 @@ class CartActivity : AppCompatActivity() {
 
     private lateinit var loading: LoadingDialog
 
+    @SuppressLint("CutPasteId")
     @RequiresApi(Build.VERSION_CODES.O)
-    @SuppressLint("NotifyDataSetChanged", "CutPasteId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityCartBinding.inflate(layoutInflater)

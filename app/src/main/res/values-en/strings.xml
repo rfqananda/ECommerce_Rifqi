@@ -59,6 +59,8 @@
     <string name="txt_checked">None have been checked yet</string>
     <string name="txt_multiple">Multiple Select</string>
     <string name="txt_payment">Choose Payment Methode</string>
+    <string name="txt_register">No empty data allowed!</string>
+
 
 
 </resources>

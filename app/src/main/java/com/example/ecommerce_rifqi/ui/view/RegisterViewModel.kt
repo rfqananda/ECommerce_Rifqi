@@ -53,7 +53,7 @@ class RegisterViewModel(context: Context) : ViewModel() {
                         val gson = Gson()
                         val jsonObject = gson.fromJson(jObjError, JsonObject::class.java)
                         val error = gson.fromJson(jsonObject, RegisterError::class.java)
-                        _toast.value = Event(error.error?.message.toString())
+                        _toast.value = Event(error.error.message)
                     }
                 }
 

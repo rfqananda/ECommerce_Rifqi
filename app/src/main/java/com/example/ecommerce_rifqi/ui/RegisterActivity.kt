@@ -63,6 +63,7 @@ class RegisterActivity : AppCompatActivity() {
             }
         }
     }
+
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
         ContextCompat.checkSelfPermission(baseContext, it) == PackageManager.PERMISSION_GRANTED
     }
@@ -123,11 +124,7 @@ class RegisterActivity : AppCompatActivity() {
             btnSignup.setOnClickListener {
                 loading.startLoading()
 
-                if (getFile != null){
-
-                    //coba
-
-
+                if (getFile != null) {
 
                     val file = reduceFileImage(getFile as File)
 
@@ -144,15 +141,33 @@ class RegisterActivity : AppCompatActivity() {
                     val phone = etPhone.text.toString().toRequestBody("text/plain".toMediaType())
                     val genderBody = gender.toString().toRequestBody("text/plain".toMediaType())
 
-                    register(
-                        name,
-                        email,
-                        pass,
-                        phone,
-                        genderBody,
-                        imageMultipart
-                    )
 
+
+                    if (
+                        etName.text?.isNotEmpty() == true &&
+                        etEmail.text?.isNotEmpty() == true &&
+                        etPass.text?.isNotEmpty() == true &&
+                        etPhone.text?.isNotEmpty() == true &&
+                        genderBody.toString().isNotEmpty()
+                    ) {
+                        if (!Patterns.EMAIL_ADDRESS.matcher(etEmail.text.toString()).matches()) {
+                            inputEmail.error = "The email you are using is not correct!"
+                            loading.isDismiss()
+                        } else{
+                            register(
+                                name,
+                                email,
+                                pass,
+                                phone,
+                                genderBody,
+                                imageMultipart
+                            )
+                        }
+
+                    } else {
+                        loading.isDismiss()
+                        showMessage(resources.getString(R.string.txt_register))
+                    }
 
                 } else {
                     loading.isDismiss()
@@ -219,19 +234,18 @@ class RegisterActivity : AppCompatActivity() {
         finish()
     }
 
-    private fun showSimpleDialog(){
+    private fun showSimpleDialog() {
         val getPhoto = arrayOf("Camera", "Galeri")
 
         MaterialAlertDialogBuilder(this)
             .setTitle("Select Image")
-            .setItems(getPhoto) {dialog, which ->
-                when(which){
+            .setItems(getPhoto) { dialog, which ->
+                when (which) {
                     0 -> startCameraX()
                     1 -> startGallery()
                 }
             }.show()
     }
-
 
 
     private fun startCameraX() {
@@ -271,17 +285,20 @@ class RegisterActivity : AppCompatActivity() {
         image: MultipartBody.Part
     ) {
 
-        viewModel = ViewModelProvider(this, ViewModelFactory(applicationContext))[RegisterViewModel::class.java]
+        viewModel = ViewModelProvider(
+            this,
+            ViewModelFactory(applicationContext)
+        )[RegisterViewModel::class.java]
 
         viewModel.setRegister(name, email, password, phone, gender, image)
 
-        viewModel.toast.observe(this){
+        viewModel.toast.observe(this) {
             it.getContentIfNotHandled()?.let { response ->
                 showMessage(response)
                 loading.isDismiss()
             }
         }
-        viewModel.registerSuccess.observe(this){
+        viewModel.registerSuccess.observe(this) {
             it.getContentIfNotHandled()?.let { response ->
                 dialog(response.success.message)
             }

@@ -39,11 +39,6 @@ class NotificationActivity : AppCompatActivity() {
         setCustomToolbar()
     }
 
-    override fun onStart() {
-        super.onStart()
-
-    }
-
     private fun getNotification() {
         notificationAdapter = ListNotificationAdapter(isMultipleSelect)
         viewModel.getNotification()?.observe(this) {
@@ -55,9 +50,16 @@ class NotificationActivity : AppCompatActivity() {
                     notificationAdapter.setData(list)
 
                     binding.apply {
-                        rvNotification.setHasFixedSize(true)
-                        rvNotification.layoutManager = LinearLayoutManager(this@NotificationActivity)
                         rvNotification.adapter = notificationAdapter
+                        rvNotification.layoutManager = LinearLayoutManager(this@NotificationActivity)
+                        rvNotification.setHasFixedSize(true)
+
+                        // setelah memperbarui dataset pada adapter RecyclerView
+                        val layoutManager = rvNotification.layoutManager as LinearLayoutManager
+                        val position = layoutManager.findFirstVisibleItemPosition() // mendapatkan posisi tampilan pertama yang terlihat
+                        val offset = rvNotification.getChildAt(0)?.top ?: 0 // mendapatkan jarak antara tampilan pertama yang terlihat dan posisi paling atas
+                        layoutManager.scrollToPositionWithOffset(position, offset) // menggulirkan RecyclerView ke posisi pertama yang terlihat sebelumnya dengan offset yang tepat
+
                     }
 
                     notificationAdapter.setOnItemClick(object :

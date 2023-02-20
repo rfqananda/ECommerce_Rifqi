@@ -3,6 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
     id 'com.google.gms.google-services'
+    id 'com.google.firebase.crashlytics'
 }
 
 android {
@@ -114,4 +115,11 @@ dependencies {
 
     // Remote Config
     implementation 'com.google.firebase:firebase-config-ktx'
+
+    // Analytics Library
+    implementation 'com.google.firebase:firebase-analytics-ktx'
+
+    // Crashlytics
+    implementation 'com.google.firebase:firebase-crashlytics-ktx'
+
 }
