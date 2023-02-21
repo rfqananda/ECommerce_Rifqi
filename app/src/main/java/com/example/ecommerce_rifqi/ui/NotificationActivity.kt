@@ -35,12 +35,17 @@ class NotificationActivity : AppCompatActivity() {
         binding = ActivityNotificationBinding.inflate(layoutInflater)
         setContentView(binding.root)
         viewModel = ViewModelProvider(this)[NotificationViewModel::class.java]
-        getNotification()
         setCustomToolbar()
+        getNotification()
     }
 
     private fun getNotification() {
         notificationAdapter = ListNotificationAdapter(isMultipleSelect)
+        binding.apply {
+            rvNotification.adapter = notificationAdapter
+            rvNotification.layoutManager = LinearLayoutManager(this@NotificationActivity)
+            rvNotification.setHasFixedSize(true)
+        }
         viewModel.getNotification()?.observe(this) {
             Log.e("Adakah datanya", it.toString())
             if (it != null) {
@@ -49,21 +54,8 @@ class NotificationActivity : AppCompatActivity() {
                     isDataEmpty(false)
                     notificationAdapter.setData(list)
 
-                    binding.apply {
-                        rvNotification.adapter = notificationAdapter
-                        rvNotification.layoutManager = LinearLayoutManager(this@NotificationActivity)
-                        rvNotification.setHasFixedSize(true)
-
-                        // setelah memperbarui dataset pada adapter RecyclerView
-                        val layoutManager = rvNotification.layoutManager as LinearLayoutManager
-                        val position = layoutManager.findFirstVisibleItemPosition() // mendapatkan posisi tampilan pertama yang terlihat
-                        val offset = rvNotification.getChildAt(0)?.top ?: 0 // mendapatkan jarak antara tampilan pertama yang terlihat dan posisi paling atas
-                        layoutManager.scrollToPositionWithOffset(position, offset) // menggulirkan RecyclerView ke posisi pertama yang terlihat sebelumnya dengan offset yang tepat
-
-                    }
-
                     notificationAdapter.setOnItemClick(object :
-                        ListNotificationAdapter.OnAdapterListenerListProductFavorite {
+                        ListNotificationAdapter.OnAdapterListenerNotification {
                         override fun onClick(data: Notification) {
                             isRead(data.id)
 
@@ -79,7 +71,6 @@ class NotificationActivity : AppCompatActivity() {
 
                         override fun onChecked(data: Notification, isChecked: Boolean, position: Int) {
                             isChecked(data.id, isChecked)
-//                            notificationAdapter.notifyItemChanged(position)
                         }
                     })
 
@@ -119,7 +110,10 @@ class NotificationActivity : AppCompatActivity() {
 
                 if (!isChecked) {
                     showMessage(resources.getString(R.string.txt_checked))
-                } else viewModel.readAllNotification()
+                } else{
+                    viewModel.readAllNotification()
+                }
+
                 onBackPressed()
             }
             R.id.delete -> {
@@ -163,6 +157,7 @@ class NotificationActivity : AppCompatActivity() {
         viewModel.isChecked(id, isChecked)
     }
 
+
     private fun unselectNotification() {
         viewModel.unselectNotification()
     }
@@ -186,6 +181,7 @@ class NotificationActivity : AppCompatActivity() {
     private fun setMultipleSelect() {
         isMultipleSelect = !isMultipleSelect
         getNotification()
+
 
         if (isMultipleSelect) {
             myMenu.findItem(R.id.read_notification)?.isVisible = true

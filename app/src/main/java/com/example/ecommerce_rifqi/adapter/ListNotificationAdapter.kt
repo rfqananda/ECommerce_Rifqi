@@ -32,9 +32,9 @@ class ListNotificationAdapter(private val isMultipleSelect: Boolean) :
         notifyDataSetChanged()
     }
 
-    private var onItemClick: ListNotificationAdapter.OnAdapterListenerListProductFavorite? = null
+    private var onItemClick: ListNotificationAdapter.OnAdapterListenerNotification? = null
 
-    fun setOnItemClick(onItemClick: ListNotificationAdapter.OnAdapterListenerListProductFavorite) {
+    fun setOnItemClick(onItemClick: ListNotificationAdapter.OnAdapterListenerNotification) {
         this.onItemClick = onItemClick
     }
 
@@ -93,7 +93,7 @@ class ListNotificationAdapter(private val isMultipleSelect: Boolean) :
 
     override fun getItemCount(): Int = listData.size
 
-    interface OnAdapterListenerListProductFavorite {
+    interface OnAdapterListenerNotification {
         fun onClick(data: Notification)
         fun onChecked(data: Notification, isChecked: Boolean, position: Int)
     }

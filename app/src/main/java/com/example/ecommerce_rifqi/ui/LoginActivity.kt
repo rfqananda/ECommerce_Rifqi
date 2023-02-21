@@ -33,6 +33,7 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
+        getTokenFirebase()
         if (sharedPref.getBoolean(Constant.PREF_IS_LOGIN)) {
             startActivity(Intent(this, MainActivity::class.java))
             finish()
@@ -55,7 +56,6 @@ class LoginActivity : AppCompatActivity() {
             }
 
             btnLogin.setOnClickListener {
-                getTokenFirebase()
                 val token_fcm = sharedPref.getString(Constant.PREF_FB)
 
                 if (etEmail.text!!.isEmpty()){
