@@ -182,7 +182,6 @@ class NotificationActivity : AppCompatActivity() {
         isMultipleSelect = !isMultipleSelect
         getNotification()
 
-
         if (isMultipleSelect) {
             myMenu.findItem(R.id.read_notification)?.isVisible = true
             myMenu.findItem(R.id.delete)?.isVisible = true

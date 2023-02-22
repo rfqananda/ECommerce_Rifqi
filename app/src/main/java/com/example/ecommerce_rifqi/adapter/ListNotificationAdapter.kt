@@ -24,6 +24,15 @@ class ListNotificationAdapter(private val isMultipleSelect: Boolean) :
 
     private val listData = ArrayList<Notification>()
 
+    private val isCheckedMap = mutableMapOf<Int, Boolean>()
+
+    init {
+        // Inisialisasi isCheckedMap dengan nilai false untuk setiap item
+        listData.forEach { myData ->
+            isCheckedMap[myData.id] = false
+        }
+    }
+
     @SuppressLint("NotifyDataSetChanged")
     fun setData(data: List<Notification>) {
         listData.clear()
@@ -83,8 +92,9 @@ class ListNotificationAdapter(private val isMultipleSelect: Boolean) :
 
             }
 
-            cbNotification.isChecked = listProduct.isChecked
+            cbNotification.isChecked = isCheckedMap[listProduct.id] == true
             cbNotification.setOnCheckedChangeListener { _, isChecked ->
+                isCheckedMap[listProduct.id] = isChecked
                 listProduct.isChecked = isChecked
                 onItemClick?.onChecked(listProduct, isChecked, position)
             }

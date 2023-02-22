@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.util.Log
 import android.util.Patterns
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.ViewModelProvider
@@ -16,6 +15,9 @@ import com.example.ecommerce_rifqi.ui.view.LoginViewModel
 import com.example.ecommerce_rifqi.helper.Constant
 import com.example.ecommerce_rifqi.helper.PreferencesHelper
 import com.example.ecommerce_rifqi.utils.ViewModelFactory
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
 
 class LoginActivity : AppCompatActivity() {
@@ -27,6 +29,8 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var viewModel: LoginViewModel
 
     private lateinit var loading: LoadingDialog
+
+    private lateinit var firebaseAnalytics: FirebaseAnalytics
 
     private var email: String = ""
     private var pass: String = ""
@@ -71,15 +75,36 @@ class LoginActivity : AppCompatActivity() {
                         showMessage("Token is not found")
                     }
                 }
+
+                //Firebase OnClick Button Login
+                val btn_login = Bundle()
+                btn_login.putString("screen_name", "Login")
+                btn_login.putString("email", binding.etEmail.text.toString())
+                btn_login.putString("button_name", "Login")
+                firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, btn_login)
             }
 
             btnSignup.setOnClickListener {
                 val i = Intent(this@LoginActivity, RegisterActivity::class.java)
                 startActivity(i)
+                //Firebase OnClick Button Signup
+                val btn_signup = Bundle()
+                btn_signup.putString("screen_name", "Login")
+                btn_signup.putString("button_name", "Sign Up")
+                firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, btn_signup)
             }
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        //Firebase Onload
+        firebaseAnalytics = Firebase.analytics
+        val onload = Bundle()
+        onload.putString("screen_name", "Login")
+        onload.putString("screen_class", this.javaClass.simpleName)
+        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, onload)
+    }
     private fun loginUser(email: String, password: String, token: String) {
         viewModel = ViewModelProvider(this@LoginActivity, ViewModelFactory(applicationContext))[LoginViewModel::class.java]
         viewModel.setLogin(email, password, token)

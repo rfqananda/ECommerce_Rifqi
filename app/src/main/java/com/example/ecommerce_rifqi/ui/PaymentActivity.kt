@@ -50,6 +50,10 @@ class PaymentActivity : AppCompatActivity(), CobaAdapter1.OnAdapterListenerPayme
                 onFirebaseActivated()
             }
         }
+
+        binding.btnBack.setOnClickListener {
+            onBackPressed()
+        }
     }
 
     private fun onFirebaseActivated() {

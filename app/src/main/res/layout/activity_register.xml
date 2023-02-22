@@ -48,7 +48,7 @@
                 android:layout_gravity="end|bottom"
                 android:scaleType="centerCrop"
                 android:background="@drawable/bg_card2"
-                android:src="@drawable/ic_add_pp" />
+                android:src="@drawable/ic_camera" />
 
         </FrameLayout>
 

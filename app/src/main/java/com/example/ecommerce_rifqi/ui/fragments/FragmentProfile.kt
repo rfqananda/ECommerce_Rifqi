@@ -143,7 +143,7 @@ class FragmentProfile : Fragment(R.layout.fragment_profile) {
     private fun whenGetPhoto() {
         if (getFile != null) {
             loading.startLoading()
-            val file = reduceFileImage(getFile as File)
+            val file = getFile as File
 
             val requestImageFile = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
             val imageMultipart: MultipartBody.Part = MultipartBody.Part.createFormData(
@@ -265,7 +265,7 @@ class FragmentProfile : Fragment(R.layout.fragment_profile) {
                 .transform(CircleCrop())
                 .into(binding.ivPhotoUser)
 
-            getFile = reduceFileImage(myFile)
+            getFile = reduceFileImage(myFile, isBackCamera)
 
             whenGetPhoto()
         }
@@ -277,7 +277,7 @@ class FragmentProfile : Fragment(R.layout.fragment_profile) {
         if (result.resultCode == AppCompatActivity.RESULT_OK) {
             val selectedImg: Uri = result.data?.data as Uri
             val myFile = uriToFile(selectedImg, requireContext())
-            getFile = myFile
+            getFile = reduceFileImage(myFile, null)
 
             Glide.with(requireContext())
                 .load(myFile)
@@ -289,8 +289,11 @@ class FragmentProfile : Fragment(R.layout.fragment_profile) {
         }
     }
 
-    private fun reduceFileImage(file: File): File {
+    private fun reduceFileImage(file: File, isBackCamera:Boolean?): File {
         var bitmap = BitmapFactory.decodeFile(file.path)
+        if (isBackCamera == true){
+            bitmap = rotateBitmap(bitmap, isBackCamera)
+        }
         var compressQuality = 100
         var streamLength: Int
         do {

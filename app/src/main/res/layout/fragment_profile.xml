@@ -40,7 +40,7 @@
                 android:background="@drawable/bg_card2"
                 android:padding="10dp"
                 android:scaleType="centerCrop"
-                android:src="@drawable/ic_add_pp"
+                android:src="@drawable/ic_camera"
                 app:layout_constraintBottom_toBottomOf="@+id/iv_photo_user"
                 app:layout_constraintEnd_toEndOf="@+id/iv_photo_user" />
 

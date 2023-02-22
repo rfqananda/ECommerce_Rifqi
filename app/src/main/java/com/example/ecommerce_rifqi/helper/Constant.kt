@@ -20,5 +20,8 @@ class Constant {
         val PREF_GET_MESSAGE = "PREF_MESSAGE"
 
         val PREF_NAME_PAYMENT = "PREF_NAME_PAYMENT"
+
+        // Firebase
+        
     }
 }

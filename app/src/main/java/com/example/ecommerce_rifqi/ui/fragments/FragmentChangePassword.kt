@@ -38,27 +38,24 @@ class FragmentChangePassword : Fragment(R.layout.fragment_change_password) {
         binding.apply {
 
             etOldPass.doOnTextChanged { text, start, before, count ->
-                if (etOldPass.text.toString().isNotEmpty()){
+                if (etOldPass.text.toString().isNotEmpty()) {
                     inputOldPass.error = null
                     inputOldPass.isErrorEnabled = false
-                }
-                else inputOldPass.error = "Old password cannot be empty!"
+                } else inputOldPass.error = "Old password cannot be empty!"
             }
 
             etNewPass.doOnTextChanged { text, start, before, count ->
-                if (etNewPass.text.toString().isNotEmpty()){
+                if (etNewPass.text.toString().isNotEmpty()) {
                     inputNewPass.error = null
                     inputNewPass.isErrorEnabled = false
-                }
-                else inputNewPass.error = "New password cannot be empty!"
+                } else inputNewPass.error = "New password cannot be empty!"
             }
 
             etConfirmNewPass.doOnTextChanged { text, start, before, count ->
-                if (etConfirmNewPass.text.toString().isNotEmpty()){
+                if (etConfirmNewPass.text.toString().isNotEmpty()) {
                     inputConfirmNewPass.error = null
                     inputConfirmNewPass.isErrorEnabled = false
-                }
-                else inputConfirmNewPass.error = "New password cannot be empty!"
+                } else inputConfirmNewPass.error = "New password cannot be empty!"
 
                 if (etConfirmNewPass.text.toString() != etNewPass.text.toString()) {
                     inputConfirmNewPass.error = "Passwords not match!"
@@ -70,34 +67,41 @@ class FragmentChangePassword : Fragment(R.layout.fragment_change_password) {
             }
 
             btnBack.setOnClickListener {
-                findNavController().navigate(R.id.action_fragmentChangePassword_to_fragmentProfile)
+                findNavController().popBackStack()
             }
 
             btnSave.setOnClickListener {
 
                 loading.startLoading()
-                val access = sharedPref.getString(Constant.PREF_ACCESS)
                 val id = sharedPref.getString(Constant.PREF_ID)
 
-
-                if (etOldPass.text.toString().isEmpty()){
+                if (etOldPass.text.toString().isEmpty()) {
                     inputOldPass.error = "Name cannot be empty!"
-                }
-                else if (etNewPass.text.toString().isEmpty()){
+                } else if (etNewPass.text.toString().isEmpty()) {
                     inputNewPass.error = "Email cannot be empty!"
-                }
-                else if (etConfirmNewPass.text.toString().isEmpty()){
+                } else if (etConfirmNewPass.text.toString().isEmpty()) {
                     inputConfirmNewPass.error = "Password cannot be empty!"
-                } else{
+                }
+
+                if (
+                    etOldPass.text?.isNotEmpty() == true &&
+                    etNewPass.text?.isNotEmpty() == true &&
+                    etConfirmNewPass.text?.isNotEmpty() == true
+                ){
                     changePassword(
                         id!!.toInt(),
                         etOldPass.text.toString(),
                         etNewPass.text.toString(),
-                        etConfirmNewPass.text.toString())
+                        etConfirmNewPass.text.toString()
+                    )
+                } else{
+                    loading.isDismiss()
+                    showMessage("Data tidak boleh kosong!")
                 }
+
+
             }
         }
-
     }
 
     private fun changePassword(id: Int, oldPass: String, newPass: String, confirmPass: String) {

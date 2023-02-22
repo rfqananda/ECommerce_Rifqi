@@ -23,6 +23,9 @@ import com.example.ecommerce_rifqi.utils.ViewModelFactory
 import com.example.ecommerce_rifqi.utils.rotateBitmap
 import com.example.ecommerce_rifqi.utils.uriToFile
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.ktx.Firebase
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -43,6 +46,10 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var loading: LoadingDialog
 
     private var isBackCamera by Delegates.notNull<Boolean>()
+
+    private lateinit var firebaseAnalytics: FirebaseAnalytics
+
+    private var userChoice = ""
 
     companion object {
         const val CAMERA_X_RESULT = 200
@@ -86,6 +93,11 @@ class RegisterActivity : AppCompatActivity() {
 
         binding.btnLogin.setOnClickListener {
             moveActivity(this)
+            //Firebase OnClick Button Login
+            val btn_login = Bundle()
+            btn_login.putString("screen_name", "Sign Up")
+            btn_login.putString("button_name", "Login")
+            firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, btn_login)
         }
 
         binding.apply {
@@ -125,8 +137,7 @@ class RegisterActivity : AppCompatActivity() {
                 loading.startLoading()
 
                 if (getFile != null) {
-
-                    val file = reduceFileImage(getFile as File)
+                    val file = getFile as File
 
                     val requestImageFile = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
                     val imageMultipart: MultipartBody.Part = MultipartBody.Part.createFormData(
@@ -168,17 +179,42 @@ class RegisterActivity : AppCompatActivity() {
                         loading.isDismiss()
                         showMessage(resources.getString(R.string.txt_register))
                     }
-
                 } else {
                     loading.isDismiss()
                     val insertImage = resources.getString(R.string.txt_insert_image)
                     showMessage(insertImage)
                 }
+
+                //Firebase OnClick Button SignUp
+                val btn_signup = Bundle()
+                btn_signup.putString("screen_name", "Sign Up")
+                btn_signup.putString("image", userChoice)
+                btn_signup.putString("email", etEmail.text.toString())
+                btn_signup.putString("name", etName.text.toString())
+                btn_signup.putString("phone", etPhone.text.toString())
+                btn_signup.putString("gender", gender.toString())
+                btn_signup.putString("button_name", "Sign Up")
+                firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, btn_signup)
             }
             btnUploadPp.setOnClickListener {
                 showSimpleDialog()
+                //Firebase OnClick Camera Icon
+                val btn_camera = Bundle()
+                btn_camera.putString("screen_name", "Sign Up")
+                btn_camera.putString("button_name", "Icon Photo")
+                firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, btn_camera)
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        //Firebase Onload
+        firebaseAnalytics = Firebase.analytics
+        val onload = Bundle()
+        onload.putString("screen_name", "Sign Up")
+        onload.putString("screen_class", this.javaClass.simpleName)
+        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, onload)
     }
 
     private var getFile: File? = null
@@ -196,7 +232,7 @@ class RegisterActivity : AppCompatActivity() {
             )
             binding.ivPhoto.setImageBitmap(result)
 
-            getFile = reduceFileImage(myFile)
+            getFile = reduceFileImage(myFile, isBackCamera)
         }
     }
 
@@ -240,10 +276,18 @@ class RegisterActivity : AppCompatActivity() {
         MaterialAlertDialogBuilder(this)
             .setTitle("Select Image")
             .setItems(getPhoto) { dialog, which ->
+                val selectedOption = getPhoto[which]
                 when (which) {
                     0 -> startCameraX()
                     1 -> startGallery()
                 }
+
+                userChoice = selectedOption
+                //Firebase OnClick Choice Image From
+                val camera = Bundle()
+                camera.putString("screen_name", "Sign Up")
+                camera.putString("image", selectedOption)
+                firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, camera)
             }.show()
     }
 
@@ -261,8 +305,9 @@ class RegisterActivity : AppCompatActivity() {
         launcherIntentGallery.launch(chooser)
     }
 
-    private fun reduceFileImage(file: File): File {
+    private fun reduceFileImage(file: File, isBackCamera: Boolean): File {
         var bitmap = BitmapFactory.decodeFile(file.path)
+        bitmap = rotateBitmap(bitmap, isBackCamera)
         var compressQuality = 100
         var streamLength: Int
         do {
