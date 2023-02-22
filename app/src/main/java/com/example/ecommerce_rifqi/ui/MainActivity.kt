@@ -18,6 +18,9 @@ import com.example.ecommerce_rifqi.ui.view.GetProductCartViewModel
 import com.example.ecommerce_rifqi.ui.view.NotificationViewModel
 import com.example.ecommerce_rifqi.utils.Communicator
 import com.google.android.material.badge.BadgeDrawable
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.ktx.Firebase
 import java.util.*
 
 @Suppress("DEPRECATION")
@@ -29,6 +32,8 @@ class MainActivity : AppCompatActivity(), Communicator {
     private var badgeNumber = 0
 
     lateinit var sharedPref: PreferencesHelper
+
+    private lateinit var firebaseAnalytics: FirebaseAnalytics
 
     private lateinit var viewModelCart: GetProductCartViewModel
 
@@ -62,11 +67,25 @@ class MainActivity : AppCompatActivity(), Communicator {
             btnCart.setOnClickListener {
                 val intent = Intent(this@MainActivity, CartActivity::class.java)
                 startActivity(intent)
+
+                //Firebase OnClick Trolley Icon
+                firebaseAnalytics = Firebase.analytics
+                val buttonClick = Bundle()
+                buttonClick.putString("screen_name", "Home")
+                buttonClick.putString("button_name", "Trolley Icon")
+                firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, buttonClick)
             }
 
             btnNotification.setOnClickListener {
                 val intent = Intent(this@MainActivity, NotificationActivity::class.java)
                 startActivity(intent)
+
+                //Firebase OnClick Notification Icon
+                firebaseAnalytics = Firebase.analytics
+                val buttonClick = Bundle()
+                buttonClick.putString("screen_name", "Home")
+                buttonClick.putString("button_name", "Notif Icon")
+                firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, buttonClick)
             }
 
         }

@@ -10,7 +10,6 @@ import android.view.View
 import android.widget.CheckBox
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.core.view.isNotEmpty
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -20,6 +19,9 @@ import com.example.ecommerce_rifqi.adapter.ListNotificationAdapter
 import com.example.ecommerce_rifqi.data.local.Notification
 import com.example.ecommerce_rifqi.databinding.ActivityNotificationBinding
 import com.example.ecommerce_rifqi.ui.view.NotificationViewModel
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
 
 class NotificationActivity : AppCompatActivity() {
@@ -29,6 +31,7 @@ class NotificationActivity : AppCompatActivity() {
     private lateinit var notificationAdapter: ListNotificationAdapter
     private var isMultipleSelect = false
     private lateinit var myMenu: Menu
+    private lateinit var firebaseAnalytics: FirebaseAnalytics
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,6 +40,17 @@ class NotificationActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this)[NotificationViewModel::class.java]
         setCustomToolbar()
         getNotification()
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        //Firebase Onload
+        firebaseAnalytics = Firebase.analytics
+        val onload = Bundle()
+        onload.putString("screen_name", "Notification")
+        onload.putString("screen_class", this.javaClass.simpleName)
+        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, onload)
     }
 
     private fun getNotification() {
@@ -67,15 +81,28 @@ class NotificationActivity : AppCompatActivity() {
                             }
                             val dialog = builder.create()
                             dialog.show()
+
+                            //Firebase On Click Item Notification
+                            firebaseAnalytics = Firebase.analytics
+                            val selectItem = Bundle()
+                            selectItem.putString("screen_name", "Notification")
+                            selectItem.putString("title", data.title)
+                            selectItem.putString("message", data.message)
+                            firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, selectItem)
                         }
 
                         override fun onChecked(data: Notification, isChecked: Boolean, position: Int) {
                             isChecked(data.id, isChecked)
+
+                            //Firebase On Select CheckBox
+                            firebaseAnalytics = Firebase.analytics
+                            val selectItem = Bundle()
+                            selectItem.putString("screen_name", "Multiple Select")
+                            selectItem.putString("title", data.title)
+                            selectItem.putString("message", data.message)
+                            firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, selectItem)
                         }
                     })
-
-
-
                 } else isDataEmpty(true)
             }
         }
@@ -91,6 +118,15 @@ class NotificationActivity : AppCompatActivity() {
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        var count = 0
+        for (i in 0 until binding.rvNotification.childCount) {
+            val child = binding.rvNotification.getChildAt(i)
+            val rvCheckBox = child.findViewById<CheckBox>(R.id.cb_notification)
+            if (rvCheckBox.isChecked) {
+                count++
+            }
+        }
+
         when (item.itemId) {
             R.id.set_notification_item -> {
                 if (binding.emptyData.isVisible) {
@@ -114,9 +150,25 @@ class NotificationActivity : AppCompatActivity() {
                     viewModel.readAllNotification()
                 }
 
+                //Firebase On Click Read Icon
+                firebaseAnalytics = Firebase.analytics
+                val selectItem = Bundle()
+                selectItem.putString("screen_name", "Multiple Select")
+                selectItem.putString("button_name", "Read Icon")
+                selectItem.putInt("total_select_item", count)
+                firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, selectItem)
+
                 onBackPressed()
             }
             R.id.delete -> {
+                //Firebase On Click Delete Icon
+                firebaseAnalytics = Firebase.analytics
+                val selectItem = Bundle()
+                selectItem.putString("screen_name", "Multiple Select")
+                selectItem.putString("button_name", "Delete Icon")
+                selectItem.putInt("total_select_item", count)
+                firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, selectItem)
+
                 var isChecked = false
                 for (i in 0 until binding.rvNotification.childCount) {
                     val child = binding.rvNotification.getChildAt(i)
@@ -188,6 +240,13 @@ class NotificationActivity : AppCompatActivity() {
             myMenu.findItem(R.id.set_notification_item)?.isVisible = false
 
             binding.tvToolbarTitle.text = resources.getString(R.string.txt_multiple)
+
+            //Firebase OnClick Multiple Select Icon
+            firebaseAnalytics = Firebase.analytics
+            val buttonClick = Bundle()
+            buttonClick.putString("screen_name", "Notification")
+            buttonClick.putString("button_name", "Multiple Select Item")
+            firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, buttonClick)
         } else {
             myMenu.findItem(R.id.read_notification)?.isVisible = false
             myMenu.findItem(R.id.delete)?.isVisible = false
@@ -209,8 +268,21 @@ class NotificationActivity : AppCompatActivity() {
     override fun onBackPressed() {
         if (isMultipleSelect) {
             setMultipleSelect()
+
+            //Firebase On Click Back Button
+            firebaseAnalytics = Firebase.analytics
+            val buttonClick = Bundle()
+            buttonClick.putString("screen_name", "Multiple Select")
+            buttonClick.putString("button_name", "Back Icon")
+            firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, buttonClick)
         } else {
             onBackPressedDispatcher.onBackPressed()
+            //Firebase On Click Back Button
+            firebaseAnalytics = Firebase.analytics
+            val buttonClick = Bundle()
+            buttonClick.putString("screen_name", "Notification")
+            buttonClick.putString("button_name", "Back Icon")
+            firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, buttonClick)
         }
         lifecycleScope.launch {
             unselectNotification()

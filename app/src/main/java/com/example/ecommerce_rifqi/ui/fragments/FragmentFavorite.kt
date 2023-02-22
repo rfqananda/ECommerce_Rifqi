@@ -18,6 +18,9 @@ import com.example.ecommerce_rifqi.ui.DetailActivity
 import com.example.ecommerce_rifqi.ui.view.GetListFavoriteProductViewModel
 import com.example.ecommerce_rifqi.utils.ViewModelFactory
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.*
 
 class FragmentFavorite : Fragment(R.layout.fragment_favorite) {
@@ -30,6 +33,8 @@ class FragmentFavorite : Fragment(R.layout.fragment_favorite) {
     private lateinit var listFavoriteProductAdapter: ListProductFavoriteAdapter
 
     private lateinit var viewModel: GetListFavoriteProductViewModel
+
+    private lateinit var firebaseAnalytics: FirebaseAnalytics
 
     private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main)
     private var searchJob: Job? = null
@@ -64,6 +69,12 @@ class FragmentFavorite : Fragment(R.layout.fragment_favorite) {
                             viewModel.setFavoriteProductList("", userID!!.toInt())
                         } else {
                             viewModel.setFavoriteProductList(text.toString(), userID!!.toInt())
+                            //Firebase OnSearch
+                            firebaseAnalytics = Firebase.analytics
+                            val onsearch = Bundle()
+                            onsearch.putString("screen_name", "Favorite")
+                            onsearch.putString("search", text.toString())
+                            firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, onsearch)
                         }
                     }
                 }
@@ -83,6 +94,17 @@ class FragmentFavorite : Fragment(R.layout.fragment_favorite) {
         super.onStart()
         viewModel.setFavoriteProductList("", sharedPref.getString(Constant.PREF_ID)!!.toInt())
         getListProduct(null)
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        //Firebase Onload
+        firebaseAnalytics = Firebase.analytics
+        val onload = Bundle()
+        onload.putString("screen_name", "Favorite")
+        onload.putString("screen_class", this.javaClass.simpleName)
+        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, onload)
     }
 
     private fun isDataEmpty(isEmpty: Boolean){
@@ -127,6 +149,13 @@ class FragmentFavorite : Fragment(R.layout.fragment_favorite) {
             }
 
             .show()
+
+        //Firebase OnClick Sort By
+        firebaseAnalytics = Firebase.analytics
+        val popupSort = Bundle()
+        popupSort.putString("screen_name", "Favorite")
+        popupSort.putString("sort_by", checkedItem)
+        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, popupSort)
     }
 
     private fun setupListProduct(){
@@ -138,6 +167,16 @@ class FragmentFavorite : Fragment(R.layout.fragment_favorite) {
                 val intent = Intent(requireActivity(), DetailActivity::class.java)
                 intent.putExtra("id", productID)
                 startActivity(intent)
+
+                //Firebase OnClick Product
+                firebaseAnalytics = Firebase.analytics
+                val selectItem = Bundle()
+                selectItem.putString("screen_name", "Favorite")
+                selectItem.putString("product_name", data.name_product)
+                selectItem.putString("product_price", data.harga)
+                selectItem.putInt("product_rate", data.rate)
+                selectItem.putInt("product_id", data.id)
+                firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, selectItem)
             }
         })
 

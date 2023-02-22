@@ -2,28 +2,24 @@ package com.example.ecommerce_rifqi.ui.fragments
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import android.widget.Toast
-import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.paging.LoadState
-import androidx.paging.PagingSource
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.ecommerce_rifqi.R
 import com.example.ecommerce_rifqi.adapter.ListProductAdapter
 import com.example.ecommerce_rifqi.adapter.LoadingStateAdapter
 import com.example.ecommerce_rifqi.databinding.FragmentHomeBinding
 import com.example.ecommerce_rifqi.helper.PreferencesHelper
 import com.example.ecommerce_rifqi.model.DataProduct
-import com.example.ecommerce_rifqi.paging.ProductPagingSource
 import com.example.ecommerce_rifqi.ui.DetailActivity
 import com.example.ecommerce_rifqi.ui.view.GetListProductViewModel
 import com.example.ecommerce_rifqi.ui.view.ViewModelFactoryProduct
 import com.example.ecommerce_rifqi.utils.Communicator
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.*
 
 class FragmentHome : Fragment(R.layout.fragment_home) {
@@ -38,6 +34,8 @@ class FragmentHome : Fragment(R.layout.fragment_home) {
     private lateinit var comm: Communicator
 
     lateinit var sharedPref: PreferencesHelper
+
+    private lateinit var firebaseAnalytics: FirebaseAnalytics
 
     private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main)
     private var searchJob: Job? = null
@@ -68,6 +66,12 @@ class FragmentHome : Fragment(R.layout.fragment_home) {
                             getListProduct(null)
                         } else {
                             getListProduct(text.toString())
+                            //Firebase OnSearch
+                            firebaseAnalytics = Firebase.analytics
+                            val onsearch = Bundle()
+                            onsearch.putString("screen_name", "Home")
+                            onsearch.putString("search", text.toString())
+                            firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, onsearch)
                         }
                     }
                 }
@@ -125,6 +129,17 @@ class FragmentHome : Fragment(R.layout.fragment_home) {
                             val intent = Intent(requireActivity(), DetailActivity::class.java)
                             intent.putExtra("id", productID)
                             startActivity(intent)
+
+
+                            //Firebase OnClick Product
+                            firebaseAnalytics = Firebase.analytics
+                            val selectItem = Bundle()
+                            selectItem.putString("screen_name", "Home")
+                            selectItem.putString("product_name", data.name_product)
+                            selectItem.putString("product_price", data.harga)
+                            selectItem.putInt("product_rate", data.rate)
+                            selectItem.putInt("product_id", data.id)
+                            firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, selectItem)
                         }
                     })
                     binding.swipeRefresh.isRefreshing = false
@@ -155,6 +170,13 @@ class FragmentHome : Fragment(R.layout.fragment_home) {
         super.onResume()
         searchJob?.cancel()
         getListProduct(null)
+
+        //Firebase Onload
+        firebaseAnalytics = Firebase.analytics
+        val onload = Bundle()
+        onload.putString("screen_name", "Home")
+        onload.putString("screen_class", this.javaClass.simpleName)
+        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, onload)
     }
 
 
