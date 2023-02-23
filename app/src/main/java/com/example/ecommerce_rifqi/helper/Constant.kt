@@ -22,6 +22,12 @@ class Constant {
         val PREF_NAME_PAYMENT = "PREF_NAME_PAYMENT"
 
         // Firebase
-        
+        val button_click = "button_click"
+        val on_scroll = "on_scroll"
+        val on_search = "on_search"
+        val popup_sort = "popup_sort"
+        val popup_detail = "popup_detail"
+
+
     }
 }

@@ -25,6 +25,9 @@ import com.example.ecommerce_rifqi.helper.PreferencesHelper
 import com.example.ecommerce_rifqi.model.DetailDataProduct
 import com.example.ecommerce_rifqi.ui.view.*
 import com.example.ecommerce_rifqi.utils.ViewModelFactory
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -45,6 +48,8 @@ class DetailActivity : AppCompatActivity(), ImagePagerAdapter.OnPageClickListene
     private lateinit var viewModelHistorySearch: GetProductSearchHistoryViewModel
 
     private lateinit var listProductAdapter: ListProductDetailAdapter
+
+    private lateinit var firebaseAnalytics: FirebaseAnalytics
 
     private lateinit var seePhoto: PhotoDialog
 
@@ -88,6 +93,12 @@ class DetailActivity : AppCompatActivity(), ImagePagerAdapter.OnPageClickListene
         binding.apply {
 
             btnBack.setOnClickListener {
+                //On Click Back Icon
+                firebaseAnalytics = Firebase.analytics
+                val buttonClick = Bundle()
+                buttonClick.putString("screen_name", "Detail Product")
+                buttonClick.putString("button_name", "Back Icon")
+                firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, buttonClick)
                 finish()
             }
 
@@ -100,6 +111,16 @@ class DetailActivity : AppCompatActivity(), ImagePagerAdapter.OnPageClickListene
                     removeFromFav(productID, userID.toInt())
                 }
                 toggleButton.isChecked = isFavorite
+
+                //On Click Love Icon
+                firebaseAnalytics = Firebase.analytics
+                val buttonClick = Bundle()
+                buttonClick.putString("screen_name", "Detail Product")
+                buttonClick.putString("button_name", "Love Icon")
+                buttonClick.putInt("product_id", productID)
+                buttonClick.putString("product_name", name)
+                buttonClick.putString("status", isFavorite.toString())
+                firebaseAnalytics.logEvent(Constant.button_click, buttonClick)
             }
 
             btnCart.setOnClickListener {
@@ -145,6 +166,13 @@ class DetailActivity : AppCompatActivity(), ImagePagerAdapter.OnPageClickListene
                     }
 
                 }
+
+                //On Click Button + Trolley
+                firebaseAnalytics = Firebase.analytics
+                val buttonClick = Bundle()
+                buttonClick.putString("screen_name", "Detail Product")
+                buttonClick.putString("button_name", "+ Trolley")
+                firebaseAnalytics.logEvent(Constant.button_click, buttonClick)
             }
 
 
@@ -172,9 +200,23 @@ class DetailActivity : AppCompatActivity(), ImagePagerAdapter.OnPageClickListene
                     "https://myostuffsmr.com/detail_product?id=$productID"
                 )
 
+                //On Click Share Product
+                firebaseAnalytics = Firebase.analytics
+                val buttonClick = Bundle()
+                buttonClick.putString("screen_name", "Detail Product")
+                buttonClick.putString("product_name", name)
+                buttonClick.putString("product_price", price)
+                buttonClick.putInt("product_id", productID)
+                buttonClick.putString("button_name", "Share Product")
+                firebaseAnalytics.logEvent(Constant.button_click, buttonClick)
             }
 
             btnBack.setOnClickListener {
+                firebaseAnalytics = Firebase.analytics
+                val buttonClick = Bundle()
+                buttonClick.putString("screen_name", "Detail Product")
+                buttonClick.putString("button_name", "Back Icon")
+                firebaseAnalytics.logEvent(Constant.button_click, buttonClick)
                 onBackPressed()
             }
 
@@ -199,6 +241,16 @@ class DetailActivity : AppCompatActivity(), ImagePagerAdapter.OnPageClickListene
         super.onStart()
         validationLanguage()
         isDataShowing(false)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        //Firebase Onload
+        firebaseAnalytics = Firebase.analytics
+        val onload = Bundle()
+        onload.putString("screen_name", "Detail Product")
+        onload.putString("screen_class", this.javaClass.simpleName)
+        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, onload)
     }
 
     override fun onBackPressed() {
@@ -291,6 +343,13 @@ class DetailActivity : AppCompatActivity(), ImagePagerAdapter.OnPageClickListene
                                 showBottomSheet(it, paymentName, paymentImage)
                             }
                         } else showBottomSheet(it, null, null)
+
+                        //On Click Button Buy
+                        firebaseAnalytics = Firebase.analytics
+                        val buttonClick = Bundle()
+                        buttonClick.putString("screen_name", "Detail Product")
+                        buttonClick.putString("button_name", "Buy")
+                        firebaseAnalytics.logEvent(Constant.button_click, buttonClick)
                     }
 
                     Glide.with(applicationContext)
@@ -419,6 +478,14 @@ class DetailActivity : AppCompatActivity(), ImagePagerAdapter.OnPageClickListene
     private fun showBottomSheet(dataProduct: DetailDataProduct, name: String?, image: Int?) {
         val bottomSheetFragment = BottomSheetFragment(dataProduct, name, image)
         bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.tag)
+
+        //On Show Popup
+        firebaseAnalytics = Firebase.analytics
+        val popupDetail = Bundle()
+        popupDetail.putString("screen_name", "Detail Product")
+        popupDetail.putString("popup", "show")
+        popupDetail.putInt("product_id", dataProduct.id)
+        firebaseAnalytics.logEvent(Constant.popup_detail, popupDetail)
     }
 
     private fun shareDeepLink(name: String, price: String, link: String) {

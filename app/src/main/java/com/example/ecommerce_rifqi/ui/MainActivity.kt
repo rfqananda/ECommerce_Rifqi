@@ -73,7 +73,7 @@ class MainActivity : AppCompatActivity(), Communicator {
                 val buttonClick = Bundle()
                 buttonClick.putString("screen_name", "Home")
                 buttonClick.putString("button_name", "Trolley Icon")
-                firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, buttonClick)
+                firebaseAnalytics.logEvent(Constant.button_click, buttonClick)
             }
 
             btnNotification.setOnClickListener {
@@ -85,7 +85,7 @@ class MainActivity : AppCompatActivity(), Communicator {
                 val buttonClick = Bundle()
                 buttonClick.putString("screen_name", "Home")
                 buttonClick.putString("button_name", "Notif Icon")
-                firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, buttonClick)
+                firebaseAnalytics.logEvent(Constant.button_click, buttonClick)
             }
 
         }

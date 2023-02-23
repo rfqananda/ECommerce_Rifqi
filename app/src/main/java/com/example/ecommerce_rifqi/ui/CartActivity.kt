@@ -28,6 +28,9 @@ import com.example.ecommerce_rifqi.ui.view.BuyProductViewModel
 import com.example.ecommerce_rifqi.ui.view.GetProductCartViewModel
 import com.example.ecommerce_rifqi.ui.view.UpdateStockViewModel
 import com.example.ecommerce_rifqi.utils.ViewModelFactory
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
 import java.text.DecimalFormat
 
@@ -43,6 +46,8 @@ class CartActivity : AppCompatActivity() {
     private lateinit var viewModelBuy: BuyProductViewModel
 
     private lateinit var viewModelUpdateStock: UpdateStockViewModel
+
+    private lateinit var firebaseAnalytics: FirebaseAnalytics
 
     private var isFirstTime = true
 
@@ -128,21 +133,51 @@ class CartActivity : AppCompatActivity() {
                     if (btnPayment.isVisible) {
                         isFirstTime = true
                         getCheckedProducts()
+                        //On Click Buy Button
+                        firebaseAnalytics = Firebase.analytics
+                        val buttonClick = Bundle()
+                        buttonClick.putString("screen_name", "Trolley")
+                        buttonClick.putString("button_name", "Buy")
+                        buttonClick.putDouble("total_price", totalPriceItem.toDouble())
+                        buttonClick.putString("payment_method", tvPayment.text.toString())
+                        firebaseAnalytics.logEvent(Constant.button_click, buttonClick)
                     } else{
                         val intent = Intent(this@CartActivity, PaymentActivity::class.java)
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK)
                         startActivity(intent)
+                        //On Click Buy Button
+                        firebaseAnalytics = Firebase.analytics
+                        val buttonClick = Bundle()
+                        buttonClick.putString("screen_name", "Trolley")
+                        buttonClick.putString("button_name", "Buy")
+                        firebaseAnalytics.logEvent(Constant.button_click, buttonClick)
                     }
                 }
+
+
             }
 
             btnPayment.setOnClickListener {
                 val intent = Intent(this@CartActivity, PaymentActivity::class.java)
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK)
                 startActivity(intent)
+
+                //On Click Icon Bank
+                firebaseAnalytics = Firebase.analytics
+                val buttonClick = Bundle()
+                buttonClick.putString("screen_name", "Trolley")
+                buttonClick.putString("button_name", "BCA Virtual Account")
+                firebaseAnalytics.logEvent(Constant.button_click, buttonClick)
             }
 
             btnBack.setOnClickListener {
+                //On Click Back Icon
+                firebaseAnalytics = Firebase.analytics
+                val buttonClick = Bundle()
+                buttonClick.putString("screen_name", "Trolley")
+                buttonClick.putString("button_name", "Back Icon")
+                firebaseAnalytics.logEvent(Constant.button_click, buttonClick)
+                onBackPressed()
                 onBackPressed()
             }
 
@@ -168,6 +203,15 @@ class CartActivity : AppCompatActivity() {
                     setPositiveButton("Delete") { dialogInterface, i ->
                         viewModel.deleteProduct(data.id)
                         dataProductAdapter.removeData(data.id)
+
+                        //On Click Delete
+                        firebaseAnalytics = Firebase.analytics
+                        val buttonClick = Bundle()
+                        buttonClick.putString("screen_name", "Trolley")
+                        buttonClick.putString("button_name", "Delete Icon")
+                        buttonClick.putInt("product_id", data.id)
+                        buttonClick.putString("product_name", data.name)
+                        firebaseAnalytics.logEvent(Constant.button_click, buttonClick)
                     }
                 }.show()
             }
@@ -175,6 +219,16 @@ class CartActivity : AppCompatActivity() {
             override fun onIncrease(data: Product, position: Int) {
                 viewModel.incrementQuantity(data.id)
                 viewModel.totalPriceItem(data.id)
+
+                //On Click Button +
+                firebaseAnalytics = Firebase.analytics
+                val buttonClick = Bundle()
+                buttonClick.putString("screen_name", "Trolley")
+                buttonClick.putString("button_name", "+")
+                buttonClick.putInt("total", data.quantity)
+                buttonClick.putInt("product_id", data.id)
+                buttonClick.putString("product_name", data.name)
+                firebaseAnalytics.logEvent(Constant.button_click, buttonClick)
             }
 
 
@@ -183,14 +237,42 @@ class CartActivity : AppCompatActivity() {
                     viewModel.decrementQuantity(data.id)
                     viewModel.totalPriceItem(data.id)
                 }
+
+                //On Click Button -
+                firebaseAnalytics = Firebase.analytics
+                val buttonClick = Bundle()
+                buttonClick.putString("screen_name", "Trolley")
+                buttonClick.putString("button_name", "-")
+                buttonClick.putInt("total", data.quantity)
+                buttonClick.putInt("product_id", data.id)
+                buttonClick.putString("product_name", data.name)
+                firebaseAnalytics.logEvent(Constant.button_click, buttonClick)
             }
 
             override fun onChecked(data: Product, isChecked: Boolean) {
                 checkedFirstTime = true
                 checkedProducts(data.id, isChecked)
                 Log.e("CheckedID", data.id.toString())
+
+                //On Select CheckBox
+                firebaseAnalytics = Firebase.analytics
+                val buttonClick = Bundle()
+                buttonClick.putString("screen_name", "Trolley")
+                buttonClick.putInt("product_id", data.id)
+                buttonClick.putString("product_name", data.name)
+                firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_ITEM, buttonClick)
             }
         })
+    }
+
+    override fun onResume() {
+        super.onResume()
+        //Firebase Onload
+        firebaseAnalytics = Firebase.analytics
+        val onload = Bundle()
+        onload.putString("screen_name", "Trolley")
+        onload.putString("screen_class", this.javaClass.simpleName)
+        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, onload)
     }
 
     override fun onStart() {

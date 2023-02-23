@@ -18,6 +18,7 @@ import com.example.ecommerce_rifqi.R
 import com.example.ecommerce_rifqi.adapter.ListNotificationAdapter
 import com.example.ecommerce_rifqi.data.local.Notification
 import com.example.ecommerce_rifqi.databinding.ActivityNotificationBinding
+import com.example.ecommerce_rifqi.helper.Constant
 import com.example.ecommerce_rifqi.ui.view.NotificationViewModel
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
@@ -88,7 +89,7 @@ class NotificationActivity : AppCompatActivity() {
                             selectItem.putString("screen_name", "Notification")
                             selectItem.putString("title", data.title)
                             selectItem.putString("message", data.message)
-                            firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, selectItem)
+                            firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_ITEM, selectItem)
                         }
 
                         override fun onChecked(data: Notification, isChecked: Boolean, position: Int) {
@@ -100,7 +101,7 @@ class NotificationActivity : AppCompatActivity() {
                             selectItem.putString("screen_name", "Multiple Select")
                             selectItem.putString("title", data.title)
                             selectItem.putString("message", data.message)
-                            firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, selectItem)
+                            firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_ITEM, selectItem)
                         }
                     })
                 } else isDataEmpty(true)
@@ -156,7 +157,7 @@ class NotificationActivity : AppCompatActivity() {
                 selectItem.putString("screen_name", "Multiple Select")
                 selectItem.putString("button_name", "Read Icon")
                 selectItem.putInt("total_select_item", count)
-                firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, selectItem)
+                firebaseAnalytics.logEvent(Constant.button_click, selectItem)
 
                 onBackPressed()
             }
@@ -167,7 +168,7 @@ class NotificationActivity : AppCompatActivity() {
                 selectItem.putString("screen_name", "Multiple Select")
                 selectItem.putString("button_name", "Delete Icon")
                 selectItem.putInt("total_select_item", count)
-                firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, selectItem)
+                firebaseAnalytics.logEvent(Constant.button_click, selectItem)
 
                 var isChecked = false
                 for (i in 0 until binding.rvNotification.childCount) {
@@ -246,7 +247,7 @@ class NotificationActivity : AppCompatActivity() {
             val buttonClick = Bundle()
             buttonClick.putString("screen_name", "Notification")
             buttonClick.putString("button_name", "Multiple Select Item")
-            firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, buttonClick)
+            firebaseAnalytics.logEvent(Constant.button_click, buttonClick)
         } else {
             myMenu.findItem(R.id.read_notification)?.isVisible = false
             myMenu.findItem(R.id.delete)?.isVisible = false
@@ -274,7 +275,7 @@ class NotificationActivity : AppCompatActivity() {
             val buttonClick = Bundle()
             buttonClick.putString("screen_name", "Multiple Select")
             buttonClick.putString("button_name", "Back Icon")
-            firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, buttonClick)
+            firebaseAnalytics.logEvent(Constant.button_click, buttonClick)
         } else {
             onBackPressedDispatcher.onBackPressed()
             //Firebase On Click Back Button

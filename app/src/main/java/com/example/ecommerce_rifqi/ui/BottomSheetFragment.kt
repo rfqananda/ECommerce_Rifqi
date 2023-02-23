@@ -3,15 +3,12 @@ package com.example.ecommerce_rifqi.ui
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.findNavController
-import androidx.navigation.navGraphViewModels
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.example.ecommerce_rifqi.R
@@ -25,6 +22,9 @@ import com.example.ecommerce_rifqi.ui.view.BuyProductViewModel
 import com.example.ecommerce_rifqi.ui.view.UpdateStockViewModel
 import com.example.ecommerce_rifqi.utils.ViewModelFactory
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.ktx.Firebase
 import java.text.DecimalFormat
 import kotlin.properties.Delegates
 
@@ -46,6 +46,8 @@ class BottomSheetFragment(
     lateinit var sharedPref: PreferencesHelper
 
     private var totalPriceItem: String = ""
+
+    private lateinit var firebaseAnalytics: FirebaseAnalytics
 
 
     override fun onCreateView(
@@ -96,10 +98,30 @@ class BottomSheetFragment(
 
             btnPlus.setOnClickListener {
                 viewModel.increaseQuantity(dataProduct?.stock)
+
+                //On Click Button +
+                firebaseAnalytics = Firebase.analytics
+                val buttonClick = Bundle()
+                buttonClick.putString("screen_name", "Detail Product")
+                buttonClick.putString("button_name", "+")
+                buttonClick.putInt("total", quantity)
+                buttonClick.putInt("product_id", dataProduct!!.id)
+                buttonClick.putString("product_name", dataProduct.name_product)
+                firebaseAnalytics.logEvent(Constant.button_click, buttonClick)
             }
 
             btnMinus.setOnClickListener {
                 viewModel.decreaseQuantity()
+
+                //On Click Button -
+                firebaseAnalytics = Firebase.analytics
+                val buttonClick = Bundle()
+                buttonClick.putString("screen_name", "Detail Product")
+                buttonClick.putString("button_name", "-")
+                buttonClick.putInt("total", quantity)
+                buttonClick.putInt("product_id", dataProduct!!.id)
+                buttonClick.putString("product_name", dataProduct.name_product)
+                firebaseAnalytics.logEvent(Constant.button_click, buttonClick)
             }
 
             val productID = dataProduct?.id
@@ -108,7 +130,28 @@ class BottomSheetFragment(
                 if (btnPayment.isVisible) {
                     val userID = sharedPref.getString(Constant.PREF_ID)
                     updateStock(userID!!, productID.toString(), quantity)
+
+                    //On Click Button Buy Now For Method Payment
+                    firebaseAnalytics = Firebase.analytics
+                    val buttonClick = Bundle()
+                    buttonClick.putString("screen_name", "Detail Product")
+                    buttonClick.putString("button_name", "Buy Now – $totalPriceItem")
+                    firebaseAnalytics.logEvent(Constant.button_click, buttonClick)
+
                 } else {
+                    //On Click Button Buy Now
+                    firebaseAnalytics = Firebase.analytics
+                    val buttonClick = Bundle()
+                    buttonClick.putString("screen_name", "Detail Product")
+                    buttonClick.putString("button_name", "Buy Now – $totalPriceItem")
+                    buttonClick.putInt("product_id", dataProduct!!.id)
+                    buttonClick.putString("product_name", dataProduct.name_product)
+                    buttonClick.putInt("product_price", dataProduct.harga.toInt())
+                    buttonClick.putInt("product_total", quantity)
+                    buttonClick.putDouble("product_totalprice", totalPriceItem.toDouble())
+                    buttonClick.putString("payment_method", tvPayment.text.toString())
+                    firebaseAnalytics.logEvent(Constant.button_click, buttonClick)
+
                     val intent = Intent(requireContext(), PaymentActivity::class.java)
                     intent.putExtra("productID", productID)
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK)
@@ -121,6 +164,13 @@ class BottomSheetFragment(
                 intent.putExtra("productID", productID)
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK)
                 startActivity(intent)
+
+                //On Click Icon Bank
+                firebaseAnalytics = Firebase.analytics
+                val buttonClick = Bundle()
+                buttonClick.putString("screen_name", "Detail Product")
+                buttonClick.putString("button_name", "BCA Virtual Account")
+                firebaseAnalytics.logEvent(Constant.button_click, buttonClick)
             }
         }
     }

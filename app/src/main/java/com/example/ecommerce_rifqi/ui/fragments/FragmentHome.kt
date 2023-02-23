@@ -11,6 +11,7 @@ import com.example.ecommerce_rifqi.R
 import com.example.ecommerce_rifqi.adapter.ListProductAdapter
 import com.example.ecommerce_rifqi.adapter.LoadingStateAdapter
 import com.example.ecommerce_rifqi.databinding.FragmentHomeBinding
+import com.example.ecommerce_rifqi.helper.Constant
 import com.example.ecommerce_rifqi.helper.PreferencesHelper
 import com.example.ecommerce_rifqi.model.DataProduct
 import com.example.ecommerce_rifqi.ui.DetailActivity
@@ -71,7 +72,7 @@ class FragmentHome : Fragment(R.layout.fragment_home) {
                             val onsearch = Bundle()
                             onsearch.putString("screen_name", "Home")
                             onsearch.putString("search", text.toString())
-                            firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, onsearch)
+                            firebaseAnalytics.logEvent(Constant.on_search, onsearch)
                         }
                     }
                 }
@@ -139,7 +140,7 @@ class FragmentHome : Fragment(R.layout.fragment_home) {
                             selectItem.putString("product_price", data.harga)
                             selectItem.putInt("product_rate", data.rate)
                             selectItem.putInt("product_id", data.id)
-                            firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, selectItem)
+                            firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_ITEM, selectItem)
                         }
                     })
                     binding.swipeRefresh.isRefreshing = false

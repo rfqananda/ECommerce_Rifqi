@@ -18,6 +18,7 @@ import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.ViewModelProvider
 import com.example.ecommerce_rifqi.R
 import com.example.ecommerce_rifqi.databinding.ActivityRegisterBinding
+import com.example.ecommerce_rifqi.helper.Constant
 import com.example.ecommerce_rifqi.ui.view.RegisterViewModel
 import com.example.ecommerce_rifqi.utils.ViewModelFactory
 import com.example.ecommerce_rifqi.utils.rotateBitmap
@@ -97,7 +98,7 @@ class RegisterActivity : AppCompatActivity() {
             val btn_login = Bundle()
             btn_login.putString("screen_name", "Sign Up")
             btn_login.putString("button_name", "Login")
-            firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, btn_login)
+            firebaseAnalytics.logEvent(Constant.button_click, btn_login)
         }
 
         binding.apply {
@@ -186,13 +187,17 @@ class RegisterActivity : AppCompatActivity() {
                 }
 
                 //Firebase OnClick Button SignUp
+                val genderIdentify = if (gender > 0){
+                    "Perempuan"
+                } else "Laki-laki"
+
                 val btn_signup = Bundle()
                 btn_signup.putString("screen_name", "Sign Up")
                 btn_signup.putString("image", userChoice)
                 btn_signup.putString("email", etEmail.text.toString())
                 btn_signup.putString("name", etName.text.toString())
                 btn_signup.putString("phone", etPhone.text.toString())
-                btn_signup.putString("gender", gender.toString())
+                btn_signup.putString("gender", genderIdentify)
                 btn_signup.putString("button_name", "Sign Up")
                 firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, btn_signup)
             }
@@ -202,7 +207,7 @@ class RegisterActivity : AppCompatActivity() {
                 val btn_camera = Bundle()
                 btn_camera.putString("screen_name", "Sign Up")
                 btn_camera.putString("button_name", "Icon Photo")
-                firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, btn_camera)
+                firebaseAnalytics.logEvent(Constant.button_click, btn_camera)
             }
         }
     }
@@ -283,11 +288,11 @@ class RegisterActivity : AppCompatActivity() {
                 }
 
                 userChoice = selectedOption
-                //Firebase OnClick Choice Image From
+                //Firebase On Change Image
                 val camera = Bundle()
                 camera.putString("screen_name", "Sign Up")
                 camera.putString("image", selectedOption)
-                firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, camera)
+                firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_ITEM, camera)
             }.show()
     }
 

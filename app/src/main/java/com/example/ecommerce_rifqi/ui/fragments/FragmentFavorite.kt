@@ -74,7 +74,7 @@ class FragmentFavorite : Fragment(R.layout.fragment_favorite) {
                             val onsearch = Bundle()
                             onsearch.putString("screen_name", "Favorite")
                             onsearch.putString("search", text.toString())
-                            firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, onsearch)
+                            firebaseAnalytics.logEvent(Constant.on_search, onsearch)
                         }
                     }
                 }
@@ -137,8 +137,15 @@ class FragmentFavorite : Fragment(R.layout.fragment_favorite) {
             .setSingleChoiceItems(options, userChoice){ _, which ->
                 selectedOption = options[which]
                 sharedPref.put(Constant.PREF_SORTIR, which.toString())
+
+                //Firebase OnClick Sort By
+                firebaseAnalytics = Firebase.analytics
+                val popupSort = Bundle()
+                popupSort.putString("screen_name", "Favorite")
+                popupSort.putString("sort_by", selectedOption)
+                firebaseAnalytics.logEvent(Constant.popup_sort, popupSort)
             }
-            .setPositiveButton("Ok"){ _, _->
+            .setPositiveButton("Ok"){ _, which->
                 when (selectedOption) {
                     resources.getString(R.string.txt_sortirAZ) -> getListProduct(resources.getString(R.string.txt_sortirAZ))
                     resources.getString(R.string.txt_sortirZA) -> getListProduct(resources.getString(R.string.txt_sortirZA))
@@ -149,13 +156,6 @@ class FragmentFavorite : Fragment(R.layout.fragment_favorite) {
             }
 
             .show()
-
-        //Firebase OnClick Sort By
-        firebaseAnalytics = Firebase.analytics
-        val popupSort = Bundle()
-        popupSort.putString("screen_name", "Favorite")
-        popupSort.putString("sort_by", checkedItem)
-        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, popupSort)
     }
 
     private fun setupListProduct(){
@@ -176,7 +176,7 @@ class FragmentFavorite : Fragment(R.layout.fragment_favorite) {
                 selectItem.putString("product_price", data.harga)
                 selectItem.putInt("product_rate", data.rate)
                 selectItem.putInt("product_id", data.id)
-                firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, selectItem)
+                firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_ITEM, selectItem)
             }
         })
 

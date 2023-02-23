@@ -30,6 +30,9 @@ import com.example.ecommerce_rifqi.utils.ViewModelFactory
 import com.example.ecommerce_rifqi.utils.rotateBitmap
 import com.example.ecommerce_rifqi.utils.uriToFile
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.ktx.Firebase
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -54,6 +57,8 @@ class FragmentProfile : Fragment(R.layout.fragment_profile) {
 
     private lateinit var loading: LoadingDialog
 
+    private lateinit var firebaseAnalytics: FirebaseAnalytics
+
     private var isBackCamera by Delegates.notNull<Boolean>()
 
     private var isUserAction = false
@@ -67,6 +72,7 @@ class FragmentProfile : Fragment(R.layout.fragment_profile) {
     var languages = arrayOf(" ", "EN", "ID")
     private var images = intArrayOf(R.drawable.bg_card4, R.drawable.ic_eng, R.drawable.ic_id)
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentProfileBinding.bind(view)
@@ -78,6 +84,13 @@ class FragmentProfile : Fragment(R.layout.fragment_profile) {
         binding.btnLogout.setOnClickListener {
             sharedPref.clear()
             startActivity(Intent(requireContext(), LoginActivity::class.java))
+
+            //On Click Logout
+            firebaseAnalytics = Firebase.analytics
+            val selectItem = Bundle()
+            selectItem.putString("screen_name", "Profile")
+            selectItem.putString("item_name", "Logout")
+            firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_ITEM, selectItem)
             activity?.finish()
         }
 
@@ -108,6 +121,14 @@ class FragmentProfile : Fragment(R.layout.fragment_profile) {
                             }
                             else -> requireActivity().recreate()
                         }
+
+                        //On Change Language
+                        firebaseAnalytics = Firebase.analytics
+                        val selectItem = Bundle()
+                        selectItem.putString("screen_name", "Profile")
+                        selectItem.putString("item_name", "Change Language")
+                        selectItem.putString("language", sharedPref.getString(Constant.PREF_LANG))
+                        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_ITEM, selectItem)
                     } else {
                         isUserAction = false
                     }
@@ -131,13 +152,35 @@ class FragmentProfile : Fragment(R.layout.fragment_profile) {
             tvEmail.text = emailUser
 
             btnChangePassword.setOnClickListener {
+                //On Click Change Password
+                firebaseAnalytics = Firebase.analytics
+                val selectItem = Bundle()
+                selectItem.putString("screen_name", "Profile")
+                selectItem.putString("item_name", "Change Password")
+                firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_ITEM, selectItem)
+
                 findNavController().navigate(R.id.action_fragmentProfile_to_fragmentChangePassword)
             }
 
             btnChangePp.setOnClickListener {
                 showSimpleDialog()
+                //Firebase OnClick Camera Icon
+                val btn_camera = Bundle()
+                btn_camera.putString("screen_name", "Profile")
+                btn_camera.putString("button_name", "Icon Photo")
+                firebaseAnalytics.logEvent(Constant.button_click, btn_camera)
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        //Firebase Onload
+        firebaseAnalytics = Firebase.analytics
+        val onload = Bundle()
+        onload.putString("screen_name", "Profile")
+        onload.putString("screen_class", this.javaClass.simpleName)
+        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, onload)
     }
 
     private fun whenGetPhoto() {
@@ -224,10 +267,18 @@ class FragmentProfile : Fragment(R.layout.fragment_profile) {
         MaterialAlertDialogBuilder(requireContext())
             .setTitle("Select Image")
             .setItems(getPhoto) { dialog, which ->
+                val selectedOption = getPhoto[which]
                 when (which) {
                     0 -> startCameraX()
                     1 -> startGallery()
                 }
+
+                //On Change Image
+                firebaseAnalytics = Firebase.analytics
+                val selectItem = Bundle()
+                selectItem.putString("screen_name", "Profile")
+                selectItem.putString("image", selectedOption)
+                firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_ITEM, selectItem)
             }
             .show()
     }

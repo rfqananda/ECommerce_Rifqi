@@ -81,7 +81,7 @@ class LoginActivity : AppCompatActivity() {
                 btn_login.putString("screen_name", "Login")
                 btn_login.putString("email", binding.etEmail.text.toString())
                 btn_login.putString("button_name", "Login")
-                firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, btn_login)
+                firebaseAnalytics.logEvent(Constant.button_click, btn_login)
             }
 
             btnSignup.setOnClickListener {
@@ -91,7 +91,7 @@ class LoginActivity : AppCompatActivity() {
                 val btn_signup = Bundle()
                 btn_signup.putString("screen_name", "Login")
                 btn_signup.putString("button_name", "Sign Up")
-                firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, btn_signup)
+                firebaseAnalytics.logEvent(Constant.button_click, btn_signup)
             }
         }
     }

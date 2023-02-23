@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import com.example.ecommerce_rifqi.helper.Constant
 import com.example.ecommerce_rifqi.model.DataProduct
 import com.example.ecommerce_rifqi.networking.APIInterface
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -29,7 +30,7 @@ class ProductPagingSource(private val apiService: APIInterface, private val sear
             val onScroll = Bundle()
             onScroll.putString("screen_name", "Home")
             onScroll.putInt("page", position)
-            firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, onScroll)
+            firebaseAnalytics.logEvent(Constant.on_scroll, onScroll)
             Log.e("DataPageOffset", "Page = $position")
 
             LoadResult.Page(

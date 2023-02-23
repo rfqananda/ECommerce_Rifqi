@@ -6,9 +6,13 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.example.ecommerce_rifqi.databinding.ActivityRatingBinding
+import com.example.ecommerce_rifqi.helper.Constant
 import com.example.ecommerce_rifqi.ui.view.GetProductCartViewModel
 import com.example.ecommerce_rifqi.ui.view.UpdateRateViewModel
 import com.example.ecommerce_rifqi.utils.ViewModelFactory
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.ktx.Firebase
 
 class RatingActivity : AppCompatActivity() {
 
@@ -17,6 +21,8 @@ class RatingActivity : AppCompatActivity() {
     private lateinit var viewModel: UpdateRateViewModel
 
     private lateinit var viewModelCart: GetProductCartViewModel
+
+    private lateinit var firebaseAnalytics: FirebaseAnalytics
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,10 +41,19 @@ class RatingActivity : AppCompatActivity() {
             ivLogo.setImageResource(paymentImage)
 
             btnSubmit.setOnClickListener {
+
                 val listProductId = intent.getStringArrayListExtra("list_id")
 
                 val rate = ratingBar.rating
                 val productID = intent.getIntExtra("id", 0)
+
+                //On Click Button Submit
+                firebaseAnalytics = Firebase.analytics
+                val buttonClick = Bundle()
+                buttonClick.putString("screen_name", "Success")
+                buttonClick.putString("button_name", "Submit")
+                buttonClick.putInt("button_name", rate.toInt())
+                firebaseAnalytics.logEvent(Constant.button_click, buttonClick)
 
                 if (productID != 0){
                     updateRating(productID, rate.toInt())
@@ -56,6 +71,16 @@ class RatingActivity : AppCompatActivity() {
                 finishAffinity()
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        //Firebase Onload
+        firebaseAnalytics = Firebase.analytics
+        val onload = Bundle()
+        onload.putString("screen_name", "Success")
+        onload.putString("screen_class", this.javaClass.simpleName)
+        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, onload)
     }
 
     private fun updateRating(productID: Int, rate: Int){

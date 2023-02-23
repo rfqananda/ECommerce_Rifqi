@@ -14,6 +14,9 @@ import com.example.ecommerce_rifqi.ui.view.ChangePasswordViewModel
 import com.example.ecommerce_rifqi.helper.Constant
 import com.example.ecommerce_rifqi.helper.PreferencesHelper
 import com.example.ecommerce_rifqi.utils.ViewModelFactory
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.ktx.Firebase
 
 class FragmentChangePassword : Fragment(R.layout.fragment_change_password) {
 
@@ -26,6 +29,7 @@ class FragmentChangePassword : Fragment(R.layout.fragment_change_password) {
 
     private lateinit var loading: LoadingDialog
 
+    private lateinit var firebaseAnalytics: FirebaseAnalytics
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -67,6 +71,12 @@ class FragmentChangePassword : Fragment(R.layout.fragment_change_password) {
             }
 
             btnBack.setOnClickListener {
+                //Firebase On Click Back Icon
+                firebaseAnalytics = Firebase.analytics
+                val buttonClick = Bundle()
+                buttonClick.putString("screen_name", "Change Password")
+                buttonClick.putString("button_name", "Back Icon")
+                firebaseAnalytics.logEvent(Constant.button_click, buttonClick)
                 findNavController().popBackStack()
             }
 
@@ -99,9 +109,23 @@ class FragmentChangePassword : Fragment(R.layout.fragment_change_password) {
                     showMessage("Data tidak boleh kosong!")
                 }
 
-
+                //Firebase On Click Button Save
+                val btn_camera = Bundle()
+                btn_camera.putString("screen_name", "Change Password")
+                btn_camera.putString("button_name", "Save")
+                firebaseAnalytics.logEvent(Constant.button_click, btn_camera)
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        //Firebase Onload
+        firebaseAnalytics = Firebase.analytics
+        val onload = Bundle()
+        onload.putString("screen_name", "Change Password")
+        onload.putString("screen_class", this.javaClass.simpleName)
+        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, onload)
     }
 
     private fun changePassword(id: Int, oldPass: String, newPass: String, confirmPass: String) {

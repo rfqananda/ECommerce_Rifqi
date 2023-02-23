@@ -10,9 +10,12 @@ import com.example.ecommerce_rifqi.adapter.CobaAdapter1
 import com.example.ecommerce_rifqi.adapter.CobaAdapter2
 import com.example.ecommerce_rifqi.adapter.PaymentMethodAdapter
 import com.example.ecommerce_rifqi.databinding.ActivityPaymentBinding
+import com.example.ecommerce_rifqi.helper.Constant
 import com.example.ecommerce_rifqi.helper.PreferencesHelper
 import com.example.ecommerce_rifqi.model.DataPayment
 import com.example.ecommerce_rifqi.model.PaymentMethod
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfig
@@ -27,6 +30,8 @@ class PaymentActivity : AppCompatActivity(), CobaAdapter1.OnAdapterListenerPayme
     var payment_remote_config: String? = null
 
     lateinit var sharedPref: PreferencesHelper
+
+    private lateinit var firebaseAnalytics: FirebaseAnalytics
 
     private lateinit var paymentAdapter: PaymentMethodAdapter
 
@@ -52,8 +57,24 @@ class PaymentActivity : AppCompatActivity(), CobaAdapter1.OnAdapterListenerPayme
         }
 
         binding.btnBack.setOnClickListener {
+            //On Click Back Icon
+            firebaseAnalytics = Firebase.analytics
+            val buttonClick = Bundle()
+            buttonClick.putString("screen_name", "Pilih Metode Pembayaran")
+            buttonClick.putString("button_name", "Back Icon")
+            firebaseAnalytics.logEvent(Constant.button_click, buttonClick)
             onBackPressed()
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        //Firebase Onload
+        firebaseAnalytics = Firebase.analytics
+        val onload = Bundle()
+        onload.putString("screen_name", "Pilih Metode Pembayaran")
+        onload.putString("screen_class", this.javaClass.simpleName)
+        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, onload)
     }
 
     private fun onFirebaseActivated() {
@@ -97,6 +118,21 @@ class PaymentActivity : AppCompatActivity(), CobaAdapter1.OnAdapterListenerPayme
             startActivity(intent)
             finish()
         }
+
+        //On Click Back Icon
+        val jenisPembayaran = if (data.name!!.contains("Virtual Account")) {
+            "Virtual Account"
+        } else {
+            "E-Wallet"
+        }
+        firebaseAnalytics = Firebase.analytics
+        val buttonClick = Bundle()
+        buttonClick.putString("screen_name", "Pilih Metode Pembayaran")
+        buttonClick.putString("jenis_pembayaran", jenisPembayaran)
+        buttonClick.putString("bank", data.name)
+
+        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_ITEM, buttonClick)
+        onBackPressed()
     }
 
     private fun showMessage(message: String) {
