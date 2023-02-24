@@ -131,14 +131,6 @@ class BottomSheetFragment(
                     val userID = sharedPref.getString(Constant.PREF_ID)
                     updateStock(userID!!, productID.toString(), quantity)
 
-                    //On Click Button Buy Now For Method Payment
-                    firebaseAnalytics = Firebase.analytics
-                    val buttonClick = Bundle()
-                    buttonClick.putString("screen_name", "Detail Product")
-                    buttonClick.putString("button_name", "Buy Now – $totalPriceItem")
-                    firebaseAnalytics.logEvent(Constant.button_click, buttonClick)
-
-                } else {
                     //On Click Button Buy Now
                     firebaseAnalytics = Firebase.analytics
                     val buttonClick = Bundle()
@@ -148,8 +140,16 @@ class BottomSheetFragment(
                     buttonClick.putString("product_name", dataProduct.name_product)
                     buttonClick.putInt("product_price", dataProduct.harga.toInt())
                     buttonClick.putInt("product_total", quantity)
-                    buttonClick.putDouble("product_totalprice", totalPriceItem.toDouble())
+                    buttonClick.putString("product_totalprice", totalPriceItem)
                     buttonClick.putString("payment_method", tvPayment.text.toString())
+                    firebaseAnalytics.logEvent(Constant.button_click, buttonClick)
+
+                } else {
+                    //On Click Button Buy Now For Method Payment
+                    firebaseAnalytics = Firebase.analytics
+                    val buttonClick = Bundle()
+                    buttonClick.putString("screen_name", "Detail Product")
+                    buttonClick.putString("button_name", "Buy Now – $totalPriceItem")
                     firebaseAnalytics.logEvent(Constant.button_click, buttonClick)
 
                     val intent = Intent(requireContext(), PaymentActivity::class.java)

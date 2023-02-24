@@ -124,6 +124,13 @@ class DetailActivity : AppCompatActivity(), ImagePagerAdapter.OnPageClickListene
             }
 
             btnCart.setOnClickListener {
+                //On Click Button + Trolley
+                firebaseAnalytics = Firebase.analytics
+                val buttonClick = Bundle()
+                buttonClick.putString("screen_name", "Detail Product")
+                buttonClick.putString("button_name", "+ Trolley")
+                firebaseAnalytics.logEvent(Constant.button_click, buttonClick)
+
                 CoroutineScope(Dispatchers.IO).launch {
                     val isProductHasBeenAdded = viewModel.checkProduct(productID)
                     withContext(Dispatchers.Main) {
@@ -166,13 +173,6 @@ class DetailActivity : AppCompatActivity(), ImagePagerAdapter.OnPageClickListene
                     }
 
                 }
-
-                //On Click Button + Trolley
-                firebaseAnalytics = Firebase.analytics
-                val buttonClick = Bundle()
-                buttonClick.putString("screen_name", "Detail Product")
-                buttonClick.putString("button_name", "+ Trolley")
-                firebaseAnalytics.logEvent(Constant.button_click, buttonClick)
             }
 
 

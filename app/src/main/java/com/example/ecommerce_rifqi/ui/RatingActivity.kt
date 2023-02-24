@@ -52,7 +52,7 @@ class RatingActivity : AppCompatActivity() {
                 val buttonClick = Bundle()
                 buttonClick.putString("screen_name", "Success")
                 buttonClick.putString("button_name", "Submit")
-                buttonClick.putInt("button_name", rate.toInt())
+                buttonClick.putInt("rate", rate.toInt())
                 firebaseAnalytics.logEvent(Constant.button_click, buttonClick)
 
                 if (productID != 0){

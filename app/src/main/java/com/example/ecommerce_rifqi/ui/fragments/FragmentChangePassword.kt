@@ -81,6 +81,11 @@ class FragmentChangePassword : Fragment(R.layout.fragment_change_password) {
             }
 
             btnSave.setOnClickListener {
+                //Firebase On Click Button Save
+                val btn_camera = Bundle()
+                btn_camera.putString("screen_name", "Change Password")
+                btn_camera.putString("button_name", "Save")
+                firebaseAnalytics.logEvent(Constant.button_click, btn_camera)
 
                 loading.startLoading()
                 val id = sharedPref.getString(Constant.PREF_ID)
@@ -108,12 +113,6 @@ class FragmentChangePassword : Fragment(R.layout.fragment_change_password) {
                     loading.isDismiss()
                     showMessage("Data tidak boleh kosong!")
                 }
-
-                //Firebase On Click Button Save
-                val btn_camera = Bundle()
-                btn_camera.putString("screen_name", "Change Password")
-                btn_camera.putString("button_name", "Save")
-                firebaseAnalytics.logEvent(Constant.button_click, btn_camera)
             }
         }
     }

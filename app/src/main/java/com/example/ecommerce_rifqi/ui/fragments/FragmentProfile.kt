@@ -164,7 +164,7 @@ class FragmentProfile : Fragment(R.layout.fragment_profile) {
 
             btnChangePp.setOnClickListener {
                 showSimpleDialog()
-                //Firebase OnClick Camera Icon
+                //Firebase On Click Camera Icon
                 val btn_camera = Bundle()
                 btn_camera.putString("screen_name", "Profile")
                 btn_camera.putString("button_name", "Icon Photo")

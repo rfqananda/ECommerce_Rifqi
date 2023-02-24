@@ -269,7 +269,17 @@ class NotificationActivity : AppCompatActivity() {
     override fun onBackPressed() {
         if (isMultipleSelect) {
             setMultipleSelect()
+        } else {
+            onBackPressedDispatcher.onBackPressed()
+        }
+        lifecycleScope.launch {
+            unselectNotification()
+        }
+    }
 
+    override fun onSupportNavigateUp(): Boolean {
+        if (isMultipleSelect) {
+            setMultipleSelect()
             //Firebase On Click Back Button
             firebaseAnalytics = Firebase.analytics
             val buttonClick = Bundle()
@@ -283,18 +293,7 @@ class NotificationActivity : AppCompatActivity() {
             val buttonClick = Bundle()
             buttonClick.putString("screen_name", "Notification")
             buttonClick.putString("button_name", "Back Icon")
-            firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, buttonClick)
-        }
-        lifecycleScope.launch {
-            unselectNotification()
-        }
-    }
-
-    override fun onSupportNavigateUp(): Boolean {
-        if (isMultipleSelect) {
-            setMultipleSelect()
-        } else {
-            onBackPressedDispatcher.onBackPressed()
+            firebaseAnalytics.logEvent(Constant.button_click, buttonClick)
         }
         lifecycleScope.launch {
             unselectNotification()

@@ -97,6 +97,19 @@ class PaymentActivity : AppCompatActivity(), CobaAdapter1.OnAdapterListenerPayme
     }
 
     override fun onClick(data: DataPayment, drawable: Int) {
+        //On Click Bank
+        val jenisPembayaran = if (data.name!!.contains("Virtual Account")) {
+            "Virtual Account"
+        } else {
+            "E-Wallet"
+        }
+        firebaseAnalytics = Firebase.analytics
+        val buttonClick = Bundle()
+        buttonClick.putString("screen_name", "Pilih Metode Pembayaran")
+        buttonClick.putString("jenis_pembayaran", jenisPembayaran)
+        buttonClick.putString("bank", data.name)
+        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_ITEM, buttonClick)
+
         val productID = intent.getIntExtra("productID", 0)
 
         if (productID == 0){
@@ -118,20 +131,6 @@ class PaymentActivity : AppCompatActivity(), CobaAdapter1.OnAdapterListenerPayme
             startActivity(intent)
             finish()
         }
-
-        //On Click Back Icon
-        val jenisPembayaran = if (data.name!!.contains("Virtual Account")) {
-            "Virtual Account"
-        } else {
-            "E-Wallet"
-        }
-        firebaseAnalytics = Firebase.analytics
-        val buttonClick = Bundle()
-        buttonClick.putString("screen_name", "Pilih Metode Pembayaran")
-        buttonClick.putString("jenis_pembayaran", jenisPembayaran)
-        buttonClick.putString("bank", data.name)
-
-        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_ITEM, buttonClick)
         onBackPressed()
     }
 

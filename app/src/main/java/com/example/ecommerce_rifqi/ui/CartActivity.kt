@@ -138,7 +138,7 @@ class CartActivity : AppCompatActivity() {
                         val buttonClick = Bundle()
                         buttonClick.putString("screen_name", "Trolley")
                         buttonClick.putString("button_name", "Buy")
-                        buttonClick.putDouble("total_price", totalPriceItem.toDouble())
+                        buttonClick.putString("total_price", totalPriceItem)
                         buttonClick.putString("payment_method", tvPayment.text.toString())
                         firebaseAnalytics.logEvent(Constant.button_click, buttonClick)
                     } else{
@@ -219,7 +219,6 @@ class CartActivity : AppCompatActivity() {
             override fun onIncrease(data: Product, position: Int) {
                 viewModel.incrementQuantity(data.id)
                 viewModel.totalPriceItem(data.id)
-
                 //On Click Button +
                 firebaseAnalytics = Firebase.analytics
                 val buttonClick = Bundle()
@@ -230,14 +229,11 @@ class CartActivity : AppCompatActivity() {
                 buttonClick.putString("product_name", data.name)
                 firebaseAnalytics.logEvent(Constant.button_click, buttonClick)
             }
-
-
             override fun onDecrease(data: Product, position: Int) {
                 if (data.quantity > 1) {
                     viewModel.decrementQuantity(data.id)
                     viewModel.totalPriceItem(data.id)
                 }
-
                 //On Click Button -
                 firebaseAnalytics = Firebase.analytics
                 val buttonClick = Bundle()

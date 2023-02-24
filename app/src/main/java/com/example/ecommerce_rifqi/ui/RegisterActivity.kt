@@ -137,6 +137,21 @@ class RegisterActivity : AppCompatActivity() {
             btnSignup.setOnClickListener {
                 loading.startLoading()
 
+                //Firebase OnClick Button SignUp
+                val genderIdentify = if (gender > 0){
+                    "Perempuan"
+                } else "Laki-laki"
+
+                val btn_signup = Bundle()
+                btn_signup.putString("screen_name", "Sign Up")
+                btn_signup.putString("image", userChoice)
+                btn_signup.putString("email", etEmail.text.toString())
+                btn_signup.putString("name", etName.text.toString())
+                btn_signup.putString("phone", etPhone.text.toString())
+                btn_signup.putString("gender", genderIdentify)
+                btn_signup.putString("button_name", "Sign Up")
+                firebaseAnalytics.logEvent(Constant.button_click, btn_signup)
+
                 if (getFile != null) {
                     val file = getFile as File
 
@@ -152,8 +167,6 @@ class RegisterActivity : AppCompatActivity() {
                     val pass = etPass.text.toString().toRequestBody("text/plain".toMediaType())
                     val phone = etPhone.text.toString().toRequestBody("text/plain".toMediaType())
                     val genderBody = gender.toString().toRequestBody("text/plain".toMediaType())
-
-
 
                     if (
                         etName.text?.isNotEmpty() == true &&
@@ -185,21 +198,6 @@ class RegisterActivity : AppCompatActivity() {
                     val insertImage = resources.getString(R.string.txt_insert_image)
                     showMessage(insertImage)
                 }
-
-                //Firebase OnClick Button SignUp
-                val genderIdentify = if (gender > 0){
-                    "Perempuan"
-                } else "Laki-laki"
-
-                val btn_signup = Bundle()
-                btn_signup.putString("screen_name", "Sign Up")
-                btn_signup.putString("image", userChoice)
-                btn_signup.putString("email", etEmail.text.toString())
-                btn_signup.putString("name", etName.text.toString())
-                btn_signup.putString("phone", etPhone.text.toString())
-                btn_signup.putString("gender", genderIdentify)
-                btn_signup.putString("button_name", "Sign Up")
-                firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, btn_signup)
             }
             btnUploadPp.setOnClickListener {
                 showSimpleDialog()
