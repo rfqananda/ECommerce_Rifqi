@@ -1,8 +1,11 @@
 # eCommerce_RifqiAnanda2
 
+I created a simple e-commerce application with the following features:
+
+# Splash Screen, Login Page, Register, Page
+
 ![image](https://user-images.githubusercontent.com/87416222/225801799-632e766d-662c-4fd8-bd4b-8ed9061736f9.png)
 
-Splash screen, Login, Register
 
 ![image](https://user-images.githubusercontent.com/87416222/225801909-37e92a92-0c0f-45a6-aec2-edb300485714.png)
 
