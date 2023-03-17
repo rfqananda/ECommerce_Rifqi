@@ -12,6 +12,12 @@ I created a simple e-commerce application with the following features:
 # List Item on Home Page and Favorite Page
 ![image](https://user-images.githubusercontent.com/87416222/225801997-d311420a-9b06-402a-9ad0-2e4efa59c8f3.png)
 
+# Search Item
+![image](https://user-images.githubusercontent.com/87416222/225805824-4b53a63b-1771-46ce-a8a0-6ed2c654b9e7.png)
+
+# Button Sort Item
+![image](https://user-images.githubusercontent.com/87416222/225805712-603132e1-21df-44e4-b6c3-9e156f7fde67.png)
+
 # Detail Product Page and Buying Proccess
 ![image](https://user-images.githubusercontent.com/87416222/225802157-10b7c8ee-8237-4c11-b136-c68e24c253bd.png)
 
