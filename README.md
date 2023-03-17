@@ -1,3 +1,3 @@
 # eCommerce_RifqiAnanda2
 
-![image](https://user-images.githubusercontent.com/87416222/225792726-045a153e-8c7b-42d7-956d-8eac0cc7ce82.png)
+![image](https://user-images.githubusercontent.com/87416222/225792924-11f32bda-14cf-4e02-87f7-280279b8f1e6.png)
